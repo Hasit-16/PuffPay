@@ -84,39 +84,111 @@ export async function searchUsers(query: string): Promise<UserResult[]> {
 }
 
 export async function sendFriendRequest(targetUserId: string) {
+    console.log("sendFriendRequest called with:", targetUserId);
+    try {
+        const supabase = await createClient();
+        const {
+            data: { user },
+        } = await supabase.auth.getUser();
+
+        if (!user) {
+            console.error("sendFriendRequest: No user found");
+            throw new Error("Unauthorized");
+        }
+
+        console.log("sendFriendRequest: Current user:", user.id);
+
+        if (user.id === targetUserId) {
+            return { error: "Cannot add yourself" };
+        }
+
+        // Check if exists
+        const { data: existing, error: checkError } = await supabase
+            .from("friendships")
+            .select("*")
+            .or(
+                `and(user_id.eq.${user.id},friend_id.eq.${targetUserId}),and(user_id.eq.${targetUserId},friend_id.eq.${user.id})`
+            )
+            .maybeSingle();
+
+        if (checkError) {
+            console.error("sendFriendRequest: Check error:", checkError);
+            return { error: "Database check failed" };
+        }
+
+        if (existing) {
+            console.log("sendFriendRequest: Friendship already exists:", existing);
+            return { error: "Friendship already exists or pending" };
+        }
+
+        const { error: insertError } = await supabase.from("friendships").insert({
+            user_id: user.id,
+            friend_id: targetUserId,
+            status: "pending",
+        });
+
+        if (insertError) {
+            console.error("sendFriendRequest: Insert error:", insertError);
+            return { error: insertError.message };
+        }
+
+        console.log("sendFriendRequest: Success");
+        revalidatePath("/friends/add");
+        return { success: true };
+    } catch (err) {
+        console.error("sendFriendRequest: Unexpected error:", err);
+        return { error: "Unexpected server error" };
+    }
+}
+
+export async function getFriendRequests() {
+    console.log("getFriendRequests: called");
     const supabase = await createClient();
     const {
         data: { user },
     } = await supabase.auth.getUser();
 
-    if (!user) throw new Error("Unauthorized");
-
-    // Check if exists
-    const { data: existing } = await supabase
-        .from("friendships")
-        .select("*")
-        .or(
-            `and(user_id.eq.${user.id},friend_id.eq.${targetUserId}),and(user_id.eq.${targetUserId},friend_id.eq.${user.id})`
-        )
-        .single();
-
-    if (existing) {
-        return { error: "Friendship already exists or pending" };
+    if (!user) {
+        console.log("getFriendRequests: No user");
+        return [];
     }
 
-    const { error } = await supabase.from("friendships").insert({
-        user_id: user.id,
-        friend_id: targetUserId,
-        status: "pending",
-    });
+    // First just check if there are ANY pending requests for me, without the join
+    const { data: rawData, error: rawError } = await supabase
+        .from("friendships")
+        .select("*")
+        .eq("friend_id", user.id)
+        .eq("status", "pending");
 
-    if (error) return { error: error.message };
+    console.log("getFriendRequests: Raw pending count:", rawData?.length, "Error:", rawError);
 
-    revalidatePath("/friends/add");
-    return { success: true };
+    const { data, error } = await supabase
+        .from("friendships")
+        .select(`
+      id,
+      user_id,
+      created_at,
+      user:profiles!friendships_user_id_fkey(id, username, avatar_url)
+    `)
+        .eq("friend_id", user.id)
+        .eq("status", "pending");
+
+    if (error) {
+        console.error("getFriendRequests error:", error);
+        return [];
+    }
+
+    console.log("getFriendRequests: Data found:", data?.length);
+
+    return data.map((item) => ({
+        id: item.id, // request id
+        sender: item.user,
+        created_at: item.created_at,
+    }));
 }
 
-export async function getFriendRequests() {
+export async function getSentRequests() {
+    console.log("getSentRequests: called");
     const supabase = await createClient();
     const {
         data: { user },
@@ -127,22 +199,22 @@ export async function getFriendRequests() {
     const { data, error } = await supabase
         .from("friendships")
         .select(`
-      id,
-      user_id,
-      created_at,
-      user:public_profiles!friendships_user_id_fkey(id, username, avatar_url)
-    `)
-        .eq("friend_id", user.id)
+            id,
+            friend_id,
+            created_at,
+            friend:profiles!friendships_friend_id_fkey(id, username, avatar_url)
+        `)
+        .eq("user_id", user.id)
         .eq("status", "pending");
 
     if (error) {
-        console.error("Get requests error:", error);
+        console.error("getSentRequests error:", error);
         return [];
     }
 
     return data.map((item) => ({
-        id: item.id, // request id
-        sender: item.user,
+        id: item.id,
+        recipient: item.friend,
         created_at: item.created_at,
     }));
 }
@@ -161,19 +233,15 @@ export async function getMyFriends() {
             id,
             user_id,
             friend_id,
-            user:public_profiles!friendships_user_id_fkey(id, username, avatar_url),
-            friend:public_profiles!friendships_friend_id_fkey(id, username, avatar_url)
+            friend:profiles!friendships_friend_id_fkey(id, username, avatar_url)
         `)
         .eq("status", "accepted")
-        .or(`user_id.eq.${user.id},friend_id.eq.${user.id}`);
+        .eq("user_id", user.id);
 
     if (error) return [];
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return (data as any[]).map(f => {
-        if (f.user_id === user.id) return f.friend;
-        return f.user;
-    });
+    return (data as any[]).map(f => f.friend);
 }
 
 

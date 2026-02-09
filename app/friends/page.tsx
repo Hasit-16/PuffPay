@@ -10,14 +10,16 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { UserPlus, Check, X } from "lucide-react";
 import Link from "next/link";
-import { getFriendRequests, getMyFriends, acceptFriendRequest, ignoreFriendRequest } from "./actions";
+import { getFriendRequests, getMyFriends, acceptFriendRequest, ignoreFriendRequest, getSentRequests } from "./actions";
 
 // Types
 type Request = { id: string; sender: { id: string; username: string | null; avatar_url: string | null }; created_at: string };
+type SentRequest = { id: string; recipient: { id: string; username: string | null; avatar_url: string | null }; created_at: string };
 type Friend = { id: string; username: string | null; avatar_url: string | null };
 
 export default function FriendsPage() {
     const [requests, setRequests] = useState<Request[]>([]);
+    const [sentRequests, setSentRequests] = useState<SentRequest[]>([]);
     const [friends, setFriends] = useState<Friend[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -27,8 +29,9 @@ export default function FriendsPage() {
 
     const loadData = async () => {
         setLoading(true);
-        const [reqs, frnds] = await Promise.all([getFriendRequests(), getMyFriends()]);
+        const [reqs, sent, frnds] = await Promise.all([getFriendRequests(), getSentRequests(), getMyFriends()]);
         setRequests(reqs as any);
+        setSentRequests(sent as any);
         setFriends(frnds as any);
         setLoading(false);
     };
@@ -105,36 +108,66 @@ export default function FriendsPage() {
                         )}
                     </TabsContent>
 
-                    <TabsContent value="requests" className="space-y-4">
-                        {loading ? (
-                            <p className="text-center text-slate-500 mt-8">Loading requests...</p>
-                        ) : requests.length === 0 ? (
-                            <p className="text-center text-slate-500 py-12">No pending requests.</p>
-                        ) : (
-                            requests.map(req => (
-                                <Card key={req.id} className="border-slate-200 dark:border-slate-800">
-                                    <CardContent className="p-4 flex items-center justify-between">
-                                        <div className="flex items-center gap-3">
-                                            <Avatar>
-                                                <AvatarImage src={req.sender.avatar_url || ""} />
-                                                <AvatarFallback>{req.sender.username?.charAt(0).toUpperCase()}</AvatarFallback>
-                                            </Avatar>
-                                            <div>
-                                                <p className="font-semibold text-sm">{req.sender.username}</p>
-                                                <p className="text-xs text-slate-500">Sent you a request</p>
+                    <TabsContent value="requests" className="space-y-6">
+                        {/* Incoming Requests */}
+                        <div>
+                            <h3 className="text-sm font-semibold text-slate-500 mb-3 px-1">INCOMING</h3>
+                            {loading ? (
+                                <p className="text-center text-slate-500 mt-2">Loading...</p>
+                            ) : requests.length === 0 ? (
+                                <p className="text-sm text-slate-400 italic px-1">No pending requests.</p>
+                            ) : (
+                                requests.map(req => (
+                                    <Card key={req.id} className="border-slate-200 dark:border-slate-800 mb-3">
+                                        <CardContent className="p-4 flex items-center justify-between">
+                                            <div className="flex items-center gap-3">
+                                                <Avatar>
+                                                    <AvatarImage src={req.sender.avatar_url || ""} />
+                                                    <AvatarFallback>{req.sender.username?.charAt(0).toUpperCase()}</AvatarFallback>
+                                                </Avatar>
+                                                <div>
+                                                    <p className="font-semibold text-sm">{req.sender.username}</p>
+                                                    <p className="text-xs text-slate-500">Sent you a request</p>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div className="flex gap-2">
-                                            <Button size="icon" variant="outline" className="h-8 w-8 text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950" onClick={() => handleIgnore(req.id)}>
-                                                <X className="h-4 w-4" />
+                                            <div className="flex gap-2">
+                                                <Button size="icon" variant="outline" className="h-8 w-8 text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950" onClick={() => handleIgnore(req.id)}>
+                                                    <X className="h-4 w-4" />
+                                                </Button>
+                                                <Button size="icon" className="h-8 w-8 bg-green-600 hover:bg-green-700 text-white" onClick={() => handleAccept(req.id)}>
+                                                    <Check className="h-4 w-4" />
+                                                </Button>
+                                            </div>
+                                        </CardContent>
+                                    </Card>
+                                ))
+                            )}
+                        </div>
+
+                        {/* Sent Requests */}
+                        {sentRequests.length > 0 && (
+                            <div>
+                                <h3 className="text-sm font-semibold text-slate-500 mb-3 px-1 mt-6">SENT</h3>
+                                {sentRequests.map(req => (
+                                    <Card key={req.id} className="border-slate-200 dark:border-slate-800 mb-3 opacity-80">
+                                        <CardContent className="p-4 flex items-center justify-between">
+                                            <div className="flex items-center gap-3">
+                                                <Avatar>
+                                                    <AvatarImage src={req.recipient.avatar_url || ""} />
+                                                    <AvatarFallback>{req.recipient.username?.charAt(0).toUpperCase()}</AvatarFallback>
+                                                </Avatar>
+                                                <div>
+                                                    <p className="font-semibold text-sm">{req.recipient.username}</p>
+                                                    <p className="text-xs text-slate-500">Waiting for approval</p>
+                                                </div>
+                                            </div>
+                                            <Button size="sm" variant="outline" disabled className="text-xs h-8">
+                                                Pending
                                             </Button>
-                                            <Button size="icon" className="h-8 w-8 bg-green-600 hover:bg-green-700 text-white" onClick={() => handleAccept(req.id)}>
-                                                <Check className="h-4 w-4" />
-                                            </Button>
-                                        </div>
-                                    </CardContent>
-                                </Card>
-                            ))
+                                        </CardContent>
+                                    </Card>
+                                ))}
+                            </div>
                         )}
                     </TabsContent>
                 </Tabs>

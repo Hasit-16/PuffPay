@@ -42,11 +42,9 @@ export async function getDashboardData(): Promise<DashboardData | null> {
       user_id,
       friend_id,
       status,
-      user:public_profiles!friendships_user_id_fkey(id, username, avatar_url),
-      friend:public_profiles!friendships_friend_id_fkey(id, username, avatar_url)
+      friend:profiles!friendships_friend_id_fkey(id, username, avatar_url)
     `
         )
-        .eq("status", "accepted")
         .eq("status", "accepted")
         .eq("user_id", userId);
 
@@ -114,22 +112,12 @@ export async function getDashboardData(): Promise<DashboardData | null> {
     const netBalance = totalToReceive - totalToPay;
 
     // 5. Format Friend List
-    // Normalize the friendship data to get the *other* person
+    // We only fetched WHERE user_id = me, so friend is always the 'friend' relation.
     const friendList: FriendWithBalance[] = [];
-
-    // Need to handle the join types from Supabase. 
-    // expected structure from query: { user: Profile, friend: Profile, ... }
-    // We need to cast or carefully access because the types generated might not match exactly 
-    // the deeply nested join result without generated types.
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (friendshipsData as any[]).forEach((f) => {
-        let otherProfile;
-        if (f.user_id === userId) {
-            otherProfile = f.friend;
-        } else {
-            otherProfile = f.user;
-        }
+        const otherProfile = f.friend;
 
         if (otherProfile) {
             friendList.push({
