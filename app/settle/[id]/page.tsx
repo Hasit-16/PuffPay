@@ -1,19 +1,17 @@
 "use client";
 
-import { useEffect, useState, useActionState } from "react";
-import { useParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, CheckCircle, Send } from "lucide-react";
+import { ArrowLeft, CheckCircle } from "lucide-react";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getSettlementDetails, recordPayment, SettlementDetails } from "../actions";
 
-// Client wrapper for server action to handle form state if needed, 
-// though we might just call it directly in form action attribute.
-// Since we need to pass hidden fields (friendId, direction), likely better to keep simple.
-
 export default function SettlePage() {
+    const router = useRouter();
     const params = useParams();
     const friendId = params.id as string;
 
@@ -32,7 +30,13 @@ export default function SettlePage() {
     }, [friendId]);
 
     const handleAction = async (formData: FormData) => {
-        await recordPayment(formData);
+        const result = await recordPayment(formData);
+        if (result?.error) {
+            toast.error(result.error);
+        } else if (result?.success) {
+            toast.success("Payment recorded!");
+            router.push("/dashboard");
+        }
     };
 
     if (loading) {

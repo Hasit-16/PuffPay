@@ -3,13 +3,14 @@
 import { useEffect, useState, useRef } from "react";
 import { useFormStatus } from "react-dom";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { ArrowLeft, Save } from "lucide-react";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { createTransaction } from "@/app/expense/actions";
 import { getMyFriends } from "@/app/friends/actions";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 // Types
 type Friend = { id: string; username: string | null; avatar_url: string | null };
@@ -28,6 +29,7 @@ function SubmitButton() {
 }
 
 export default function AddExpensePage() {
+    const router = useRouter();
     const [friends, setFriends] = useState<Friend[]>([]);
     const [loading, setLoading] = useState(true);
     const [amount, setAmount] = useState("");
@@ -54,7 +56,10 @@ export default function AddExpensePage() {
     const clientAction = async (formData: FormData) => {
         const result = await createTransaction(formData);
         if (result?.error) {
-            alert(result.error);
+            toast.error(result.error);
+        } else if (result?.success) {
+            toast.success("Expense added successfully");
+            router.push("/dashboard");
         }
     };
 

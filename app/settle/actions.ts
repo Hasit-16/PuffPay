@@ -127,5 +127,7 @@ export async function recordPayment(formData: FormData) {
 
     revalidatePath("/dashboard");
     revalidatePath(`/settle/${friendId}`);
-    redirect("/dashboard");
+    revalidatePath("/dashboard");
+    revalidatePath(`/settle/${friendId}`);
+    return { success: true };
 }

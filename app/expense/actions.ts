@@ -49,5 +49,6 @@ export async function createTransaction(formData: FormData) {
     }
 
     revalidatePath("/dashboard");
-    redirect("/dashboard");
+    revalidatePath("/dashboard");
+    return { success: true };
 }
