@@ -1,4 +1,6 @@
+"use client";
 
+import { Bell } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
@@ -15,9 +17,16 @@ export default function FriendRow({ id, name, avatar, amount }: FriendRowProps) 
     const isDebt = amount < 0;
     const isSettled = amount === 0;
 
+    const handleNudge = (e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const text = encodeURIComponent(`Hey ${name}! Just a quick reminder that you owe me ₹${Math.abs(amount)} on PuffPay. 💸 Settle up whenever you can!`);
+        window.open(`https://wa.me/?text=${text}`, '_blank');
+    };
+
     return (
         <Link href={`/settle/${id}`}>
-            <div className="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors active:scale-[0.98]">
+            <div className="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors active:scale-[0.98] group">
                 <div className="flex items-center gap-3">
                     <Avatar className="h-12 w-12 border border-slate-100 dark:border-slate-800">
                         <AvatarImage src={avatar} alt={name} />
@@ -40,13 +49,25 @@ export default function FriendRow({ id, name, avatar, amount }: FriendRowProps) 
                     </div>
                 </div>
 
-                <div className="text-right">
-                    {isSettled ? (
-                        <Badge variant="secondary" className="bg-slate-100 text-slate-500 font-normal">Settled</Badge>
-                    ) : (
-                        <span className={`text-lg font-bold tabular-nums ${isOwed ? 'text-green-600' : 'text-red-500'}`}>
-                            {isOwed ? '+' : '-'}₹{Math.abs(amount)}
-                        </span>
+                <div className="flex items-center gap-3">
+                    <div className="text-right">
+                        {isSettled ? (
+                            <Badge variant="secondary" className="bg-slate-100 text-slate-500 font-normal">Settled</Badge>
+                        ) : (
+                            <span className={`text-lg font-bold tabular-nums ${isOwed ? 'text-green-600' : 'text-red-500'}`}>
+                                {isOwed ? '+' : '-'}₹{Math.abs(amount)}
+                            </span>
+                        )}
+                    </div>
+
+                    {isOwed && (
+                        <button
+                            onClick={handleNudge}
+                            className="p-2 rounded-full hover:bg-green-100 dark:hover:bg-green-900/30 text-green-600 dark:text-green-400 transition-colors"
+                            title="Send Reminder"
+                        >
+                            <Bell className="w-5 h-5" />
+                        </button>
                     )}
                 </div>
             </div>

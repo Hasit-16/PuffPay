@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, CheckCircle } from "lucide-react";
+import { ArrowLeft, CheckCircle, MessageCircle } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -74,6 +74,21 @@ export default function SettlePage() {
                 <h2 className="text-lg font-medium text-slate-900 dark:text-white mb-1">
                     {friend.username}
                 </h2>
+
+                {/* Nudge Button */}
+                {isOwed && (
+                    <Button
+                        variant="outline"
+                        className="mb-8 w-full max-w-sm border-green-200 dark:border-green-900 text-green-700 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20"
+                        onClick={() => {
+                            const text = encodeURIComponent(`Hey ${friend.username}! Just a quick reminder that you owe me ₹${Math.abs(balance)} on PuffPay. 💸 Settle up whenever you can!`);
+                            window.open(`https://wa.me/?text=${text}`, '_blank');
+                        }}
+                    >
+                        <MessageCircle className="w-4 h-4 mr-2" />
+                        Send Reminder on WhatsApp
+                    </Button>
+                )}
 
                 <div className="mt-6 mb-12 text-center">
                     {isSettled ? (
