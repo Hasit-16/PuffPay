@@ -1,0 +1,18 @@
+{
+    "css.customAtRules": [
+        "custom-variant",
+        "theme",
+        "utility",
+        "plugin",
+        "source",
+        "variant"
+    ],
+    "scss.customAtRules": [
+        "custom-variant",
+        "theme",
+        "utility",
+        "plugin",
+        "source",
+        "variant"
+    ]
+}
