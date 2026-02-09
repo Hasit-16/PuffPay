@@ -10,7 +10,7 @@ export default function BottomNav() {
 
     const navItems = [
         { name: "Home", href: "/dashboard", icon: Home },
-        { name: "Friends", href: "/dashboard/friends", icon: Users }, // Placeholder route
+        { name: "Friends", href: "/friends", icon: Users },
         { name: "Add", href: "/expense/add", icon: PlusCircle, isMain: true },
         { name: "Activity", href: "/activity", icon: Activity },
         { name: "Profile", href: "/profile", icon: User },
@@ -43,14 +43,14 @@ export default function BottomNav() {
                             <div className="flex flex-col items-center justify-center gap-1">
                                 <Icon
                                     className={`w-6 h-6 transition-colors ${isActive
-                                            ? "text-green-500"
-                                            : "text-slate-400 dark:text-slate-500"
+                                        ? "text-green-500"
+                                        : "text-slate-400 dark:text-slate-500"
                                         }`}
                                 />
                                 <span
                                     className={`text-[10px] font-medium ${isActive
-                                            ? "text-green-500"
-                                            : "text-slate-400 dark:text-slate-500"
+                                        ? "text-green-500"
+                                        : "text-slate-400 dark:text-slate-500"
                                         }`}
                                 >
                                     {item.name}

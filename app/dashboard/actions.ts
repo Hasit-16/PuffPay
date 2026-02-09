@@ -47,7 +47,8 @@ export async function getDashboardData(): Promise<DashboardData | null> {
     `
         )
         .eq("status", "accepted")
-        .or(`user_id.eq.${userId},friend_id.eq.${userId}`);
+        .eq("status", "accepted")
+        .eq("user_id", userId);
 
     if (friendsError) {
         console.error("Error fetching friends:", friendsError);
