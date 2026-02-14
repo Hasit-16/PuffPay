@@ -1,5 +1,5 @@
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+
 
 export default function TopBar() {
     return (
@@ -8,11 +8,6 @@ export default function TopBar() {
                 <h1 className="text-xl font-bold bg-gradient-to-r from-green-500 to-emerald-400 bg-clip-text text-transparent">
                     PuffPay
                 </h1>
-
-                <Avatar className="w-8 h-8 border border-slate-200 dark:border-slate-700">
-                    <AvatarImage src="" alt="User" />
-                    <AvatarFallback className="bg-slate-100 dark:bg-slate-800 text-xs">ME</AvatarFallback>
-                </Avatar>
             </div>
         </header>
     );
