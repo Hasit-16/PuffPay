@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { revalidatePath } from "next/cache";
 
 export interface ActivityItem {
     id: string;
@@ -111,4 +112,81 @@ function isSameDay(d1: Date, d2: Date) {
         d1.getMonth() === d2.getMonth() &&
         d1.getDate() === d2.getDate()
     );
+}
+
+export async function deleteTransaction(transactionId: string) {
+    const supabase = await createClient();
+    const {
+        data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+        throw new Error("Unauthorized");
+    }
+
+    // Verify ownership (payer or borrower)
+    const { data: transaction, error: fetchError } = await supabase
+        .from("transactions")
+        .select("payer_id, borrower_id")
+        .eq("id", transactionId)
+        .single();
+
+    if (fetchError || !transaction) {
+        throw new Error("Transaction not found");
+    }
+
+    if (transaction.payer_id !== user.id && transaction.borrower_id !== user.id) {
+        throw new Error("You do not have permission to delete this transaction");
+    }
+
+    const { error } = await supabase.from("transactions").delete().eq("id", transactionId);
+
+    if (error) {
+        console.error("Error deleting transaction:", error);
+        throw new Error("Failed to delete transaction");
+    }
+
+    revalidatePath("/activity");
+    revalidatePath("/dashboard");
+    return { success: true };
+}
+
+export async function updateTransaction(transactionId: string, amount: number, description: string) {
+    const supabase = await createClient();
+    const {
+        data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+        throw new Error("Unauthorized");
+    }
+
+    // Verify ownership
+    const { data: transaction, error: fetchError } = await supabase
+        .from("transactions")
+        .select("payer_id, borrower_id")
+        .eq("id", transactionId)
+        .single();
+
+    if (fetchError || !transaction) {
+        throw new Error("Transaction not found");
+    }
+
+    if (transaction.payer_id !== user.id && transaction.borrower_id !== user.id) {
+        throw new Error("You do not have permission to edit this transaction");
+    }
+
+    const { error } = await supabase
+        .from("transactions")
+        .update({ amount, description })
+        .eq("id", transactionId);
+
+    if (error) {
+        console.error("Error updating transaction:", error);
+        throw new Error("Failed to update transaction");
+    }
+
+    revalidatePath("/activity");
+    revalidatePath("/dashboard");
+    return { success: true };
 }

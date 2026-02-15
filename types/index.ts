@@ -13,6 +13,7 @@ export interface Friendship {
     user_id: string; // uuid
     friend_id: string; // uuid
     status: 'accepted' | 'pending';
+    is_favorite?: boolean;
     created_at: string;
 }
 

@@ -9,6 +9,7 @@ export interface FriendWithBalance {
     name: string;
     avatar?: string;
     balance: number; // + means they owe you, - means you owe them
+    is_favorite: boolean;
 }
 
 export interface DashboardData {
@@ -42,6 +43,7 @@ export async function getDashboardData(): Promise<DashboardData | null> {
       user_id,
       friend_id,
       status,
+      is_favorite,
       friend:profiles!friendships_friend_id_fkey(id, username, avatar_url)
     `
         )
@@ -124,7 +126,8 @@ export async function getDashboardData(): Promise<DashboardData | null> {
                 id: otherProfile.id,
                 name: otherProfile.username || "Unknown",
                 avatar: otherProfile.avatar_url || "",
-                balance: friendBalances.get(otherProfile.id) || 0
+                balance: friendBalances.get(otherProfile.id) || 0,
+                is_favorite: f.is_favorite || false
             });
         }
     });

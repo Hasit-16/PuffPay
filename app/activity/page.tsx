@@ -3,9 +3,9 @@
 import { useEffect, useState } from "react";
 import TopBar from "@/components/layout/TopBar";
 import BottomNav from "@/components/layout/BottomNav";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getActivityLog, GroupedActivity } from "./actions";
-import { ArrowUpRight, ArrowDownLeft } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
+import ActivityItemRow from "@/components/activity/ActivityItemRow";
 
 export default function ActivityPage() {
     const [groupedActivity, setGroupedActivity] = useState<GroupedActivity>({});
@@ -50,39 +50,7 @@ export default function ActivityPage() {
                                 </h3>
                                 <div className="space-y-3">
                                     {items.map((item) => (
-                                        <div
-                                            key={item.id}
-                                            className="flex items-center justify-between p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-800 shadow-sm"
-                                        >
-                                            <div className="flex items-center gap-3">
-                                                <div className="relative">
-                                                    <Avatar className="h-10 w-10 border border-slate-100 dark:border-slate-800">
-                                                        <AvatarImage src={item.otherPerson.avatar_url || ""} />
-                                                        <AvatarFallback>{item.otherPerson.username?.charAt(0).toUpperCase()}</AvatarFallback>
-                                                    </Avatar>
-
-                                                    {/* Type Indicator Icon */}
-                                                    <div className={`absolute -bottom-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full border-2 border-white dark:border-slate-900 ${item.type === 'paid' ? 'bg-red-500' : 'bg-green-500'}`}>
-                                                        {item.type === 'paid' ? (
-                                                            <ArrowUpRight className="h-2 w-2 text-white" />
-                                                        ) : (
-                                                            <ArrowDownLeft className="h-2 w-2 text-white" />
-                                                        )}
-                                                    </div>
-                                                </div>
-
-                                                <div>
-                                                    <p className="font-medium text-slate-900 dark:text-white text-sm line-clamp-1">{item.description}</p>
-                                                    <p className="text-xs text-slate-500">
-                                                        {item.type === 'paid' ? `You paid ${item.otherPerson.username}` : `${item.otherPerson.username} paid you`}
-                                                    </p>
-                                                </div>
-                                            </div>
-
-                                            <div className={`font-bold text-sm tabular-nums whitespace-nowrap ${item.type === 'paid' ? 'text-red-500' : 'text-green-600'}`}>
-                                                {item.type === 'paid' ? '-' : '+'} ₹{item.amount.toLocaleString()}
-                                            </div>
-                                        </div>
+                                        <ActivityItemRow key={item.id} item={item} />
                                     ))}
                                 </div>
                             </div>
