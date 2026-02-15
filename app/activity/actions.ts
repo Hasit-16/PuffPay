@@ -115,12 +115,14 @@ function isSameDay(d1: Date, d2: Date) {
 }
 
 export async function deleteTransaction(transactionId: string) {
+    console.log("Attempting to delete transaction:", transactionId);
     const supabase = await createClient();
     const {
         data: { user },
     } = await supabase.auth.getUser();
 
     if (!user) {
+        console.error("Delete failed: No user");
         throw new Error("Unauthorized");
     }
 
@@ -132,19 +134,26 @@ export async function deleteTransaction(transactionId: string) {
         .single();
 
     if (fetchError || !transaction) {
+        console.error("Delete failed: Transaction not found or fetch error", fetchError);
         throw new Error("Transaction not found");
     }
 
+    console.log("Transaction found:", transaction);
+    console.log("Current user:", user.id);
+
     if (transaction.payer_id !== user.id && transaction.borrower_id !== user.id) {
+        console.error("Delete failed: Permission denied");
         throw new Error("You do not have permission to delete this transaction");
     }
 
-    const { error } = await supabase.from("transactions").delete().eq("id", transactionId);
+    const { error, count } = await supabase.from("transactions").delete({ count: 'exact' }).eq("id", transactionId);
 
     if (error) {
-        console.error("Error deleting transaction:", error);
-        throw new Error("Failed to delete transaction");
+        console.error("Error deleting transaction (DB):", error);
+        throw new Error("Failed to delete transaction: " + error.message);
     }
+
+    console.log("Delete successful, rows deleted:", count);
 
     revalidatePath("/activity");
     revalidatePath("/dashboard");
