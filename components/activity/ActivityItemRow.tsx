@@ -32,6 +32,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 export default function ActivityItemRow({ item }: { item: ActivityItem }) {
     const [isEditOpen, setIsEditOpen] = useState(false);
@@ -40,12 +41,15 @@ export default function ActivityItemRow({ item }: { item: ActivityItem }) {
     const [editDesc, setEditDesc] = useState(item.description);
     const [isLoading, setIsLoading] = useState(false);
 
+    const router = useRouter();
+
     const handleUpdate = async () => {
         setIsLoading(true);
         try {
             await updateTransaction(item.id, editAmount, editDesc);
             toast.success("Transaction updated");
             setIsEditOpen(false);
+            router.refresh(); // creating a new change
         } catch (error) {
             toast.error("Failed to update transaction");
         } finally {
@@ -59,6 +63,7 @@ export default function ActivityItemRow({ item }: { item: ActivityItem }) {
             await deleteTransaction(item.id);
             toast.success("Transaction deleted");
             setIsDeleteOpen(false);
+            router.refresh(); // creating a new change
         } catch (error) {
             toast.error("Failed to delete transaction");
         } finally {
