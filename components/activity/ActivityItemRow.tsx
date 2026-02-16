@@ -1,8 +1,10 @@
 "use client";
 
 import { ActivityItem, deleteTransaction, updateTransaction } from "@/app/activity/actions";
+import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ArrowUpRight, ArrowDownLeft, MoreVertical, Pencil, Trash } from "lucide-react";
+import { ArrowUpRight, ArrowDownLeft, MoreVertical, Pencil, Trash, Bell } from "lucide-react";
+import TrafficLightBadge from "@/components/dashboard/TrafficLightBadge";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -49,7 +51,7 @@ export default function ActivityItemRow({ item }: { item: ActivityItem }) {
             await updateTransaction(item.id, editAmount, editDesc);
             toast.success("Transaction updated");
             setIsEditOpen(false);
-            router.refresh(); // creating a new change
+            router.refresh();
         } catch (error) {
             toast.error("Failed to update transaction");
         } finally {
@@ -63,11 +65,29 @@ export default function ActivityItemRow({ item }: { item: ActivityItem }) {
             await deleteTransaction(item.id);
             toast.success("Transaction deleted");
             setIsDeleteOpen(false);
-            router.refresh(); // creating a new change
+            router.refresh();
         } catch (error) {
             toast.error("Failed to delete transaction");
         } finally {
             setIsLoading(false);
+        }
+    };
+
+    const isPayer = item.type === 'paid'; // "I paid" -> I am the Lender (Payer)
+    const isBorrower = item.type === 'borrowed'; // "I borrowed" -> I am the Borrower
+
+    const handleNudge = (e: React.MouseEvent) => {
+        e.preventDefault();
+
+        let text = "";
+        if (isBorrower && item.status === 'confirming') {
+            text = encodeURIComponent(`Hey! I sent you ₹${item.amount}. Please confirm it on PuffPay so my balance clears!`);
+        } else if (isPayer && item.status === 'pending') {
+            text = encodeURIComponent(`Hey! Just a quick reminder about the ₹${item.amount} on PuffPay.`);
+        }
+
+        if (text) {
+            window.open(`https://wa.me/?text=${text}`, '_blank');
         }
     };
 
@@ -91,7 +111,15 @@ export default function ActivityItemRow({ item }: { item: ActivityItem }) {
                     </div>
 
                     <div>
-                        <p className="font-medium text-slate-900 dark:text-white text-sm line-clamp-1">{item.description}</p>
+                        <div className="flex items-center gap-2">
+                            <p className="font-medium text-slate-900 dark:text-white text-sm line-clamp-1">{item.description}</p>
+                            {/* Traffic Light Badge */}
+                            <TrafficLightBadge
+                                status={item.status as any}
+                                perspective={isPayer ? 'lender' : 'borrower'}
+                            />
+                        </div>
+
                         <p className="text-xs text-slate-500">
                             {item.type === 'paid' ? `You paid ${item.otherPerson.username}` : `${item.otherPerson.username} paid you`}
                         </p>
@@ -100,9 +128,32 @@ export default function ActivityItemRow({ item }: { item: ActivityItem }) {
 
                 {/* Right Side: Amount + Menu */}
                 <div className="flex items-center gap-2">
-                    <div className={`font-bold text-sm tabular-nums whitespace-nowrap ${item.type === 'paid' ? 'text-red-500' : 'text-green-600'}`}>
-                        {item.type === 'paid' ? '-' : '+'} ₹{item.amount.toLocaleString()}
+                    <div className="flex flex-col items-end">
+                        <span className={`font-bold text-sm tabular-nums whitespace-nowrap ${item.type === 'paid' ? 'text-red-500' : 'text-green-600'}`}>
+                            {item.type === 'paid' ? '-' : '+'} ₹{item.amount.toLocaleString()}
+                        </span>
                     </div>
+
+                    {/* Action Buttons */}
+                    {isBorrower && item.status === 'pending' && (
+                        <Link href={`/settle/${item.id}`} className="mr-1">
+                            <Button size="sm" variant="outline" className="h-7 text-xs border-green-200 text-green-700 hover:bg-green-50 hover:text-green-800">
+                                Pay
+                            </Button>
+                        </Link>
+                    )}
+
+                    {isPayer && item.status === 'pending' && (
+                        <button onClick={handleNudge} className="p-1.5 text-slate-400 hover:text-green-600 transition-colors" title="Send Reminder">
+                            <Bell className="w-4 h-4" />
+                        </button>
+                    )}
+
+                    {isBorrower && item.status === 'confirming' && (
+                        <button onClick={handleNudge} className="p-1.5 text-amber-500 hover:text-amber-600 transition-colors" title="Nudge to Confirm">
+                            <Bell className="w-4 h-4" />
+                        </button>
+                    )}
 
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>

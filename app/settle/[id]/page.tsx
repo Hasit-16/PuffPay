@@ -2,158 +2,215 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import Link from "next/link";
-import { ArrowLeft, CheckCircle, MessageCircle } from "lucide-react";
-import { toast } from "sonner";
-
-import { Button } from "@/components/ui/button";
+import { createClient } from "@/lib/supabase/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { getSettlementDetails, recordPayment, SettlementDetails } from "../actions";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft, Check, X, Clock } from "lucide-react";
+import Link from "next/link";
+import { toast } from "sonner";
+import { initiateSettlement, approveSettlement, rejectSettlement } from "../actions";
+import TrafficLightBadge from "@/components/dashboard/TrafficLightBadge";
 
 export default function SettlePage() {
-    const router = useRouter();
     const params = useParams();
-    const friendId = params.id as string;
-
-    const [details, setDetails] = useState<SettlementDetails | null>(null);
+    const router = useRouter();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const [transaction, setTransaction] = useState<any>(null);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const [currentUser, setCurrentUser] = useState<any>(null);
     const [loading, setLoading] = useState(true);
-    const [amount, setAmount] = useState("");
+    const [actionLoading, setActionLoading] = useState(false);
 
     useEffect(() => {
-        getSettlementDetails(friendId).then((data) => {
-            setDetails(data);
-            if (data && data.balance !== 0) {
-                setAmount(Math.abs(data.balance).toString());
+        const fetchData = async () => {
+            const supabase = createClient();
+
+            // Get Current User
+            const { data: { user } } = await supabase.auth.getUser();
+            setCurrentUser(user);
+
+            // Get Transaction
+            const { data, error } = await supabase
+                .from("transactions")
+                .select(`
+                    *,
+                    payer:profiles!transactions_payer_id_fkey(*),
+                    borrower:profiles!transactions_borrower_id_fkey(*)
+                `)
+                .eq("id", params.id)
+                .single();
+
+            if (error) {
+                // If checking for friend settlement (legacy), this might fail if ID is friend ID.
+                // For now, assume ID is transaction ID.
+                // toast.error("Error fetching transaction");
+                console.error("Fetch Error Details:", JSON.stringify(error, null, 2));
+            } else {
+                setTransaction(data);
             }
             setLoading(false);
-        });
-    }, [friendId]);
+        };
 
-    const handleAction = async (formData: FormData) => {
-        const result = await recordPayment(formData);
-        if (result?.error) {
-            toast.error(result.error);
-        } else if (result?.success) {
-            toast.success("Payment recorded!");
-            router.push("/dashboard");
+        fetchData();
+    }, [params.id]);
+
+    const handleInitiate = async () => {
+        setActionLoading(true);
+        try {
+            await initiateSettlement(transaction.id);
+            toast.success("Payment marked as sent! Waiting for approval.");
+            router.refresh();
+            // Optimistic update
+            setTransaction({ ...transaction, status: 'confirming' });
+        } catch (error) {
+            toast.error("Failed to mark as paid");
+        } finally {
+            setActionLoading(false);
         }
     };
 
-    if (loading) {
-        return <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center p-4 text-slate-500">Loading settlement details...</div>;
-    }
+    const handleApprove = async () => {
+        setActionLoading(true);
+        try {
+            await approveSettlement(transaction.id);
+            toast.success("Payment confirmed! Transaction settled.");
+            router.refresh();
+            setTransaction({ ...transaction, status: 'settled' });
+        } catch (error) {
+            toast.error("Failed to confirm payment");
+        } finally {
+            setActionLoading(false);
+        }
+    };
 
-    if (!details) {
-        return <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center p-4">Friend not found.</div>;
-    }
+    const handleReject = async () => {
+        setActionLoading(true);
+        try {
+            await rejectSettlement(transaction.id);
+            toast.error("Payment rejected. Status reverted to pending.");
+            router.refresh();
+            setTransaction({ ...transaction, status: 'pending' });
+        } catch (error) {
+            toast.error("Failed to reject payment");
+        } finally {
+            setActionLoading(false);
+        }
+    };
 
-    const { friend, balance } = details;
-    const isOwed = balance > 0;
-    const isDebt = balance < 0;
-    const isSettled = balance === 0;
+    if (loading) return <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center p-4 text-slate-500">Loading details...</div>;
+
+    // Fallback if not found (or if ID was friend ID and query failed)
+    if (!transaction || !currentUser) return (
+        <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col items-center justify-center p-4">
+            <Link href="/dashboard" className="absolute top-4 left-4 p-2 bg-slate-100 dark:bg-slate-800 rounded-full hover:bg-slate-200 transition-colors">
+                <ArrowLeft className="w-5 h-5 text-slate-600 dark:text-slate-300" />
+            </Link>
+            <p>Transaction not found.</p>
+        </div>
+    );
+
+    const isPayer = transaction.payer_id === currentUser.id; // Lender
+    const isBorrower = transaction.borrower_id === currentUser.id; // Borrower
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const otherPerson = isPayer ? transaction.borrower : transaction.payer;
 
     return (
-        <div className="min-h-screen bg-slate-50 dark:bg-slate-950 px-4 py-6 flex flex-col">
-            {/* Header */}
-            <div className="flex items-center mb-6">
-                <Link href="/dashboard">
-                    <Button variant="ghost" size="icon" className="-ml-2">
-                        <ArrowLeft className="w-6 h-6 text-slate-600 dark:text-slate-400" />
-                    </Button>
+        <div className="min-h-screen bg-slate-50 dark:bg-slate-950 p-4 flex flex-col items-center justify-center">
+
+            <div className="w-full max-w-md bg-white dark:bg-slate-900 rounded-3xl shadow-xl overflow-hidden relative">
+                <Link href="/dashboard" className="absolute top-4 left-4 p-2 bg-slate-100 dark:bg-slate-800 rounded-full hover:bg-slate-200 transition-colors">
+                    <ArrowLeft className="w-5 h-5 text-slate-600 dark:text-slate-300" />
                 </Link>
-                <h1 className="text-xl font-semibold ml-2 text-slate-900 dark:text-white">Settle Up</h1>
-            </div>
 
-            {/* Profile & Balance */}
-            <div className="flex-1 flex flex-col items-center pt-8">
-                <Avatar className="w-24 h-24 mb-4 border-4 border-white dark:border-slate-900 shadow-sm">
-                    <AvatarImage src={friend.avatar_url || ""} />
-                    <AvatarFallback className="text-2xl">{friend.username?.charAt(0).toUpperCase()}</AvatarFallback>
-                </Avatar>
+                <div className="pt-12 pb-8 px-8 flex flex-col items-center text-center">
+                    <Avatar className="w-24 h-24 border-4 border-slate-100 dark:border-slate-800 mb-6 shadow-lg">
+                        <AvatarImage src={otherPerson?.avatar_url} />
+                        <AvatarFallback className="text-2xl bg-slate-200 dark:bg-slate-700">
+                            {otherPerson?.username?.charAt(0)}
+                        </AvatarFallback>
+                    </Avatar>
 
-                <h2 className="text-lg font-medium text-slate-900 dark:text-white mb-1">
-                    {friend.username}
-                </h2>
+                    <h1 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
+                        {isPayer ? `You lent to ${otherPerson.username}` : `You owe ${otherPerson.username}`}
+                    </h1>
 
-                {/* Nudge Button */}
-                {isOwed && (
-                    <Button
-                        variant="outline"
-                        className="mb-8 w-full max-w-sm border-green-200 dark:border-green-900 text-green-700 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20"
-                        onClick={() => {
-                            const text = encodeURIComponent(`Hey ${friend.username}! Just a quick reminder that you owe me ₹${Math.abs(balance)} on PuffPay. 💸 Settle up whenever you can!`);
-                            window.open(`https://wa.me/?text=${text}`, '_blank');
-                        }}
-                    >
-                        <MessageCircle className="w-4 h-4 mr-2" />
-                        Send Reminder on WhatsApp
-                    </Button>
-                )}
+                    <div className="my-4">
+                        <span className="text-5xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+                            ₹{transaction.amount}
+                        </span>
+                    </div>
 
-                <div className="mt-6 mb-12 text-center">
-                    {isSettled ? (
-                        <div className="animate-in zoom-in duration-300">
-                            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 mb-3">
-                                <CheckCircle className="w-8 h-8" />
+                    <p className="text-slate-500 mb-6 max-w-[200px]">
+                        {transaction.description || "No description"}
+                    </p>
+
+                    <TrafficLightBadge
+                        status={transaction.status}
+                        perspective={isPayer ? 'lender' : 'borrower'}
+                        className="scale-125 mb-8"
+                    />
+
+                    {/* ACTIONS */}
+                    <div className="w-full space-y-3">
+                        {isBorrower && transaction.status === 'pending' && (
+                            <Button
+                                className="w-full h-12 text-lg bg-green-600 hover:bg-green-700 text-white rounded-xl shadow-lg shadow-green-600/20"
+                                onClick={handleInitiate}
+                                disabled={actionLoading}
+                            >
+                                {actionLoading ? "Processing..." : "I Have Paid This"}
+                            </Button>
+                        )}
+
+                        {isBorrower && transaction.status === 'confirming' && (
+                            <div className="bg-amber-50 dark:bg-amber-900/20 text-amber-800 dark:text-amber-300 p-4 rounded-xl flex items-center gap-3 text-left">
+                                <Clock className="w-6 h-6 shrink-0" />
+                                <p className="text-sm font-medium leading-tight">Waiting for {otherPerson.username} to confirm receipt.</p>
                             </div>
-                            <p className="text-2xl font-bold text-slate-900 dark:text-white">All settled up!</p>
-                            <p className="text-slate-500 mt-1">No pending debts with {friend.username}.</p>
-                        </div>
-                    ) : (
-                        <>
-                            <p className={`text-sm font-semibold tracking-wider uppercase mb-2 ${isOwed ? "text-green-600" : "text-red-500"}`}>
-                                {isOwed ? "Owes you" : "You owe"}
-                            </p>
-                            <div className="text-5xl font-bold text-slate-900 dark:text-white tracking-tight">
-                                ₹{Math.abs(balance).toLocaleString()}
+                        )}
+
+                        {isPayer && transaction.status === 'confirming' && (
+                            <div className="grid grid-cols-2 gap-3 w-full">
+                                <Button
+                                    className="h-12 bg-red-100 hover:bg-red-200 text-red-700 border border-red-200 shadow-none dark:bg-red-900/40 dark:text-red-400 dark:border-red-900"
+                                    onClick={handleReject}
+                                    disabled={actionLoading}
+                                >
+                                    <X className="w-5 h-5 mr-2" />
+                                    Reject
+                                </Button>
+                                <Button
+                                    className="h-12 bg-green-600 hover:bg-green-700 text-white shadow-lg shadow-green-600/20"
+                                    onClick={handleApprove}
+                                    disabled={actionLoading}
+                                >
+                                    <Check className="w-5 h-5 mr-2" />
+                                    Confirm
+                                </Button>
                             </div>
-                        </>
-                    )}
+                        )}
+
+                        {isPayer && transaction.status === 'pending' && (
+                            <div className="bg-slate-100 dark:bg-slate-800 text-slate-500 p-4 rounded-xl flex items-center justify-center gap-2">
+                                <span className="font-medium text-sm">Waiting for repayment</span>
+                            </div>
+                        )}
+
+                        {transaction.status === 'settled' && (
+                            <div className="bg-slate-100 dark:bg-slate-800 text-slate-500 p-4 rounded-xl flex items-center justify-center gap-2">
+                                <Check className="w-5 h-5" />
+                                <span className="font-medium">Transaction Complete</span>
+                            </div>
+                        )}
+
+                        {transaction.status === 'rejected' && (
+                            <div className="bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 p-4 rounded-xl flex items-center justify-center gap-2">
+                                <X className="w-5 h-5" />
+                                <span className="font-medium">Settlement Rejected</span>
+                            </div>
+                        )}
+                    </div>
                 </div>
-
-                {/* Action Form */}
-                {!isSettled && (
-                    <form action={handleAction} className="w-full max-w-sm space-y-6">
-                        <input type="hidden" name="friendId" value={friend.id} />
-                        <input type="hidden" name="direction" value={isDebt ? "pay" : "receive"} />
-
-                        <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
-                            <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
-                                Amount to {isDebt ? "Pay" : "Receive"}
-                            </label>
-                            <div className="relative">
-                                <span className="absolute left-0 top-1/2 -translate-y-1/2 text-xl font-bold text-slate-400">₹</span>
-                                <input
-                                    type="number"
-                                    name="amount"
-                                    value={amount}
-                                    onChange={(e) => setAmount(e.target.value)}
-                                    className="w-full bg-transparent text-3xl font-bold text-slate-900 dark:text-white border-none focus:ring-0 p-0 pl-6 placeholder:text-slate-300"
-                                    placeholder="0"
-                                    min="1"
-                                    step="any"
-                                    required
-                                />
-                            </div>
-                        </div>
-
-                        <Button
-                            type="submit"
-                            size="lg"
-                            className={`w-full text-lg h-14 ${isDebt ? "bg-red-500 hover:bg-red-600" : "bg-green-600 hover:bg-green-700"} text-white shadow-lg shadow-slate-200 dark:shadow-none`}
-                        >
-                            {isDebt ? (
-                                <>Pay {friend.username}</>
-                            ) : (
-                                <>Confirm Payment Received</>
-                            )}
-                        </Button>
-
-                        <p className="text-center text-xs text-slate-400 px-4">
-                            Recording this will add a transaction to clear the balance.
-                        </p>
-                    </form>
-                )}
             </div>
         </div>
     );

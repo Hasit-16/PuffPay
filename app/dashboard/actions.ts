@@ -78,14 +78,10 @@ export async function getDashboardData(): Promise<DashboardData | null> {
     let totalToReceive = 0;
 
     transactions.forEach((t) => {
-        // If status is 'paid' or 'confirmed', strictly speaking for a "Net Balance" view
-        // we might want to exclude them if they are settled. 
-        // However, usually "Net Balance" implies outstanding debt.
-        // Let's assume 'pending' implies outstanding. 
-        // If 'paid', it's settled, so balance effect is 0 (or we ignore it).
-        // Let's filter for ONLY 'pending' transactions for the active debt view.
+        // If status is 'settled' or 'paid' (legacy), balance effect is 0 (we ignore it).
+        // 'pending' and 'confirming' both count as active debt.
 
-        if (t.status !== 'pending') return;
+        if (t.status === 'settled' || t.status === 'rejected' || t.status === 'paid') return;
 
         const amount = Number(t.amount);
 
