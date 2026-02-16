@@ -19,7 +19,7 @@ export default function TrafficLightBadge({ status, perspective, className }: Tr
                 label = "To Pay";
                 break;
             case 'confirming':
-                colorClass = "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 border border-amber-200 dark:border-amber-800";
+                colorClass = "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-300 border border-yellow-200 dark:border-yellow-700";
                 label = "Confirming";
                 break;
             case 'settled':
@@ -35,7 +35,7 @@ export default function TrafficLightBadge({ status, perspective, className }: Tr
                 label = "To Receive";
                 break;
             case 'confirming':
-                colorClass = "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 border border-amber-200 dark:border-amber-800";
+                colorClass = "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-300 border border-yellow-200 dark:border-yellow-700";
                 label = "Review";
                 break;
             case 'settled':
