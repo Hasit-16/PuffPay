@@ -10,9 +10,10 @@ interface FriendRowProps {
     name: string;
     avatar?: string;
     amount: number; // positive = they owe you, negative = you owe them
+    hasPendingApproval?: boolean;
 }
 
-export default function FriendRow({ id, name, avatar, amount }: FriendRowProps) {
+export default function FriendRow({ id, name, avatar, amount, hasPendingApproval }: FriendRowProps) {
     const isOwed = amount > 0;
     const isDebt = amount < 0;
     const isSettled = amount === 0;
@@ -57,6 +58,12 @@ export default function FriendRow({ id, name, avatar, amount }: FriendRowProps) 
                             <span className={`text-lg font-bold tabular-nums ${isOwed ? 'text-green-600' : 'text-red-500'}`}>
                                 {isOwed ? '+' : '-'}₹{Math.abs(amount)}
                             </span>
+                        )}
+                        {hasPendingApproval && (
+                            <div className="text-[10px] text-amber-600 font-medium flex items-center justify-end mt-1">
+                                <span className="w-2 h-2 rounded-full bg-amber-500 mr-1 animate-pulse"></span>
+                                Confirming
+                            </div>
                         )}
                     </div>
 

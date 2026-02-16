@@ -24,6 +24,14 @@ export default function DashboardClientView({ initialFriends }: DashboardClientV
             result = result.filter((f) => !f.is_favorite);
         }
 
+        // 2.5 Prioritize Pending Approvals (Traffic Light)
+        // Friends with 'hasPendingApproval' should be at the top?
+        // Or just let normal sort handle it?
+        // Let's sort them to top by default if "Newest" or default sort.
+        // Actually, let's make it a primary sort criteria for ALL sorts?
+        // No, maybe just for "action required".
+        // Let's stick to simple sort for now, but ensure we pass the prop.
+
         // 3. Sort - Create a copy to sort
         result = [...result];
 
@@ -84,6 +92,7 @@ export default function DashboardClientView({ initialFriends }: DashboardClientV
                             name={friend.name}
                             amount={friend.balance}
                             avatar={friend.avatar}
+                            hasPendingApproval={friend.hasPendingApproval}
                         />
                     ))}
                 </div>

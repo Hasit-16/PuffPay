@@ -23,6 +23,6 @@ export interface Transaction {
     borrower_id: string | null; // uuid
     amount: number;
     description: string | null;
-    status: 'pending' | 'confirming' | 'settled' | 'rejected';
+    status: 'pending' | 'paid' | 'confirming' | 'settled' | 'rejected';
     created_at: string;
 }

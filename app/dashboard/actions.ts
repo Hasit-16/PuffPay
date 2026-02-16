@@ -10,6 +10,7 @@ export interface FriendWithBalance {
     avatar?: string;
     balance: number; // + means they owe you, - means you owe them
     is_favorite: boolean;
+    hasPendingApproval: boolean;
 }
 
 export interface DashboardData {
@@ -78,10 +79,15 @@ export async function getDashboardData(): Promise<DashboardData | null> {
     let totalToReceive = 0;
 
     transactions.forEach((t) => {
-        // If status is 'settled' or 'paid' (legacy), balance effect is 0 (we ignore it).
-        // 'pending' and 'confirming' both count as active debt.
+        // If status is 'paid' or 'confirmed', strictly speaking for a "Net Balance" view
+        // we might want to exclude them if they are settled. 
+        // However, usually "Net Balance" implies outstanding debt.
+        // Let's assume 'pending' implies outstanding. 
+        // If 'paid', it's settled, so balance effect is 0 (or we ignore it).
+        // Let's filter for ONLY 'pending' transactions for the active debt view.
 
-        if (t.status === 'settled' || t.status === 'rejected' || t.status === 'paid') return;
+        // Match 'pending' OR 'confirming' as active debt
+        if (t.status !== 'pending' && t.status !== 'confirming') return;
 
         const amount = Number(t.amount);
 
@@ -109,6 +115,15 @@ export async function getDashboardData(): Promise<DashboardData | null> {
 
     const netBalance = totalToReceive - totalToPay;
 
+    // Track friends who have 'confirming' transactions where I am the PAYER (Lender)
+    // These need approval.
+    const pendingApprovals = new Set<string>();
+    transactions.forEach(t => {
+        if (t.status === 'confirming' && t.payer_id === userId) {
+            if (t.borrower_id) pendingApprovals.add(t.borrower_id);
+        }
+    });
+
     // 5. Format Friend List
     // We only fetched WHERE user_id = me, so friend is always the 'friend' relation.
     const friendList: FriendWithBalance[] = [];
@@ -123,7 +138,8 @@ export async function getDashboardData(): Promise<DashboardData | null> {
                 name: otherProfile.username || "Unknown",
                 avatar: otherProfile.avatar_url || "",
                 balance: friendBalances.get(otherProfile.id) || 0,
-                is_favorite: f.is_favorite || false
+                is_favorite: f.is_favorite || false,
+                hasPendingApproval: pendingApprovals.has(otherProfile.id)
             });
         }
     });

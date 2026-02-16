@@ -8,6 +8,7 @@ export interface ActivityItem {
     amount: number;
     description: string;
     created_at: string;
+    status: 'pending' | 'paid' | 'confirming' | 'settled' | 'rejected';
     type: "paid" | "borrowed"; // paid = money out, borrowed = money in
     otherPerson: {
         id: string;
@@ -35,6 +36,7 @@ export async function getActivityLog(): Promise<GroupedActivity> {
             id,
             amount,
             description,
+            status,
             created_at,
             payer_id,
             borrower_id,
@@ -79,6 +81,7 @@ export async function getActivityLog(): Promise<GroupedActivity> {
             amount: Number(t.amount),
             description: t.description || "Expense",
             created_at: t.created_at,
+            status: t.status,
             type,
             otherPerson: {
                 id: otherPerson.id,

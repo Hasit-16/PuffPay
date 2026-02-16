@@ -3,7 +3,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 
-// Borrower initiates settlement -> Status: confirming
 export async function initiateSettlement(transactionId: string) {
     const supabase = await createClient();
     const {
@@ -12,7 +11,7 @@ export async function initiateSettlement(transactionId: string) {
 
     if (!user) throw new Error("Unauthorized");
 
-    // Verify ownership and that user is the BORROWER
+    // Verify ownership (Must be borrower to initiate payment)
     const { data: transaction, error: fetchError } = await supabase
         .from("transactions")
         .select("borrower_id, status")
@@ -25,16 +24,19 @@ export async function initiateSettlement(transactionId: string) {
         throw new Error("Only the borrower can initiate settlement");
     }
 
-    if (transaction.status !== "pending") {
-        throw new Error("Transaction must be pending to settle");
+    if (transaction.status !== 'pending') {
+        throw new Error("Transaction is not in pending state");
     }
 
     const { error } = await supabase
         .from("transactions")
-        .update({ status: "confirming" })
+        .update({ status: 'confirming' })
         .eq("id", transactionId);
 
-    if (error) throw new Error("Failed to initiate settlement");
+    if (error) {
+        console.error("Error initiating settlement:", error);
+        throw new Error("Failed to initiate settlement");
+    }
 
     revalidatePath("/dashboard");
     revalidatePath("/activity");
@@ -42,7 +44,6 @@ export async function initiateSettlement(transactionId: string) {
     return { success: true };
 }
 
-// Lender approves settlement -> Status: settled
 export async function approveSettlement(transactionId: string) {
     const supabase = await createClient();
     const {
@@ -51,7 +52,7 @@ export async function approveSettlement(transactionId: string) {
 
     if (!user) throw new Error("Unauthorized");
 
-    // Verify ownership and that user is the PAYER (Lender)
+    // Verify ownership (Must be lender to approve)
     const { data: transaction, error: fetchError } = await supabase
         .from("transactions")
         .select("payer_id, status")
@@ -64,23 +65,25 @@ export async function approveSettlement(transactionId: string) {
         throw new Error("Only the lender can approve settlement");
     }
 
-    if (transaction.status !== "confirming") {
-        throw new Error("Transaction must be in confirming state to approve");
+    if (transaction.status !== 'confirming') {
+        throw new Error("Transaction is not in confirming state");
     }
 
     const { error } = await supabase
         .from("transactions")
-        .update({ status: "settled" })
+        .update({ status: 'settled' }) // Using 'settled' as per new plan
         .eq("id", transactionId);
 
-    if (error) throw new Error("Failed to approve settlement");
+    if (error) {
+        console.error("Error approving settlement:", error);
+        throw new Error("Failed to approve settlement");
+    }
 
     revalidatePath("/dashboard");
     revalidatePath("/activity");
     return { success: true };
 }
 
-// Lender rejects settlement -> Status: pending
 export async function rejectSettlement(transactionId: string) {
     const supabase = await createClient();
     const {
@@ -89,7 +92,7 @@ export async function rejectSettlement(transactionId: string) {
 
     if (!user) throw new Error("Unauthorized");
 
-    // Verify ownership and that user is the PAYER (Lender)
+    // Verify ownership (Must be lender to reject)
     const { data: transaction, error: fetchError } = await supabase
         .from("transactions")
         .select("payer_id, status")
@@ -104,10 +107,13 @@ export async function rejectSettlement(transactionId: string) {
 
     const { error } = await supabase
         .from("transactions")
-        .update({ status: "pending" })
+        .update({ status: 'pending' }) // Revert to pending
         .eq("id", transactionId);
 
-    if (error) throw new Error("Failed to reject settlement");
+    if (error) {
+        console.error("Error rejecting settlement:", error);
+        throw new Error("Failed to reject settlement");
+    }
 
     revalidatePath("/dashboard");
     revalidatePath("/activity");
