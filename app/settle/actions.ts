@@ -41,7 +41,7 @@ export async function initiateSettlement(transactionId: string) {
     revalidatePath("/dashboard");
     revalidatePath("/activity");
     revalidatePath(`/settle/${transactionId}`);
-    return { success: true };
+
 }
 
 export async function approveSettlement(transactionId: string) {
@@ -81,7 +81,7 @@ export async function approveSettlement(transactionId: string) {
 
     revalidatePath("/dashboard");
     revalidatePath("/activity");
-    return { success: true };
+
 }
 
 export async function rejectSettlement(transactionId: string) {
@@ -117,5 +117,84 @@ export async function rejectSettlement(transactionId: string) {
 
     revalidatePath("/dashboard");
     revalidatePath("/activity");
-    return { success: true };
+
+}
+
+export async function settleAllTransactions(friendId: string) {
+    const supabase = await createClient();
+    const {
+        data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) throw new Error("Unauthorized");
+
+    const { error } = await supabase
+        .from("transactions")
+        .update({ status: 'confirming' })
+        .eq("borrower_id", user.id)
+        // Correct query logic: transactions where *I* am the borrower and *Friend* is the payer
+        .eq("payer_id", friendId)
+        .eq("status", "pending");
+
+    if (error) {
+        console.error("Error settling all transactions:", error);
+        throw new Error("Failed to settle transactions");
+    }
+
+    revalidatePath("/dashboard");
+    revalidatePath("/activity");
+    revalidatePath(`/settle/${friendId}`);
+
+}
+
+export async function approveAllSettlements(friendId: string) {
+    const supabase = await createClient();
+    const {
+        data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) throw new Error("Unauthorized");
+
+    const { error } = await supabase
+        .from("transactions")
+        .update({ status: 'settled' })
+        .eq("payer_id", user.id) // I am the Lender approving
+        .eq("borrower_id", friendId)
+        .eq("status", 'confirming');
+
+    if (error) {
+        console.error("Error approving all settlements:", error);
+        throw new Error("Failed to approve settlements");
+    }
+
+    revalidatePath("/dashboard");
+    revalidatePath("/activity");
+    revalidatePath(`/settle/${friendId}`);
+
+}
+
+export async function rejectAllSettlements(friendId: string) {
+    const supabase = await createClient();
+    const {
+        data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) throw new Error("Unauthorized");
+
+    const { error } = await supabase
+        .from("transactions")
+        .update({ status: 'pending' })
+        .eq("payer_id", user.id) // I am the Lender rejecting
+        .eq("borrower_id", friendId)
+        .eq("status", 'confirming');
+
+    if (error) {
+        console.error("Error rejecting all settlements:", error);
+        throw new Error("Failed to reject settlements");
+    }
+
+    revalidatePath("/dashboard");
+    revalidatePath("/activity");
+    revalidatePath(`/settle/${friendId}`);
+
 }
