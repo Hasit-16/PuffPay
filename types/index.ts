@@ -26,3 +26,16 @@ export interface Transaction {
     status: 'pending' | 'paid' | 'confirming' | 'settled' | 'rejected';
     created_at: string;
 }
+
+export interface Group {
+    id: string; // uuid
+    name: string;
+    created_by: string; // uuid
+    created_at: string;
+}
+
+export interface GroupMember {
+    group_id: string; // uuid
+    user_id: string; // uuid
+    joined_at: string;
+}
