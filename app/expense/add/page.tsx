@@ -231,11 +231,13 @@ export default function AddExpensePage() {
                                     </option>
                                 ))}
                             </select>
-                            {groups.length === 0 && !loading && (
-                                <div className="text-sm text-slate-500">
-                                    No groups yet. <Link href="/groups" className="text-green-600 font-medium hover:underline">Create one?</Link>
-                                </div>
-                            )}
+
+                            <div className="flex justify-end mt-2">
+                                <Link href="/groups" className="text-xs flex items-center text-green-600 font-medium hover:underline">
+                                    <Plus className="w-3 h-3 mr-1" />
+                                    Create new group
+                                </Link>
+                            </div>
                         </div>
 
                         {/* Avatar Row */}
@@ -284,7 +286,8 @@ export default function AddExpensePage() {
                             </div>
                         )}
                     </div>
-                )}
+                )
+                }
 
                 {/* Description */}
                 <div className="space-y-3">
@@ -318,7 +321,7 @@ export default function AddExpensePage() {
                     <SubmitButton disabled={mode === "group" && includedUserIds.length === 0} />
                 </div>
 
-            </form>
-        </div>
+            </form >
+        </div >
     );
 }
