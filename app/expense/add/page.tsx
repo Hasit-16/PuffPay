@@ -142,8 +142,8 @@ export default function AddExpensePage() {
                 <button
                     onClick={() => setMode("individual")}
                     className={`flex-1 flex items-center justify-center py-2 rounded-lg text-sm font-medium transition-all ${mode === "individual"
-                            ? "bg-white dark:bg-slate-700 shadow-sm text-slate-900 dark:text-white"
-                            : "text-slate-500 dark:text-slate-400 hover:text-slate-700"
+                        ? "bg-white dark:bg-slate-700 shadow-sm text-slate-900 dark:text-white"
+                        : "text-slate-500 dark:text-slate-400 hover:text-slate-700"
                         }`}
                 >
                     <User className="w-4 h-4 mr-2" />
@@ -152,8 +152,8 @@ export default function AddExpensePage() {
                 <button
                     onClick={() => setMode("group")}
                     className={`flex-1 flex items-center justify-center py-2 rounded-lg text-sm font-medium transition-all ${mode === "group"
-                            ? "bg-white dark:bg-slate-700 shadow-sm text-slate-900 dark:text-white"
-                            : "text-slate-500 dark:text-slate-400 hover:text-slate-700"
+                        ? "bg-white dark:bg-slate-700 shadow-sm text-slate-900 dark:text-white"
+                        : "text-slate-500 dark:text-slate-400 hover:text-slate-700"
                         }`}
                 >
                     <Users className="w-4 h-4 mr-2" />
@@ -202,7 +202,7 @@ export default function AddExpensePage() {
                                     className="w-full p-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg text-slate-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none appearance-none"
                                     required
                                 >
-                                    <option value="" disabled selected>Select a friend</option>
+                                    <option value="" disabled>Select a friend</option>
                                     {friends.map(friend => (
                                         <option key={friend.id} value={friend.id}>
                                             {friend.username}

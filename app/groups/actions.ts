@@ -43,7 +43,7 @@ export async function createGroup(formData: FormData) {
 
     if (groupError) {
         console.error("Error creating group:", groupError);
-        return { error: "Failed to create group" };
+        return { error: `Failed to create group: ${groupError.message || JSON.stringify(groupError)}` };
     }
 
     // 2. Add Members (including self if needed? Usually groups include creator implicitly or explicitly. 

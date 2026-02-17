@@ -1,5 +1,7 @@
 "use client";
 
+import { useState, useEffect } from "react";
+
 import {
     Select,
     SelectContent,
@@ -22,6 +24,25 @@ export default function DashboardControls({
     sortOption,
     setSortOption,
 }: DashboardControlsProps) {
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    if (!mounted) {
+        return (
+            <div className="flex flex-col sm:flex-row gap-3 sm:items-center justify-between py-2">
+                <h2 className="text-lg font-bold text-slate-800 dark:text-white">
+                    Friends
+                </h2>
+                <div className="flex items-center gap-2">
+                    {/* Skeleton or just emptiness to match layout */}
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="flex flex-col sm:flex-row gap-3 sm:items-center justify-between py-2">
             <h2 className="text-lg font-bold text-slate-800 dark:text-white">
@@ -33,14 +54,14 @@ export default function DashboardControls({
                 <button
                     onClick={() => setHideFavorites(!hideFavorites)}
                     className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium transition-all border ${hideFavorites
-                            ? "bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-800"
-                            : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border-transparent hover:bg-slate-200 dark:hover:bg-slate-700"
+                        ? "bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-800"
+                        : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border-transparent hover:bg-slate-200 dark:hover:bg-slate-700"
                         }`}
                 >
                     <div
                         className={`w-3.5 h-3.5 rounded-sm border flex items-center justify-center transition-colors ${hideFavorites
-                                ? "bg-amber-500 border-amber-500"
-                                : "border-slate-400 dark:border-slate-500"
+                            ? "bg-amber-500 border-amber-500"
+                            : "border-slate-400 dark:border-slate-500"
                             }`}
                     >
                         {hideFavorites && <Check className="w-2.5 h-2.5 text-white" />}

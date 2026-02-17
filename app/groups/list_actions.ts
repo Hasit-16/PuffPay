@@ -36,16 +36,31 @@ export async function getMyGroups() {
 export async function getGroupMembers(groupId: string) {
     const supabase = await createClient();
 
-    const { data: members, error } = await supabase
+    // 1. Get member IDs
+    const { data: memberRows, error: memberError } = await supabase
         .from("group_members")
-        .select("user_id, profiles ( id, username, avatar_url )")
+        .select("user_id")
         .eq("group_id", groupId);
 
-    if (error) {
-        console.error("Error fetching group members:", error);
+    if (memberError) {
+        console.error("Error fetching group members:", memberError);
         return [];
     }
 
-    // Flatten to array of profiles
-    return members.map((m: any) => m.profiles).filter(Boolean);
+    const memberIds = memberRows.map(m => m.user_id);
+
+    if (memberIds.length === 0) return [];
+
+    // 2. Fetch profiles
+    const { data: profiles, error: profileError } = await supabase
+        .from("profiles")
+        .select("id, username, avatar_url")
+        .in("id", memberIds);
+
+    if (profileError) {
+        console.error("Error fetching member profiles:", profileError);
+        return [];
+    }
+
+    return profiles;
 }
