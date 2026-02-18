@@ -1,24 +1,32 @@
-
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import TopBar from "@/components/layout/TopBar";
 import BottomNav from "@/components/layout/BottomNav";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { UserPlus, Check, X, Users } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { UserPlus, Check, X, Users, Search, Star, SortAsc } from "lucide-react";
 import Link from "next/link";
-import { getFriendRequests, getMyFriends, acceptFriendRequest, ignoreFriendRequest, getSentRequests } from "./actions";
+import { getFriendRequests, getMyFriends, acceptFriendRequest, ignoreFriendRequest, getSentRequests, toggleFavoriteStatus } from "./actions";
 import { getMyGroups } from "@/app/groups/list_actions";
+import { toast } from "sonner";
+import { Group } from "@/types";
 
 // Types
 type Request = { id: string; sender: { id: string; username: string | null; avatar_url: string | null }; created_at: string };
 type SentRequest = { id: string; recipient: { id: string; username: string | null; avatar_url: string | null }; created_at: string };
-type Friend = { id: string; username: string | null; avatar_url: string | null };
-
-import { Group } from "@/types";
+type Friend = {
+    id: string;
+    username: string | null;
+    avatar_url: string | null;
+    friendship_id: string;
+    is_favorite: boolean;
+    created_at: string;
+};
 
 export default function FriendsPage() {
     const [requests, setRequests] = useState<Request[]>([]);
@@ -26,6 +34,10 @@ export default function FriendsPage() {
     const [friends, setFriends] = useState<Friend[]>([]);
     const [groups, setGroups] = useState<Group[]>([]);
     const [loading, setLoading] = useState(true);
+
+    // Filter/Sort State
+    const [searchQuery, setSearchQuery] = useState("");
+    const [sortBy, setSortBy] = useState<"name-asc" | "name-desc" | "newest">("name-asc");
 
     useEffect(() => {
         loadData();
@@ -56,6 +68,44 @@ export default function FriendsPage() {
         loadData();
     };
 
+    const handleToggleFavorite = async (friend: Friend) => {
+        // Optimistic update
+        setFriends(prev => prev.map(f =>
+            f.id === friend.id ? { ...f, is_favorite: !f.is_favorite } : f
+        ));
+
+        const result = await toggleFavoriteStatus(friend.friendship_id, friend.is_favorite);
+        if (result?.error) {
+            toast.error("Failed to update favorite status");
+            // Revert on error
+            setFriends(prev => prev.map(f =>
+                f.id === friend.id ? { ...f, is_favorite: friend.is_favorite } : f
+            ));
+        }
+    };
+
+    // Filter & Sort Logic
+    const processedFriends = useMemo(() => {
+        let filtered = friends.filter(friend =>
+            friend.username?.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+
+        return filtered.sort((a, b) => {
+            // Apply selected sort
+            // Note: Favorites are visually marked but do NOT enforce top sorting anymore per user request.
+
+            if (sortBy === "name-asc") {
+                return (a.username || "").localeCompare(b.username || "");
+            } else if (sortBy === "name-desc") {
+                return (b.username || "").localeCompare(a.username || "");
+            } else if (sortBy === "newest") {
+                // Sort by created_at descending (newest first)
+                return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+            }
+            return 0;
+        });
+    }, [friends, searchQuery, sortBy]);
+
     return (
         <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-20">
             <TopBar />
@@ -80,7 +130,7 @@ export default function FriendsPage() {
                     </div>
                 </div>
 
-                {/* Mobile-only Add Group Button (since hidden above on mobile to save space) */}
+                {/* Mobile-only Add Group Button */}
                 <div className="sm:hidden w-full mb-4">
                     <Button size="sm" variant="outline" className="w-full" asChild>
                         <Link href="/groups">
@@ -105,21 +155,49 @@ export default function FriendsPage() {
                     </TabsList>
 
                     <TabsContent value="friends" className="space-y-4">
+                        {/* Search & Sort Controls */}
+                        <div className="flex gap-2 mb-4">
+                            <div className="relative flex-1">
+                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                                <Input
+                                    placeholder="Search friends..."
+                                    className="pl-9 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800"
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                />
+                            </div>
+                            <Select value={sortBy} onValueChange={(v: any) => setSortBy(v)}>
+                                <SelectTrigger className="w-[140px] bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800">
+                                    <div className="flex items-center gap-2">
+                                        <SortAsc className="h-4 w-4 text-slate-500" />
+                                        <SelectValue placeholder="Sort by" />
+                                    </div>
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="name-asc">Name (A-Z)</SelectItem>
+                                    <SelectItem value="name-desc">Name (Z-A)</SelectItem>
+                                    <SelectItem value="newest">Newest</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+
                         {loading ? (
                             <p className="text-center text-slate-500 mt-8">Loading friends...</p>
-                        ) : friends.length === 0 ? (
+                        ) : processedFriends.length === 0 ? (
                             <div className="text-center py-12">
                                 <div className="bg-slate-100 dark:bg-slate-800 p-4 rounded-full inline-block mb-4">
                                     <UserPlus className="w-8 h-8 text-slate-400" />
                                 </div>
-                                <h3 className="text-lg font-medium mb-2">No friends yet</h3>
-                                <p className="text-slate-500 mb-6">Add friends to start sharing expenses.</p>
-                                <Link href="/friends/add">
-                                    <Button variant="outline">Find Friends</Button>
-                                </Link>
+                                <h3 className="text-lg font-medium mb-2">{searchQuery ? "No matching friends" : "No friends yet"}</h3>
+                                <p className="text-slate-500 mb-6">{searchQuery ? "Try a different search term" : "Add friends to start sharing expenses."}</p>
+                                {!searchQuery && (
+                                    <Link href="/friends/add">
+                                        <Button variant="outline">Find Friends</Button>
+                                    </Link>
+                                )}
                             </div>
                         ) : (
-                            friends.map(friend => (
+                            processedFriends.map(friend => (
                                 <Card key={friend.id} className="border-slate-200 dark:border-slate-800">
                                     <CardContent className="p-4 flex items-center gap-4">
                                         <Avatar>
@@ -127,7 +205,17 @@ export default function FriendsPage() {
                                             <AvatarFallback>{friend.username?.charAt(0).toUpperCase()}</AvatarFallback>
                                         </Avatar>
                                         <div className="flex-1">
-                                            <p className="font-semibold text-slate-900 dark:text-white">{friend.username}</p>
+                                            <div className="flex items-center gap-2">
+                                                <p className="font-semibold text-slate-900 dark:text-white">{friend.username}</p>
+                                                <button
+                                                    onClick={() => handleToggleFavorite(friend)}
+                                                    className="focus:outline-none"
+                                                >
+                                                    <Star
+                                                        className={`w-4 h-4 ${friend.is_favorite ? "fill-yellow-400 text-yellow-400" : "text-slate-300 hover:text-slate-400"}`}
+                                                    />
+                                                </button>
+                                            </div>
                                         </div>
                                         <Button variant="ghost" size="sm" asChild>
                                             <Link href={`/settle/${friend.id}`}>View</Link>

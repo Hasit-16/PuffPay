@@ -1,137 +1,172 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
-import Image from "next/image";
-import { createClient } from "@/lib/supabase/client";
-import { updateAvatar, signOut } from "./actions";
-import { Button } from "@/components/ui/button";
-import { Camera, LogOut, User } from "lucide-react";
+import { useEffect, useState } from "react";
+import TopBar from "@/components/layout/TopBar";
 import BottomNav from "@/components/layout/BottomNav";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { getProfile, updateProfile, deactivateAccount } from "./actions";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
 
 export default function ProfilePage() {
-    const [user, setUser] = useState<any>(null);
-    const [profile, setProfile] = useState<any>(null);
+    const router = useRouter();
     const [loading, setLoading] = useState(true);
-    const [uploading, setUploading] = useState(false);
-    const fileInputRef = useRef<HTMLInputElement>(null);
+    const [saving, setSaving] = useState(false);
+    const [user, setUser] = useState<{ id: string; username: string | null; avatar_url: string | null; email?: string } | null>(null);
+
+    // Form State
+    const [username, setUsername] = useState("");
+    const [avatarUrl, setAvatarUrl] = useState("");
 
     useEffect(() => {
-        const loadProfile = async () => {
-            const supabase = createClient();
-            const { data: { user } } = await supabase.auth.getUser();
-
-            if (user) {
-                setUser(user);
-                const { data } = await supabase.from("profiles").select("*").eq("id", user.id).single();
-                setProfile(data);
+        getProfile().then((data) => {
+            if (data) {
+                setUser(data as any);
+                setUsername(data.username || "");
+                setAvatarUrl(data.avatar_url || "");
             }
             setLoading(false);
-        };
-        loadProfile();
+        });
     }, []);
 
-    const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (!e.target.files || e.target.files.length === 0) return;
+    const handleSave = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setSaving(true);
 
-        const file = e.target.files[0];
         const formData = new FormData();
-        formData.append("file", file);
+        formData.append("username", username);
+        formData.append("avatar_url", avatarUrl);
 
-        setUploading(true);
-        const result = await updateAvatar(formData);
-
+        const result = await updateProfile(formData);
         if (result?.error) {
             toast.error(result.error);
         } else {
-            toast.success("Profile photo updated");
-            // Refresh profile data locally to show new image immediately (optimistic-ish)
-            // Ideally trigger a re-fetch or rely on revalidatePath + router.refresh() 
-            // but effectively we might need to reload the window to force image cache clear 
-            // if strict caching is on, though we added timestamp in action.
-            window.location.reload();
+            toast.success("Profile updated successfully");
+            router.refresh();
         }
-        setUploading(false);
+        setSaving(false);
     };
 
-    const handleSignOut = async () => {
-        await signOut();
+    const handleDeactivate = async () => {
+        const result = await deactivateAccount();
+        if (result?.error) {
+            toast.error("Failed to deactivate: " + result.error);
+        } else {
+            // Sign out
+            const supabase = createClient();
+            await supabase.auth.signOut();
+            router.push("/login");
+            toast.success("Account deactivated");
+        }
     };
 
     if (loading) {
-        return <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center">Loading...</div>;
+        return (
+            <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center">
+                <p className="text-slate-500">Loading profile...</p>
+            </div>
+        );
+    }
+
+    if (!user) {
+        return (
+            <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col items-center justify-center p-4">
+                <h1 className="text-xl font-bold mb-2">Profile Not Found</h1>
+                <Button onClick={() => router.push("/login")}>Go to Login</Button>
+            </div>
+        );
     }
 
     return (
         <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-20">
-            <div className="px-4 py-8 flex flex-col items-center">
-                <h1 className="text-xl font-semibold text-slate-900 dark:text-white mb-8">My Profile</h1>
+            <TopBar />
 
-                {/* Avatar */}
-                <div className="relative mb-6 group">
-                    <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-white dark:border-slate-800 shadow-lg relative bg-slate-200">
-                        {profile?.avatar_url ? (
-                            <Image
-                                src={profile.avatar_url}
-                                alt="Avatar"
-                                fill
-                                className="object-cover"
-                                priority
+            <main className="px-4 py-8 max-w-md mx-auto">
+                <div className="flex flex-col items-center mb-8">
+                    <Avatar className="w-24 h-24 mb-4 border-4 border-white dark:border-slate-800 shadow-lg">
+                        <AvatarImage src={avatarUrl || user.avatar_url || ""} />
+                        <AvatarFallback className="text-2xl">{username?.charAt(0)?.toUpperCase() || "?"}</AvatarFallback>
+                    </Avatar>
+                    <h1 className="text-2xl font-bold text-slate-900 dark:text-white">{user.username || "User"}</h1>
+                    <p className="text-slate-500">{user.email}</p>
+                </div>
+
+                <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 p-6 space-y-6">
+                    <div className="flex items-center justify-between">
+                        <h2 className="text-lg font-semibold text-slate-900 dark:text-white">Edit Profile</h2>
+                    </div>
+
+                    <form onSubmit={handleSave} className="space-y-4">
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Username</label>
+                            <Input
+                                value={username}
+                                onChange={(e) => setUsername(e.target.value)}
+                                placeholder="Enter username"
+                                minLength={3}
+                                required
                             />
-                        ) : (
-                            <div className="w-full h-full flex items-center justify-center bg-slate-100 dark:bg-slate-800 text-slate-400">
-                                <User className="w-12 h-12" />
-                            </div>
-                        )}
+                        </div>
 
-                        {/* Overlay Loader */}
-                        {uploading && (
-                            <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-20">
-                                <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                            </div>
-                        )}
-                    </div>
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Avatar URL</label>
+                            <Input
+                                value={avatarUrl}
+                                onChange={(e) => setAvatarUrl(e.target.value)}
+                                placeholder="https://example.com/avatar.jpg"
+                            />
+                            <p className="text-xs text-slate-500">Paste a direct link to an image.</p>
+                        </div>
 
-                    {/* Edit Button */}
-                    <button
-                        onClick={() => fileInputRef.current?.click()}
-                        className="absolute bottom-0 right-0 bg-slate-900 text-white p-2.5 rounded-full shadow-lg hover:scale-105 transition-transform"
-                        disabled={uploading}
-                    >
-                        <Camera className="w-4 h-4" />
-                    </button>
-                    <input
-                        type="file"
-                        ref={fileInputRef}
-                        className="hidden"
-                        accept="image/*"
-                        onChange={handleFileChange}
-                    />
+                        <Button type="submit" className="w-full bg-green-600 hover:bg-green-700" disabled={saving}>
+                            {saving ? "Saving..." : "Save Changes"}
+                        </Button>
+                    </form>
                 </div>
 
-                {/* Basic Info */}
-                <div className="w-full max-w-sm space-y-4 mb-8">
-                    <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800">
-                        <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Username</p>
-                        <p className="font-medium text-slate-900 dark:text-white text-lg">{profile?.username || "No username"}</p>
-                    </div>
-                    <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800">
-                        <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Email</p>
-                        <p className="font-medium text-slate-900 dark:text-white text-lg">{user?.email}</p>
+                <div className="mt-8 pt-8 border-t border-slate-200 dark:border-slate-800">
+                    <h3 className="text-red-600 font-semibold mb-2">Danger Zone</h3>
+                    <div className="bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-900/30 rounded-lg p-4">
+                        <p className="text-sm text-red-700 dark:text-red-400 mb-4">
+                            Deactivating your account will permanently remove your profile and access to groups. This action cannot be undone.
+                        </p>
+
+                        <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                                <Button variant="destructive" className="w-full">Deactivate Account</Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                                <AlertDialogHeader>
+                                    <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                        This action cannot be undone. This will permanently delete your account and remove your data from our servers.
+                                    </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                    <AlertDialogAction onClick={handleDeactivate} className="bg-red-600 hover:bg-red-700 focus:ring-red-600">
+                                        Yes, delete my account
+                                    </AlertDialogAction>
+                                </AlertDialogFooter>
+                            </AlertDialogContent>
+                        </AlertDialog>
                     </div>
                 </div>
-
-                {/* Actions */}
-                <form action={handleSignOut} className="w-full max-w-sm">
-                    <Button variant="destructive" size="lg" className="w-full">
-                        <LogOut className="w-4 h-4 mr-2" />
-                        Sign Out
-                    </Button>
-                </form>
-
-                <p className="text-xs text-slate-400 mt-8">v0.1.0 • PuffPay Beta</p>
-            </div>
+            </main>
 
             <BottomNav />
         </div>

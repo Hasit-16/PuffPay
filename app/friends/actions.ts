@@ -233,6 +233,8 @@ export async function getMyFriends() {
             id,
             user_id,
             friend_id,
+            is_favorite,
+            created_at,
             friend:profiles!friendships_friend_id_fkey(id, username, avatar_url)
         `)
         .eq("status", "accepted")
@@ -241,7 +243,35 @@ export async function getMyFriends() {
     if (error) return [];
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return (data as any[]).map(f => f.friend);
+    return (data as any[]).map(f => ({
+        ...f.friend,
+        friendship_id: f.id,
+        is_favorite: f.is_favorite,
+        created_at: f.created_at
+    }));
+}
+
+export async function toggleFavoriteStatus(friendshipId: string, currentStatus: boolean) {
+    const supabase = await createClient();
+    const {
+        data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) throw new Error("Unauthorized");
+
+    const { error } = await supabase
+        .from("friendships")
+        .update({ is_favorite: !currentStatus })
+        .eq("id", friendshipId)
+        .eq("user_id", user.id); // Security: only update my own friendship record
+
+    if (error) {
+        console.error("toggleFavoriteStatus error:", error);
+        return { error: error.message };
+    }
+
+    revalidatePath("/friends");
+    return { success: true };
 }
 
 
