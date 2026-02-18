@@ -203,7 +203,6 @@ export default function GroupDetailsClient({ group, members, currentUserId, avai
             {/* Danger Zone */}
             {isCreator && (
                 <div className="mt-8 pt-8 border-t border-slate-200 dark:border-slate-800">
-                    <h3 className="text-red-600 font-medium mb-2">Danger Zone</h3>
                     <AlertDialog>
                         <AlertDialogTrigger asChild>
                             <Button variant="destructive">Delete Group</Button>
