@@ -1,11 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
+import Image from "next/image";
 import TopBar from "@/components/layout/TopBar";
 import BottomNav from "@/components/layout/BottomNav";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { User, Camera, LogOut } from "lucide-react";
 import {
     AlertDialog,
     AlertDialogAction,
@@ -17,7 +20,7 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { getProfile, updateProfile, deactivateAccount } from "./actions";
+import { updateProfile, deactivateAccount, getProfile } from "./actions";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
@@ -26,7 +29,9 @@ export default function ProfilePage() {
     const router = useRouter();
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
+    const [uploading, setUploading] = useState(false);
     const [user, setUser] = useState<{ id: string; username: string | null; avatar_url: string | null; email?: string } | null>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     // Form State
     const [username, setUsername] = useState("");
@@ -43,6 +48,39 @@ export default function ProfilePage() {
         });
     }, []);
 
+    const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (!e.target.files || e.target.files.length === 0) return;
+
+        const file = e.target.files[0];
+        setUploading(true);
+
+        try {
+            const supabase = createClient();
+            const { data: { user } } = await supabase.auth.getUser();
+
+            if (!user) throw new Error("Unauthorized");
+
+            const fileExt = file.name.split('.').pop();
+            const fileName = `${user.id}/${Date.now()}.${fileExt}`;
+
+            const { error: uploadError } = await supabase.storage
+                .from('avatars')
+                .upload(fileName, file);
+
+            if (uploadError) throw uploadError;
+
+            const { data: { publicUrl } } = supabase.storage
+                .from('avatars')
+                .getPublicUrl(fileName);
+
+            setAvatarUrl(publicUrl);
+            toast.success("Image uploaded! Don't forget to save changes.");
+        } catch (error: any) {
+            toast.error("Error uploading avatar: " + error.message);
+        } finally {
+            setUploading(false);
+        }
+    };
     const handleSave = async (e: React.FormEvent) => {
         e.preventDefault();
         setSaving(true);
@@ -111,6 +149,89 @@ export default function ProfilePage() {
                     </div>
 
                     <form onSubmit={handleSave} className="space-y-4">
+                        {/* Avatar Selection */}
+                        <div className="w-full max-w-md mb-8">
+                            <div className="flex justify-center mb-6">
+                                <div className="relative group">
+                                    <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-white dark:border-slate-800 shadow-lg relative bg-slate-200">
+                                        {avatarUrl ? (
+                                            <Image
+                                                src={avatarUrl}
+                                                alt="Avatar"
+                                                fill
+                                                className="object-cover"
+                                                priority
+                                            />
+                                        ) : (
+                                            <div className="w-full h-full flex items-center justify-center bg-slate-100 dark:bg-slate-800 text-slate-400">
+                                                <User className="w-12 h-12" />
+                                            </div>
+                                        )}
+                                        {uploading && (
+                                            <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-20">
+                                                <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <Tabs defaultValue="defaults" className="w-full">
+                                <TabsList className="grid w-full grid-cols-2 mb-4">
+                                    <TabsTrigger value="defaults">Illustrations</TabsTrigger>
+                                    <TabsTrigger value="upload">Upload</TabsTrigger>
+                                </TabsList>
+
+                                <TabsContent value="defaults" className="space-y-4">
+                                    <div className="grid grid-cols-4 gap-2">
+                                        {[
+                                            "Felix", "Aneka", "Zoe", "Jack",
+                                            "Leo", "Molly", "Sam", "Bear"
+                                        ].map((seed) => (
+                                            <button
+                                                key={seed}
+                                                type="button"
+                                                onClick={() => setAvatarUrl(`https://api.dicebear.com/9.x/adventurer/svg?seed=${seed}`)}
+                                                className={`relative aspect-square rounded-lg overflow-hidden border-2 transition-all ${avatarUrl?.includes(seed)
+                                                    ? "border-green-500 ring-2 ring-green-500/20"
+                                                    : "border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700"
+                                                    }`}
+                                            >
+                                                <Image
+                                                    src={`https://api.dicebear.com/9.x/adventurer/svg?seed=${seed}`}
+                                                    alt={seed}
+                                                    fill
+                                                    className="object-cover p-1"
+                                                />
+                                            </button>
+                                        ))}
+                                    </div>
+                                    <p className="text-xs text-center text-slate-500">
+                                        Powered by <a href="https://dicebear.com" target="_blank" rel="noreferrer" className="underline">DiceBear</a>
+                                    </p>
+                                </TabsContent>
+
+                                <TabsContent value="upload" className="space-y-4">
+                                    <div className="border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-lg p-6 flex flex-col items-center gap-4 hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors cursor-pointer" onClick={() => fileInputRef.current?.click()}>
+                                        <div className="p-3 bg-slate-100 dark:bg-slate-800 rounded-full">
+                                            <Camera className="w-6 h-6 text-slate-500" />
+                                        </div>
+                                        <div className="text-center">
+                                            <p className="text-sm font-medium">Click to upload image</p>
+                                            <p className="text-xs text-slate-500 mt-1">PNG, JPG up to 2MB</p>
+                                        </div>
+                                        <input
+                                            type="file"
+                                            ref={fileInputRef}
+                                            className="hidden"
+                                            accept="image/*"
+                                            onChange={handleFileChange}
+                                        />
+                                    </div>
+                                </TabsContent>
+                            </Tabs>
+                        </div>
+                        {/* Avatar URL is managed by above UI now */}
                         <div className="space-y-2">
                             <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Username</label>
                             <Input
@@ -122,20 +243,22 @@ export default function ProfilePage() {
                             />
                         </div>
 
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Avatar URL</label>
-                            <Input
-                                value={avatarUrl}
-                                onChange={(e) => setAvatarUrl(e.target.value)}
-                                placeholder="https://example.com/avatar.jpg"
-                            />
-                            <p className="text-xs text-slate-500">Paste a direct link to an image.</p>
-                        </div>
-
                         <Button type="submit" className="w-full bg-green-600 hover:bg-green-700" disabled={saving}>
                             {saving ? "Saving..." : "Save Changes"}
                         </Button>
                     </form>
+                </div>
+
+                <div className="mt-8 border-t border-slate-200 dark:border-slate-800 pt-6">
+                    <Button variant="outline" className="w-full" onClick={async () => {
+                        const supabase = createClient();
+                        await supabase.auth.signOut();
+                        router.push("/login");
+                        toast.success("Signed out");
+                    }}>
+                        <LogOut className="w-4 h-4 mr-2" />
+                        Sign Out
+                    </Button>
                 </div>
 
                 <div className="mt-8 pt-8 border-t border-slate-200 dark:border-slate-800">
