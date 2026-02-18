@@ -91,197 +91,191 @@ export default function AddExpensePage() {
     const toggleMemberInclusion = (memberId: string) => {
         if (includedUserIds.includes(memberId)) {
             setIncludedUserIds(includedUserIds.filter(id => id !== memberId));
+            // Remove from exact amounts if we wanted to cleanup, but not strictly necessary keeping it in state
         } else {
             setIncludedUserIds([...includedUserIds, memberId]);
+            // Add to exact amounts with 0 if not exists
+            if (exactAmounts[memberId] === undefined) {
+                setExactAmounts(prev => ({ ...prev, [memberId]: 0 }));
+            }
         }
-        const toggleMemberInclusion = (memberId: string) => {
-            if (includedUserIds.includes(memberId)) {
-                setIncludedUserIds(includedUserIds.filter(id => id !== memberId));
-                // Remove from exact amounts if we wanted to cleanup, but not strictly necessary keeping it in state
-            } else {
-                setIncludedUserIds([...includedUserIds, memberId]);
-                // Add to exact amounts with 0 if not exists
-                if (exactAmounts[memberId] === undefined) {
-                    setExactAmounts(prev => ({ ...prev, [memberId]: 0 }));
-                }
+    };
+
+    const handleExactAmountChange = (memberId: string, value: string) => {
+        const numValue = parseFloat(value) || 0;
+        setExactAmounts(prev => ({
+            ...prev,
+            [memberId]: numValue
+        }));
+    };
+
+    const clientAction = async (formData: FormData) => {
+        if (mode === "group") {
+            if (includedUserIds.length === 0) {
+                toast.error("Must include at least one person");
+                return;
             }
-        };
-
-        const handleExactAmountChange = (memberId: string, value: string) => {
-            const numValue = parseFloat(value) || 0;
-            setExactAmounts(prev => ({
-                ...prev,
-                [memberId]: numValue
-            }));
-        };
-
-        const clientAction = async (formData: FormData) => {
-            if (mode === "group") {
-                if (includedUserIds.length === 0) {
-                    toast.error("Must include at least one person");
-                    return;
-                }
-                // Add included members to formData
-                // We need to send them as JSON or repeated fields. 
-                // The server action expects `borrower_ids` or `borrower_id`.
-                // Let's modify server action to handle `borrower_ids` as a JSON string for flexibility.
-                formData.append("borrower_ids", JSON.stringify(includedUserIds));
-                formData.append("split_type", splitType);
-                if (splitType === "exact") {
-                    formData.append("exact_amounts", JSON.stringify(exactAmounts));
-                }
-
-                // Also append mode
-                formData.append("mode", "group");
-            } else {
-                // Individual Mode
-                const borrowerId = formData.get("borrower_id");
-                if (!borrowerId) {
-                    toast.error("Please select a friend");
-                    return;
-                }
-                formData.append("borrower_ids", JSON.stringify([borrowerId.toString()]));
-                formData.append("mode", "individual");
+            // Add included members to formData
+            // We need to send them as JSON or repeated fields. 
+            // The server action expects `borrower_ids` or `borrower_id`.
+            // Let's modify server action to handle `borrower_ids` as a JSON string for flexibility.
+            formData.append("borrower_ids", JSON.stringify(includedUserIds));
+            formData.append("split_type", splitType);
+            if (splitType === "exact") {
+                formData.append("exact_amounts", JSON.stringify(exactAmounts));
             }
 
-            const result = await createTransaction(formData);
-            if (result?.error) {
-                toast.error(result.error);
-            } else if (result?.success) {
-                toast.success("Expense added successfully");
-                router.push("/dashboard");
+            // Also append mode
+            formData.append("mode", "group");
+        } else {
+            // Individual Mode
+            const borrowerId = formData.get("borrower_id");
+            if (!borrowerId) {
+                toast.error("Please select a friend");
+                return;
             }
-        };
+            formData.append("borrower_ids", JSON.stringify([borrowerId.toString()]));
+            formData.append("mode", "individual");
+        }
 
-        // Derived state for math
-        const parsedAmount = parseFloat(amount) || 0;
-        const splitCount = includedUserIds.length;
-        const parsedAmount = parseFloat(amount) || 0;
-        const splitCount = includedUserIds.length;
-        const splitAmount = splitCount > 0 ? (parsedAmount / splitCount).toFixed(0) : "0";
+        const result = await createTransaction(formData);
+        if (result?.error) {
+            toast.error(result.error);
+        } else if (result?.success) {
+            toast.success("Expense added successfully");
+            router.push("/dashboard");
+        }
+    };
 
-        // Exact Split Math
-        const currentExactSum = includedUserIds.reduce((sum, id) => sum + (exactAmounts[id] || 0), 0);
-        const difference = parsedAmount - currentExactSum;
-        const isExactValid = Math.abs(difference) < 0.01; // Float tolerance
+    // Derived state for math
+    const parsedAmount = parseFloat(amount) || 0;
+    const splitCount = includedUserIds.length;
+    const splitAmount = splitCount > 0 ? (parsedAmount / splitCount).toFixed(0) : "0";
 
-        return (
-            <div className="min-h-screen bg-slate-50 dark:bg-slate-950 px-4 py-6">
-                {/* Header */}
-                <div className="flex items-center mb-6">
-                    <Link href="/dashboard">
-                        <Button variant="ghost" size="icon" className="-ml-2">
-                            <ArrowLeft className="w-6 h-6 text-slate-600 dark:text-slate-400" />
-                        </Button>
-                    </Link>
-                    <h1 className="text-xl font-semibold ml-2 text-slate-900 dark:text-white">Add Expense</h1>
-                </div>
+    // Exact Split Math
+    const currentExactSum = includedUserIds.reduce((sum, id) => sum + (exactAmounts[id] || 0), 0);
+    const difference = parsedAmount - currentExactSum;
+    const isExactValid = Math.abs(difference) < 0.01; // Float tolerance
 
-                {/* Mode Toggle */}
-                <div className="flex p-1 bg-slate-200 dark:bg-slate-800 rounded-xl mb-6 max-w-md mx-auto">
-                    <button
-                        onClick={() => setMode("individual")}
-                        className={`flex-1 flex items-center justify-center py-2 rounded-lg text-sm font-medium transition-all ${mode === "individual"
-                            ? "bg-white dark:bg-slate-700 shadow-sm text-slate-900 dark:text-white"
-                            : "text-slate-500 dark:text-slate-400 hover:text-slate-700"
-                            }`}
-                    >
-                        <User className="w-4 h-4 mr-2" />
-                        Individual
-                    </button>
-                    <button
-                        onClick={() => setMode("group")}
-                        className={`flex-1 flex items-center justify-center py-2 rounded-lg text-sm font-medium transition-all ${mode === "group"
-                            ? "bg-white dark:bg-slate-700 shadow-sm text-slate-900 dark:text-white"
-                            : "text-slate-500 dark:text-slate-400 hover:text-slate-700"
-                            }`}
-                    >
-                        <Users className="w-4 h-4 mr-2" />
-                        Group
-                    </button>
-                </div>
+    return (
+        <div className="min-h-screen bg-slate-50 dark:bg-slate-950 px-4 py-6">
+            {/* Header */}
+            <div className="flex items-center mb-6">
+                <Link href="/dashboard">
+                    <Button variant="ghost" size="icon" className="-ml-2">
+                        <ArrowLeft className="w-6 h-6 text-slate-600 dark:text-slate-400" />
+                    </Button>
+                </Link>
+                <h1 className="text-xl font-semibold ml-2 text-slate-900 dark:text-white">Add Expense</h1>
+            </div>
 
-                <form action={clientAction} className="space-y-8 max-w-md mx-auto">
+            {/* Mode Toggle */}
+            <div className="flex p-1 bg-slate-200 dark:bg-slate-800 rounded-xl mb-6 max-w-md mx-auto">
+                <button
+                    onClick={() => setMode("individual")}
+                    className={`flex-1 flex items-center justify-center py-2 rounded-lg text-sm font-medium transition-all ${mode === "individual"
+                        ? "bg-white dark:bg-slate-700 shadow-sm text-slate-900 dark:text-white"
+                        : "text-slate-500 dark:text-slate-400 hover:text-slate-700"
+                        }`}
+                >
+                    <User className="w-4 h-4 mr-2" />
+                    Individual
+                </button>
+                <button
+                    onClick={() => setMode("group")}
+                    className={`flex-1 flex items-center justify-center py-2 rounded-lg text-sm font-medium transition-all ${mode === "group"
+                        ? "bg-white dark:bg-slate-700 shadow-sm text-slate-900 dark:text-white"
+                        : "text-slate-500 dark:text-slate-400 hover:text-slate-700"
+                        }`}
+                >
+                    <Users className="w-4 h-4 mr-2" />
+                    Group
+                </button>
+            </div>
 
-                    {/* Amount Input */}
-                    <div className="space-y-2">
-                        <label className="text-sm font-medium text-slate-500 uppercase tracking-wider">Amount</label>
-                        <div className="relative">
-                            <span className="absolute left-0 top-1/2 -translate-y-1/2 text-3xl font-bold text-slate-400">₹</span>
-                            <input
-                                ref={amountInputRef}
-                                type="number"
-                                name="amount"
-                                value={amount}
-                                onChange={(e) => setAmount(e.target.value)}
-                                placeholder="0"
-                                className="w-full bg-transparent text-5xl font-bold text-slate-900 dark:text-white border-b-2 border-slate-200 dark:border-slate-800 focus:border-green-500 focus:outline-none pl-8 py-2 placeholder:text-slate-200 dark:placeholder:text-slate-800"
-                                required
-                                min="1"
-                                step="any"
-                            />
-                        </div>
+            <form action={clientAction} className="space-y-8 max-w-md mx-auto">
+
+                {/* Amount Input */}
+                <div className="space-y-2">
+                    <label className="text-sm font-medium text-slate-500 uppercase tracking-wider">Amount</label>
+                    <div className="relative">
+                        <span className="absolute left-0 top-1/2 -translate-y-1/2 text-3xl font-bold text-slate-400">₹</span>
+                        <input
+                            ref={amountInputRef}
+                            type="number"
+                            name="amount"
+                            value={amount}
+                            onChange={(e) => setAmount(e.target.value)}
+                            placeholder="0"
+                            className="w-full bg-transparent text-5xl font-bold text-slate-900 dark:text-white border-b-2 border-slate-200 dark:border-slate-800 focus:border-green-500 focus:outline-none pl-8 py-2 placeholder:text-slate-200 dark:placeholder:text-slate-800"
+                            required
+                            min="1"
+                            step="any"
+                        />
                     </div>
+                </div>
 
-                    {/* Logic Switch based on Mode */}
-                    {mode === "individual" ? (
-                        /* INDIVIDUAL MODE */
-                        <div className="space-y-4">
-                            <div className="flex items-center justify-between p-3 bg-white dark:bg-slate-900 rounded-lg border border-slate-100 dark:border-slate-800">
-                                <span className="text-slate-500">Paid by</span>
-                                <span className="font-medium text-slate-900 dark:text-white">You</span>
-                            </div>
-
-                            <div className="space-y-2">
-                                <label className="text-sm font-medium text-slate-500">Split with</label>
-                                {loading ? (
-                                    <div className="h-12 w-full bg-slate-100 dark:bg-slate-800 animate-pulse rounded-lg" />
-                                ) : (
-                                    <select
-                                        name="borrower_id"
-                                        className="w-full p-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg text-slate-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none appearance-none"
-                                        required
-                                    >
-                                        <option value="" disabled>Select a friend</option>
-                                        {friends.map(friend => (
-                                            <option key={friend.id} value={friend.id}>
-                                                {friend.username}
-                                            </option>
-                                        ))}
-                                    </select>
-                                )}
-                            </div>
+                {/* Logic Switch based on Mode */}
+                {mode === "individual" ? (
+                    /* INDIVIDUAL MODE */
+                    <div className="space-y-4">
+                        <div className="flex items-center justify-between p-3 bg-white dark:bg-slate-900 rounded-lg border border-slate-100 dark:border-slate-800">
+                            <span className="text-slate-500">Paid by</span>
+                            <span className="font-medium text-slate-900 dark:text-white">You</span>
                         </div>
-                    ) : (
-                        /* GROUP MODE */
-                        <div className="space-y-6">
-                            {/* Group Selector */}
-                            <div className="space-y-2">
-                                <label className="text-sm font-medium text-slate-500">Select Group</label>
+
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium text-slate-500">Split with</label>
+                            {loading ? (
+                                <div className="h-12 w-full bg-slate-100 dark:bg-slate-800 animate-pulse rounded-lg" />
+                            ) : (
                                 <select
-                                    value={selectedGroupId}
-                                    onChange={(e) => setSelectedGroupId(e.target.value)}
+                                    name="borrower_id"
                                     className="w-full p-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg text-slate-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none appearance-none"
                                     required
                                 >
-                                    <option value="" disabled>Select a group</option>
-                                    {groups.map(group => (
-                                        <option key={group.id} value={group.id}>
-                                            {group.name}
+                                    <option value="" disabled>Select a friend</option>
+                                    {friends.map(friend => (
+                                        <option key={friend.id} value={friend.id}>
+                                            {friend.username}
                                         </option>
                                     ))}
                                 </select>
+                            )}
+                        </div>
+                    </div>
+                ) : (
+                    /* GROUP MODE */
+                    <div className="space-y-6">
+                        {/* Group Selector */}
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium text-slate-500">Select Group</label>
+                            <select
+                                value={selectedGroupId}
+                                onChange={(e) => setSelectedGroupId(e.target.value)}
+                                className="w-full p-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg text-slate-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none appearance-none"
+                                required
+                            >
+                                <option value="" disabled>Select a group</option>
+                                {groups.map(group => (
+                                    <option key={group.id} value={group.id}>
+                                        {group.name}
+                                    </option>
+                                ))}
+                            </select>
 
-                                <div className="flex justify-end mt-2">
-                                    <Link href="/groups" className="text-xs flex items-center text-green-600 font-medium hover:underline">
-                                        <Plus className="w-3 h-3 mr-1" />
-                                        Create new group
-                                    </Link>
-                                </div>
+                            <div className="flex justify-end mt-2">
+                                <Link href="/groups" className="text-xs flex items-center text-green-600 font-medium hover:underline">
+                                    <Plus className="w-3 h-3 mr-1" />
+                                    Create new group
+                                </Link>
                             </div>
+                        </div>
 
-                            {/* Split Type Toggle (Only if group selected) */}
-                            {selectedGroupId && (
+                        {/* Split Logic Container */}
+                        {selectedGroupId && (
+                            <>
+                                {/* Split Type Toggle */}
                                 <div className="flex p-1 bg-slate-100 dark:bg-slate-800/50 rounded-lg max-w-sm mx-auto mb-4">
                                     <button
                                         type="button"
@@ -304,10 +298,8 @@ export default function AddExpensePage() {
                                         ✎ Exact Amounts
                                     </button>
                                 </div>
-                            )}
 
-                            {/* Avatar Row */}
-                            {selectedGroupId && (
+                                {/* Avatar Row & Inputs */}
                                 <div className="space-y-3">
                                     <label className="text-sm font-medium text-slate-500">Tap to exclude</label>
                                     <div className="flex overflow-x-auto pb-2 gap-4">
@@ -335,109 +327,108 @@ export default function AddExpensePage() {
                                             );
                                         })}
                                     </div>
-                                </div>
-                                    
+
                                     {/* Exact Amounts Inputs */}
-                            {splitType === "exact" && (
-                                <div className="space-y-3 mt-4 px-1">
-                                    {selectedGroupMembers
-                                        .filter(m => includedUserIds.includes(m.id))
-                                        .map(member => (
-                                            <div key={member.id} className="flex items-center justify-between gap-3">
-                                                <div className="flex items-center gap-2">
-                                                    <Avatar className="h-8 w-8">
-                                                        <AvatarImage src={member.avatar_url || ""} />
-                                                        <AvatarFallback>{member.username?.charAt(0)}</AvatarFallback>
-                                                    </Avatar>
-                                                    <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                                                        {member.username}
+                                    {splitType === "exact" && (
+                                        <div className="space-y-3 mt-4 px-1">
+                                            {selectedGroupMembers
+                                                .filter(m => includedUserIds.includes(m.id))
+                                                .map(member => (
+                                                    <div key={member.id} className="flex items-center justify-between gap-3">
+                                                        <div className="flex items-center gap-2">
+                                                            <Avatar className="h-8 w-8">
+                                                                <AvatarImage src={member.avatar_url || ""} />
+                                                                <AvatarFallback>{member.username?.charAt(0)}</AvatarFallback>
+                                                            </Avatar>
+                                                            <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                                                                {member.username}
+                                                            </span>
+                                                        </div>
+                                                        <div className="relative w-24">
+                                                            <span className="absolute left-2 top-1/2 -translate-y-1/2 text-slate-400 text-xs">₹</span>
+                                                            <input
+                                                                type="number"
+                                                                value={exactAmounts[member.id] || ""}
+                                                                onChange={(e) => handleExactAmountChange(member.id, e.target.value)}
+                                                                className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-md py-1 pl-5 pr-2 text-sm text-right focus:ring-1 focus:ring-green-500 outline-none"
+                                                                placeholder="0"
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                ))}
+
+                                            {/* Validation Message */}
+                                            <div className="pt-2 text-center text-sm font-medium">
+                                                {difference > 0.01 ? (
+                                                    <span className="text-red-500">
+                                                        ₹{difference.toFixed(2)} remaining to allocate
                                                     </span>
-                                                </div>
-                                                <div className="relative w-24">
-                                                    <span className="absolute left-2 top-1/2 -translate-y-1/2 text-slate-400 text-xs">₹</span>
-                                                    <input
-                                                        type="number"
-                                                        value={exactAmounts[member.id] || ""}
-                                                        onChange={(e) => handleExactAmountChange(member.id, e.target.value)}
-                                                        className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-md py-1 pl-5 pr-2 text-sm text-right focus:ring-1 focus:ring-green-500 outline-none"
-                                                        placeholder="0"
-                                                    />
-                                                </div>
+                                                ) : difference < -0.01 ? (
+                                                    <span className="text-red-500">
+                                                        ₹{Math.abs(difference).toFixed(2)} over-allocated!
+                                                    </span>
+                                                ) : (
+                                                    <span className="text-green-600 flex items-center justify-center gap-1">
+                                                        <Check className="w-4 h-4" /> Perfectly split!
+                                                    </span>
+                                                )}
                                             </div>
-                                        ))}
+                                        </div>
+                                    )}
 
-                                    {/* Validation Message */}
-                                    <div className="pt-2 text-center text-sm font-medium">
-                                        {difference > 0.01 ? (
-                                            <span className="text-red-500">
-                                                ₹{difference.toFixed(2)} remaining to allocate
-                                            </span>
-                                        ) : difference < -0.01 ? (
-                                            <span className="text-red-500">
-                                                ₹{Math.abs(difference).toFixed(2)} over-allocated!
-                                            </span>
-                                        ) : (
-                                            <span className="text-green-600 flex items-center justify-center gap-1">
-                                                <Check className="w-4 h-4" /> Perfectly split!
-                                            </span>
-                                        )}
-                                    </div>
+                                    {/* Equal Split Message */}
+                                    {splitType === "equal" && includedUserIds.length > 0 ? (
+                                        <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg text-center">
+                                            <p className="text-green-700 dark:text-green-300 font-medium text-sm">
+                                                Splitting ₹{parsedAmount.toLocaleString()} between {splitCount} people
+                                            </p>
+                                            <p className="text-green-600 dark:text-green-400 text-xs mt-1">
+                                                Since you paid, you'll be owed ₹{splitAmount} from each.
+                                            </p>
+                                        </div>
+                                    ) : null}
                                 </div>
-                            )}
-                        </div>
-                                {splitType === "equal" && includedUserIds.length > 0 ? (
-                        <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg text-center">
-                            <p className="text-green-700 dark:text-green-300 font-medium text-sm">
-                                Splitting ₹{parsedAmount.toLocaleString()} between {splitCount} people
-                            </p>
-                            <p className="text-green-600 dark:text-green-400 text-xs mt-1">
-                                Since you paid, you'll be owed ₹{splitAmount} from each.
-                            </p>
-                        </div>
-                    ) : null}
-            </div>
-        )
-    }
-                    </div >
-                )
-}
+                            </>
+                        )}
+                    </div>
+                )}
 
-{/* Description */ }
-<div className="space-y-3">
-    <label className="text-sm font-medium text-slate-500">For</label>
-    <Input
-        name="description"
-        placeholder="What's this for?"
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-        required
-        className="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800"
-    />
+                {/* Description */}
+                <div className="space-y-3">
+                    <label className="text-sm font-medium text-slate-500">For</label>
+                    <Input
+                        name="description"
+                        placeholder="What's this for?"
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
+                        required
+                        className="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800"
+                    />
 
-    {/* Quick Chips */}
-    <div className="flex flex-wrap gap-2">
-        {QUICK_CHIPS.map(chip => (
-            <button
-                key={chip}
-                type="button"
-                onClick={() => handleChipClick(chip.split(" ")[1])}
-                className="text-xs px-3 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-full text-slate-600 dark:text-slate-300 transition-colors"
-            >
-                {chip}
-            </button>
-        ))}
-    </div>
-</div>
+                    {/* Quick Chips */}
+                    <div className="flex flex-wrap gap-2">
+                        {QUICK_CHIPS.map(chip => (
+                            <button
+                                key={chip}
+                                type="button"
+                                onClick={() => handleChipClick(chip.split(" ")[1])}
+                                className="text-xs px-3 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-full text-slate-600 dark:text-slate-300 transition-colors"
+                            >
+                                {chip}
+                            </button>
+                        ))}
+                    </div>
+                </div>
 
-{/* Submit */ }
-<div className="pt-4 pb-10">
-    <SubmitButton disabled={
-        (mode === "group" && includedUserIds.length === 0) ||
-        (mode === "group" && splitType === "exact" && !isExactValid)
-    } />
-</div>
+                {/* Submit */}
+                <div className="pt-4 pb-10">
+                    <SubmitButton disabled={
+                        (mode === "group" && includedUserIds.length === 0) ||
+                        (mode === "group" && splitType === "exact" && !isExactValid)
+                    } />
+                </div>
 
-            </form >
-        </div >
+            </form>
+        </div>
     );
 }
