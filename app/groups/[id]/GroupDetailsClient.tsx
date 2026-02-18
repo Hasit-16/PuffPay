@@ -38,7 +38,7 @@ import { Edit2, Trash2, UserPlus, Users, ArrowLeft, Loader2 } from "lucide-react
 import { toast } from "sonner";
 import { updateGroupName, deleteGroup, removeGroupMember, addGroupMember } from "@/app/groups/actions";
 import Link from "next/link";
-import { Checkbox } from "@/components/ui/checkbox";
+
 
 type Group = {
     id: string;
