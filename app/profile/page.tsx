@@ -262,7 +262,6 @@ export default function ProfilePage() {
                 </div>
 
                 <div className="mt-8 pt-8 border-t border-slate-200 dark:border-slate-800">
-                    <h3 className="text-red-600 font-semibold mb-2">Danger Zone</h3>
                     <div className="bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-900/30 rounded-lg p-4">
                         <p className="text-sm text-red-700 dark:text-red-400 mb-4">
                             Deactivating your account will permanently remove your profile and access to groups. This action cannot be undone.
