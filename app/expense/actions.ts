@@ -81,66 +81,68 @@ export async function createTransaction(formData: FormData) {
     let errorCount = 0;
 
     if (mode === 'group') {
+        const splitType = formData.get("split_type") as string; // 'equal' | 'exact'
+
         // Group Split Logic
-        // Total Amount = `amount`
         // Borrowers = `borrowerIds` (These are the people checked in the UI)
-        // Does `borrowerIds` include ME?
-        // In UI: "Default include everyone" (from group members).
-        // If I am in the group, I am in `borrowerIds`.
-        // If I am in `borrowerIds`, I don't owe myself.
-        // So splitAmount = amount / borrowerIds.length.
-        // I only create transactions for OTHER people in `borrowerIds`.
+        // Does `borrowerIds` include ME? - Yes, usually.
 
         const splitCount = borrowerIds.length;
         if (splitCount === 0) return { error: "No one to split with" }; // Should be caught above
-
-        const splitAmount = amount / splitCount;
 
         // Filter out myself from borrowers (I don't pay myself)
         const others = borrowerIds.filter(id => id !== user.id);
 
         if (others.length === 0 && borrowerIds.includes(user.id)) {
-            // I paid for myself only?
             return { error: "You cannot split an expense only with yourself" };
         }
 
-        // Insert for each other person
-        for (const borrowerId of others) {
-            const err = await insertTransaction(borrowerId, splitAmount);
-            if (err) {
-                console.error("Error inserting transaction for", borrowerId, err);
-                errorCount++;
+        if (splitType === 'exact') {
+            const exactAmountsJson = formData.get("exact_amounts") as string;
+            let exactAmounts: Record<string, number> = {};
+            try {
+                exactAmounts = JSON.parse(exactAmountsJson);
+            } catch (e) {
+                return { error: "Invalid exact amounts data" };
+            }
+
+            // Validate total (Server side check)
+            // Note: `amount` is Total Bill.
+            // Sum of exactAmounts for ALL included members should be `amount`.
+            // But we only create transactions for OTHERS.
+            // So we iterate `others` and use their exact amount.
+
+            // Optional: Verify sum matches total amount within tolerance?
+            // The client does this, but good to be safe.
+            // let totalExact = Object.values(exactAmounts).reduce((a, b) => a + b, 0);
+            // if (Math.abs(totalExact - amount) > 1) { return { error: "Amounts do not match total" }; }
+
+            for (const borrowerId of others) {
+                const debtAmount = exactAmounts[borrowerId];
+                if (debtAmount > 0) {
+                    const err = await insertTransaction(borrowerId, debtAmount);
+                    if (err) {
+                        console.error("Error inserting transaction for", borrowerId, err);
+                        errorCount++;
+                    }
+                }
+            }
+
+        } else {
+            // EQUAL SPLIT
+            const splitAmount = amount / splitCount;
+
+            for (const borrowerId of others) {
+                const err = await insertTransaction(borrowerId, splitAmount);
+                if (err) {
+                    console.error("Error inserting transaction for", borrowerId, err);
+                    errorCount++;
+                }
             }
         }
 
     } else {
         // Individual Mode (Legacy)
-        // Existing behavior: "amount" is what they owe me.
-        // But wait, in the new UI for individual, I am selecting "Split with Friend A".
-        // If I enter 100, does Friend A owe me 100? Or 50?
-        // The previous code:
-        // const amount = Number(formData.get("amount"));
-        // ... insert { amount: amount }
-        // So previously, input was "Amount they owe".
-
-        // Let's keep it consistent for Individual mode if we want to support "I paid for you completely".
-        // BUT "Split with" implies splitting.
-        // However, standard 1-on-1 expense usually means "I paid this much for you" OR "We split this".
-        // Given `app/expense/add/page.tsx` label "Amount", usually implies Total.
-        // But the previous implementation logic was: `amount` from input -> `amount` in DB.
-        // If I pay 100 for Lunch with A, and enter 100.
-        // If DB `amount` is 100, then A owes me 100. That means I paid 200? Or I paid 100 and it was ALL for A?
-        // "Quick Chips" like Chai, Sandwich imply small items.
-        // Let's assume for Individual mode, sticking to previous behavior is safest to NOT BREAK Phase 15.
-        // Previous behavior: Input Amount = Transaction Amount (Debt).
-
-        // Wait, I changed the UI. The UI now says "Split with".
-        // The old UI said "Paid by You, Split with [Select]".
-        // Phase 15 logic: Input 100 -> Transaction 100.
-        // Use Case: I bought a sandwich for Bob (100). Bob owes 100.
-        // Use Case: I paid 200 for lunch for Me and Bob. Bob owes 100. User calculates 100 and enters 100.
-        // Let's stick to: Individual Mode Input = Debt Amount. Use `amount` directly.
-
         for (const borrowerId of borrowerIds) {
             const err = await insertTransaction(borrowerId, amount);
             if (err) errorCount++;
