@@ -154,18 +154,23 @@ export default function FriendsPage() {
                             </div>
                         ) : (
                             groups.map(group => (
-                                <Card key={group.id} className="border-slate-200 dark:border-slate-800">
-                                    <CardContent className="p-4 flex items-center gap-4">
-                                        <div className="h-10 w-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
-                                            <Users className="h-5 w-5 text-slate-500" />
-                                        </div>
-                                        <div className="flex-1">
-                                            <p className="font-semibold text-slate-900 dark:text-white">{group.name}</p>
-                                            <p className="text-xs text-slate-500">Group</p>
-                                        </div>
-                                        {/* Future: Add 'View Group' logic */}
-                                    </CardContent>
-                                </Card>
+                                <Link key={group.id} href={`/groups/${group.id}`} className="block">
+                                    <Card className="border-slate-200 dark:border-slate-800 hover:border-green-500 dark:hover:border-green-500 transition-colors">
+                                        <CardContent className="p-4 flex items-center gap-4">
+                                            <div className="h-10 w-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
+                                                <Users className="h-5 w-5 text-slate-500" />
+                                            </div>
+                                            <div className="flex-1">
+                                                <p className="font-semibold text-slate-900 dark:text-white">{group.name}</p>
+                                                <p className="text-xs text-slate-500">Group</p>
+                                            </div>
+                                            <Button variant="ghost" size="icon" className="text-slate-400">
+                                                <span className="sr-only">View</span>
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-chevron-right w-4 h-4"><path d="m9 18 6-6-6-6" /></svg>
+                                            </Button>
+                                        </CardContent>
+                                    </Card>
+                                </Link>
                             ))
                         )}
                     </TabsContent>
