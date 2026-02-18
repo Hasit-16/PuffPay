@@ -2,67 +2,77 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 
-export async function updateAvatar(formData: FormData) {
+export async function updateProfile(formData: FormData) {
     const supabase = await createClient();
     const {
         data: { user },
     } = await supabase.auth.getUser();
 
-    if (!user) {
-        throw new Error("Unauthorized");
-    }
+    if (!user) throw new Error("Unauthorized");
 
-    const file = formData.get("file") as File;
-    if (!file) {
-        return { error: "No file provided" };
-    }
+    const username = formData.get("username") as string;
+    const avatar_url = formData.get("avatar_url") as string;
 
-    // validate file type/size if needed (simplified for now)
-    if (file.size > 2 * 1024 * 1024) {
-        return { error: "File size must be less than 2MB" };
-    }
+    // Simple validation
+    if (!username || username.length < 3) return { error: "Username must be at least 3 chars" };
 
-    const fileExt = file.name.split(".").pop();
-    const filePath = `${user.id}/avatar.${fileExt}`;
-
-    // Upload to Supabase Storage
-    const { error: uploadError } = await supabase.storage
-        .from("avatars")
-        .upload(filePath, file, { upsert: true });
-
-    if (uploadError) {
-        console.error("Upload error:", uploadError);
-        return { error: "Failed to upload image" };
-    }
-
-    // Get Public URL
-    const { data: { publicUrl } } = supabase.storage
-        .from("avatars")
-        .getPublicUrl(filePath);
-
-    // Update Profile
-    // Force a cache bust query param to ensure UI updates immediately
-    const publicUrlWithTimestamp = `${publicUrl}?t=${new Date().getTime()}`;
-
-    const { error: updateError } = await supabase
+    const { error } = await supabase
         .from("profiles")
-        .update({ avatar_url: publicUrlWithTimestamp })
+        .update({ username, avatar_url })
         .eq("id", user.id);
 
-    if (updateError) {
-        console.error("Profile update error:", updateError);
-        return { error: "Failed to update profile" };
+    if (error) {
+        return { error: error.message };
     }
 
     revalidatePath("/profile");
-    revalidatePath("/dashboard");
+    revalidatePath("/dashboard"); // Sidebar avatar might change
     return { success: true };
 }
 
-export async function signOut() {
+export async function deactivateAccount() {
     const supabase = await createClient();
-    await supabase.auth.signOut();
-    redirect("/login");
+    const {
+        data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) throw new Error("Unauthorized");
+
+    // Deleting profile row.
+    // Assuming DB has ON DELETE CASCADE for relationships to avoid foreign key errors,
+    // otherwise this will fail if user has friendships/transactions.
+    const { error } = await supabase
+        .from("profiles")
+        .delete()
+        .eq("id", user.id);
+
+    if (error) {
+        console.error("Deactivate error:", error);
+        return { error: error.message };
+    }
+
+    return { success: true };
+}
+
+export async function getProfile() {
+    const supabase = await createClient();
+    const {
+        data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) return null;
+
+    const { data } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", user.id)
+        .single();
+
+    if (!data) return null;
+
+    return {
+        ...data,
+        email: user.email
+    };
 }
