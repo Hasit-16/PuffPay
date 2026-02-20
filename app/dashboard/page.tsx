@@ -4,6 +4,7 @@ import TopBar from "@/components/layout/TopBar";
 import BottomNav from "@/components/layout/BottomNav";
 import BalanceCard from "@/components/dashboard/BalanceCard";
 import DashboardClientView from "./DashboardClientView";
+import DashboardGreeting from "@/components/dashboard/DashboardGreeting";
 import { getDashboardData } from "./actions";
 
 export default async function Dashboard() {
@@ -15,7 +16,7 @@ export default async function Dashboard() {
         return <div className="p-4 text-center text-red-500">Failed to load data. Please log in.</div>;
     }
 
-    const { userBalance, totalToPay, totalToReceive, friendList } = data;
+    const { username, userBalance, totalToPay, totalToReceive, friendList } = data;
 
     return (
         <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-20">
@@ -23,6 +24,7 @@ export default async function Dashboard() {
             <TopBar />
 
             <main className="px-4 py-6 space-y-8">
+                <DashboardGreeting username={username} />
                 {/* 2. Balance Card */}
                 <section>
                     <BalanceCard

@@ -14,6 +14,7 @@ export interface FriendWithBalance {
 }
 
 export interface DashboardData {
+    username: string;
     userBalance: number;
     totalToPay: number;
     totalToReceive: number;
@@ -33,6 +34,9 @@ export async function getDashboardData(): Promise<DashboardData | null> {
     }
 
     const userId = user.id;
+
+    const { data: profile } = await supabase.from('profiles').select('username').eq('id', userId).single();
+    const username = profile?.username || "User";
 
     // 2. Fetch Friends (Accepted only)
     // We need to get the profile of the *other* person in the friendship
@@ -54,7 +58,7 @@ export async function getDashboardData(): Promise<DashboardData | null> {
     if (friendsError) {
         console.error("Error fetching friends:", friendsError);
         // Return empty data on error to avoid crashing the page, or handle differently
-        return { userBalance: 0, totalToPay: 0, totalToReceive: 0, friendList: [] };
+        return { username, userBalance: 0, totalToPay: 0, totalToReceive: 0, friendList: [] };
     }
 
     // 3. Fetch Transactions (Where user is involved)
@@ -66,7 +70,7 @@ export async function getDashboardData(): Promise<DashboardData | null> {
 
     if (transactionsError) {
         console.error("Error fetching transactions:", transactionsError);
-        return { userBalance: 0, totalToPay: 0, totalToReceive: 0, friendList: [] };
+        return { username, userBalance: 0, totalToPay: 0, totalToReceive: 0, friendList: [] };
     }
 
     const transactions = transactionsData as Transaction[];
@@ -145,6 +149,7 @@ export async function getDashboardData(): Promise<DashboardData | null> {
     });
 
     return {
+        username,
         userBalance: netBalance,
         totalToPay,
         totalToReceive,
