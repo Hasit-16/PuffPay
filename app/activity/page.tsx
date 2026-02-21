@@ -4,6 +4,8 @@ import { getActivityLog } from "./actions";
 import { ArrowUpRight } from "lucide-react";
 import ActivityItemRow from "@/components/activity/ActivityItemRow";
 import ExportButton from "@/components/activity/ExportButton";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 export const dynamic = 'force-dynamic';
 
@@ -18,7 +20,12 @@ export default async function ActivityPage() {
             <main className="px-4 py-6">
                 <div className="flex items-center justify-between mb-6">
                     <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Activity</h1>
-                    {hasActivity && <ExportButton transactions={Object.values(groupedActivity).flat()} />}
+                    <div className="flex items-center gap-2">
+                        <Button asChild variant="outline" className="gap-2">
+                            <Link href="/analytics">📈 View Analytics</Link>
+                        </Button>
+                        {hasActivity && <ExportButton transactions={Object.values(groupedActivity).flat()} />}
+                    </div>
                 </div>
 
                 {!hasActivity ? (

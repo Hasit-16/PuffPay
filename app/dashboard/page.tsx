@@ -5,6 +5,7 @@ import BottomNav from "@/components/layout/BottomNav";
 import BalanceCard from "@/components/dashboard/BalanceCard";
 import DashboardClientView from "./DashboardClientView";
 import DashboardGreeting from "@/components/dashboard/DashboardGreeting";
+import PuffScoreWidget from "@/components/dashboard/PuffScoreWidget";
 import { getDashboardData } from "./actions";
 
 export default async function Dashboard() {
@@ -25,6 +26,9 @@ export default async function Dashboard() {
 
             <main className="px-4 py-6 space-y-8">
                 <DashboardGreeting username={username} />
+
+                <PuffScoreWidget friends={friendList} />
+
                 {/* 2. Balance Card */}
                 <section>
                     <BalanceCard

@@ -3,6 +3,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { Friendship, Transaction, Profile } from "@/types";
+import { calculatePuffScore } from "@/utils/puffScore";
 
 export interface FriendWithBalance {
     id: string; // The friend's profile ID
@@ -11,6 +12,8 @@ export interface FriendWithBalance {
     balance: number; // + means they owe you, - means you owe them
     is_favorite: boolean;
     hasPendingApproval: boolean;
+    puffScore: number;
+    puffBadge: string;
 }
 
 export interface DashboardData {
@@ -137,13 +140,18 @@ export async function getDashboardData(): Promise<DashboardData | null> {
         const otherProfile = f.friend;
 
         if (otherProfile) {
+            const mutualTransactions = transactions.filter(t => t.payer_id === otherProfile.id || t.borrower_id === otherProfile.id);
+            const { score, badge } = calculatePuffScore(mutualTransactions, otherProfile.id);
+
             friendList.push({
                 id: otherProfile.id,
                 name: otherProfile.username || "Unknown",
                 avatar: otherProfile.avatar_url || "",
                 balance: friendBalances.get(otherProfile.id) || 0,
                 is_favorite: f.is_favorite || false,
-                hasPendingApproval: pendingApprovals.has(otherProfile.id)
+                hasPendingApproval: pendingApprovals.has(otherProfile.id),
+                puffScore: score,
+                puffBadge: badge
             });
         }
     });

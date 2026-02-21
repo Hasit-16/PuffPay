@@ -2,6 +2,7 @@
 "use client";
 
 import { useState, Suspense } from "react";
+import Image from "next/image";
 import { login, signup } from "./actions";
 import { User, Mail, Lock, Loader2 } from "lucide-react";
 import { useSearchParams } from "next/navigation";
@@ -29,8 +30,9 @@ function LoginForm() {
         <div className="w-full max-w-md bg-white dark:bg-slate-900 rounded-xl shadow-2xl overflow-hidden border border-slate-800">
 
             {/* Header */}
-            <div className="p-6 text-center border-b border-slate-800 bg-slate-900">
-                <h1 className="text-2xl font-bold text-white mb-2">PuffPay</h1>
+            <div className="p-6 text-center border-b border-slate-800 bg-slate-900 flex flex-col items-center">
+                <Image src="/icons/android-chrome-192x192.png" width={100} height={100} alt="PuffPay Logo" className="mx-auto mb-6" />
+                <h1 className="text-2xl font-bold text-white mb-2">Login to PuffPay</h1>
                 <p className="text-slate-400 text-sm">
                     {mode === "login"
                         ? "Welcome back! Login to your account."
@@ -43,8 +45,8 @@ function LoginForm() {
                 <button
                     onClick={() => setMode("login")}
                     className={`flex-1 py-3 text-sm font-medium transition-colors ${mode === "login"
-                            ? "bg-slate-800 text-white border-b-2 border-green-500"
-                            : "text-slate-400 hover:text-white"
+                        ? "bg-slate-800 text-white border-b-2 border-green-500"
+                        : "text-slate-400 hover:text-white"
                         }`}
                 >
                     Login
@@ -52,8 +54,8 @@ function LoginForm() {
                 <button
                     onClick={() => setMode("signup")}
                     className={`flex-1 py-3 text-sm font-medium transition-colors ${mode === "signup"
-                            ? "bg-slate-800 text-white border-b-2 border-green-500"
-                            : "text-slate-400 hover:text-white"
+                        ? "bg-slate-800 text-white border-b-2 border-green-500"
+                        : "text-slate-400 hover:text-white"
                         }`}
                 >
                     Sign Up

@@ -71,7 +71,7 @@ export async function approveSettlement(transactionId: string) {
 
     const { error } = await supabase
         .from("transactions")
-        .update({ status: 'settled' }) // Using 'settled' as per new plan
+        .update({ status: 'settled', settled_at: new Date().toISOString() }) // Updated to set settled_at
         .eq("id", transactionId);
 
     if (error) {
@@ -157,7 +157,7 @@ export async function approveAllSettlements(friendId: string) {
 
     const { error } = await supabase
         .from("transactions")
-        .update({ status: 'settled' })
+        .update({ status: 'settled', settled_at: new Date().toISOString() })
         .eq("payer_id", user.id) // I am the Lender approving
         .eq("borrower_id", friendId)
         .eq("status", 'confirming');
