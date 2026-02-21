@@ -25,7 +25,7 @@ export interface AnalyticsPayload {
 }
 
 // Simple helper to derive category from description
-export function deriveCategory(desc: string | null): string {
+function deriveCategory(desc: string | null): string {
     if (!desc) return "Other";
     const Ldesc = desc.toLowerCase();
 
