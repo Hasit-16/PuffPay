@@ -158,25 +158,25 @@ export default function FriendsPage() {
                         {/* Search & Sort Controls */}
                         <div className="flex gap-2 mb-4">
                             <div className="relative flex-1">
-                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
                                 <Input
                                     placeholder="Search friends..."
-                                    className="pl-9 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800"
+                                    className="pl-9 bg-white/5 backdrop-blur-md border border-white/10 text-zinc-50 placeholder:text-zinc-500 focus-visible:ring-1 focus-visible:ring-white/20 rounded-2xl"
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
                                 />
                             </div>
                             <Select value={sortBy} onValueChange={(v: any) => setSortBy(v)}>
-                                <SelectTrigger className="w-[140px] bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800">
+                                <SelectTrigger className="w-[140px] bg-white/5 backdrop-blur-md border border-white/10 text-zinc-300 hover:bg-white/10 rounded-2xl">
                                     <div className="flex items-center gap-2">
-                                        <SortAsc className="h-4 w-4 text-slate-500" />
+                                        <SortAsc className="h-4 w-4 text-zinc-400" />
                                         <SelectValue placeholder="Sort by" />
                                     </div>
                                 </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="name-asc">Name (A-Z)</SelectItem>
-                                    <SelectItem value="name-desc">Name (Z-A)</SelectItem>
-                                    <SelectItem value="newest">Newest</SelectItem>
+                                <SelectContent className="bg-black/90 backdrop-blur-xl border border-white/10 text-zinc-50">
+                                    <SelectItem value="name-asc" className="focus:bg-white/10 focus:text-white">Name (A-Z)</SelectItem>
+                                    <SelectItem value="name-desc" className="focus:bg-white/10 focus:text-white">Name (Z-A)</SelectItem>
+                                    <SelectItem value="newest" className="focus:bg-white/10 focus:text-white">Newest</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
