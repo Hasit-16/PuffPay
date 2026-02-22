@@ -33,7 +33,7 @@ export default function DashboardControls({
     if (!mounted) {
         return (
             <div className="flex flex-col sm:flex-row gap-3 sm:items-center justify-between py-2">
-                <h2 className="text-lg font-bold text-slate-800 dark:text-white">
+                <h2 className="text-lg font-bold text-zinc-50">
                     Friends
                 </h2>
                 <div className="flex items-center gap-2">
@@ -45,7 +45,7 @@ export default function DashboardControls({
 
     return (
         <div className="flex flex-col sm:flex-row gap-3 sm:items-center justify-between py-2">
-            <h2 className="text-lg font-bold text-slate-800 dark:text-white">
+            <h2 className="text-lg font-bold text-zinc-50">
                 Friends
             </h2>
 
@@ -54,32 +54,32 @@ export default function DashboardControls({
                 <button
                     onClick={() => setHideFavorites(!hideFavorites)}
                     className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium transition-all border ${hideFavorites
-                        ? "bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-800"
-                        : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border-transparent hover:bg-slate-200 dark:hover:bg-slate-700"
+                        ? "bg-green-500/20 text-green-400 border-green-500/50"
+                        : "bg-white/5 backdrop-blur-md text-zinc-300 border-white/10 hover:bg-white/10"
                         }`}
                 >
                     <div
                         className={`w-3.5 h-3.5 rounded-sm border flex items-center justify-center transition-colors ${hideFavorites
-                            ? "bg-amber-500 border-amber-500"
-                            : "border-slate-400 dark:border-slate-500"
+                            ? "bg-green-500 border-green-500"
+                            : "border-white/20"
                             }`}
                     >
-                        {hideFavorites && <Check className="w-2.5 h-2.5 text-white" />}
+                        {hideFavorites && <Check className="w-2.5 h-2.5 text-black" />}
                     </div>
                     Hide Favorites
                 </button>
 
                 {/* Sort Dropdown */}
                 <Select value={sortOption} onValueChange={setSortOption}>
-                    <SelectTrigger className="w-[140px] h-8 text-xs bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 rounded-full">
+                    <SelectTrigger className="w-[140px] h-8 text-xs bg-white/5 backdrop-blur-md border border-white/10 text-zinc-300 rounded-full hover:bg-white/10">
                         <SlidersHorizontal className="w-3 h-3 mr-2" />
                         <SelectValue placeholder="Sort by" />
                     </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="newest">Newest</SelectItem>
-                        <SelectItem value="amount_high">Amount (High to Low)</SelectItem>
-                        <SelectItem value="amount_low">Amount (Low to High)</SelectItem>
-                        <SelectItem value="name_asc">Name (A-Z)</SelectItem>
+                    <SelectContent className="bg-black/90 backdrop-blur-xl border border-white/10 text-zinc-50">
+                        <SelectItem value="newest" className="focus:bg-white/10 focus:text-white">Newest</SelectItem>
+                        <SelectItem value="amount_high" className="focus:bg-white/10 focus:text-white">Amount (High to Low)</SelectItem>
+                        <SelectItem value="amount_low" className="focus:bg-white/10 focus:text-white">Amount (Low to High)</SelectItem>
+                        <SelectItem value="name_asc" className="focus:bg-white/10 focus:text-white">Name (A-Z)</SelectItem>
                     </SelectContent>
                 </Select>
             </div>
