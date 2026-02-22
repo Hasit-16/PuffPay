@@ -11,8 +11,6 @@ export interface FriendWithBalance {
     balance: number; // + means they owe you, - means you owe them
     is_favorite: boolean;
     hasPendingApproval: boolean;
-    puffScore: number;
-    puffBadge: string;
 }
 
 export interface DashboardData {
@@ -51,7 +49,7 @@ export async function getDashboardData(): Promise<DashboardData | null> {
       friend_id,
       status,
       is_favorite,
-      friend:profiles!friendships_friend_id_fkey(id, username, avatar_url, puff_score)
+      friend:profiles!friendships_friend_id_fkey(id, username, avatar_url)
     `
         )
         .eq("status", "accepted")
@@ -139,21 +137,13 @@ export async function getDashboardData(): Promise<DashboardData | null> {
         const otherProfile = f.friend;
 
         if (otherProfile) {
-            const score = otherProfile.puff_score ?? 500;
-            let badge = "⚪";
-            if (score >= 800) badge = "💎";
-            else if (score >= 600) badge = "🥇";
-            else if (score >= 400) badge = "🥈";
-
             friendList.push({
                 id: otherProfile.id,
                 name: otherProfile.username || "Unknown",
                 avatar: otherProfile.avatar_url || "",
                 balance: friendBalances.get(otherProfile.id) || 0,
                 is_favorite: f.is_favorite || false,
-                hasPendingApproval: pendingApprovals.has(otherProfile.id),
-                puffScore: score,
-                puffBadge: badge
+                hasPendingApproval: pendingApprovals.has(otherProfile.id)
             });
         }
     });

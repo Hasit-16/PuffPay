@@ -5,7 +5,6 @@ export interface Profile {
     email: string | null;
     avatar_url: string | null;
     trust_score: number;
-    puff_score: number; // Added for global score calculation
     created_at: string;
 }
 

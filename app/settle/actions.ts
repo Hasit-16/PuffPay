@@ -80,44 +80,6 @@ export async function approveSettlement(transactionId: string) {
         throw new Error("Failed to approve settlement");
     }
 
-    // Phase 19.5: Update borrower's global puff_score based on settlement time
-    if (transaction.borrower_id) {
-        const createdAt = new Date(transaction.created_at);
-        let pointsToAdd = 0;
-
-        // Same calendar day
-        if (
-            createdAt.getFullYear() === settledAt.getFullYear() &&
-            createdAt.getMonth() === settledAt.getMonth() &&
-            createdAt.getDate() === settledAt.getDate()
-        ) {
-            pointsToAdd = 15;
-        } else {
-            const daysDiff = (settledAt.getTime() - createdAt.getTime()) / (1000 * 3600 * 24);
-            if (daysDiff <= 3) {
-                pointsToAdd = 5;
-            } else if (daysDiff > 7) {
-                pointsToAdd = -10;
-            }
-        }
-
-        if (pointsToAdd !== 0) {
-            const { data: profile } = await supabase
-                .from('profiles')
-                .select('puff_score')
-                .eq('id', transaction.borrower_id)
-                .single();
-
-            if (profile) {
-                const newScore = (profile.puff_score || 500) + pointsToAdd;
-                await supabase
-                    .from('profiles')
-                    .update({ puff_score: newScore })
-                    .eq('id', transaction.borrower_id);
-            }
-        }
-    }
-
     revalidatePath("/dashboard");
     revalidatePath("/activity");
 
@@ -213,47 +175,6 @@ export async function approveAllSettlements(friendId: string) {
     if (error) {
         console.error("Error approving all settlements:", error);
         throw new Error("Failed to approve settlements");
-    }
-
-    // Phase 19.5: Update borrower's global puff_score based on settlement times of ALL approved transactions
-    if (transactionsToApprove && transactionsToApprove.length > 0) {
-        let totalPointsToAdd = 0;
-
-        transactionsToApprove.forEach(tx => {
-            const createdAt = new Date(tx.created_at);
-
-            // Same calendar day
-            if (
-                createdAt.getFullYear() === settledAt.getFullYear() &&
-                createdAt.getMonth() === settledAt.getMonth() &&
-                createdAt.getDate() === settledAt.getDate()
-            ) {
-                totalPointsToAdd += 15;
-            } else {
-                const daysDiff = (settledAt.getTime() - createdAt.getTime()) / (1000 * 3600 * 24);
-                if (daysDiff <= 3) {
-                    totalPointsToAdd += 5;
-                } else if (daysDiff > 7) {
-                    totalPointsToAdd -= 10;
-                }
-            }
-        });
-
-        if (totalPointsToAdd !== 0) {
-            const { data: profile } = await supabase
-                .from('profiles')
-                .select('puff_score')
-                .eq('id', friendId)
-                .single();
-
-            if (profile) {
-                const newScore = (profile.puff_score || 500) + totalPointsToAdd;
-                await supabase
-                    .from('profiles')
-                    .update({ puff_score: newScore })
-                    .eq('id', friendId);
-            }
-        }
     }
 
     revalidatePath("/dashboard");
