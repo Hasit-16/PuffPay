@@ -100,7 +100,7 @@ export default function ActivityItemRow({ item }: { item: ActivityItem }) {
 
     return (
         <>
-            <div className="flex items-center justify-between p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-800 shadow-sm">
+            <div className="flex items-center justify-between bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-4 mb-3">
                 {/* Left Side: Avatar + Info */}
                 <div className="flex items-center gap-3">
                     <div className="relative">

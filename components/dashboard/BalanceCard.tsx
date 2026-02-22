@@ -12,7 +12,7 @@ export default function BalanceCard({ netBalance, toPay, toReceive }: BalanceCar
     const isPositive = netBalance >= 0;
 
     return (
-        <Card className="bg-gradient-to-br from-slate-900 to-slate-800 border-none text-white shadow-xl overflow-hidden relative">
+        <Card className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-[2rem] p-6 shadow-2xl text-white relative overflow-hidden">
             {/* Decorative background blobs */}
             <div className={`absolute -right-10 -top-10 w-40 h-40 rounded-full blur-[60px] opacity-20 ${isPositive ? 'bg-green-500' : 'bg-red-500'}`}></div>
 
@@ -27,7 +27,7 @@ export default function BalanceCard({ netBalance, toPay, toReceive }: BalanceCar
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
-                    <div className="bg-white/5 rounded-xl p-3 backdrop-blur-sm border border-white/10">
+                    <div className="bg-white/5 border border-white/10 rounded-2xl p-4">
                         <div className="flex items-center gap-2 mb-1 text-red-400">
                             <div className="p-1 bg-red-500/10 rounded-full">
                                 <ArrowUpRight size={14} />
@@ -37,7 +37,7 @@ export default function BalanceCard({ netBalance, toPay, toReceive }: BalanceCar
                         <p className="text-lg font-bold text-white">₹{(Math.round(toPay * 100) / 100).toFixed(2)}</p>
                     </div>
 
-                    <div className="bg-white/5 rounded-xl p-3 backdrop-blur-sm border border-white/10">
+                    <div className="bg-white/5 border border-white/10 rounded-2xl p-4">
                         <div className="flex items-center gap-2 mb-1 text-green-400">
                             <div className="p-1 bg-green-500/10 rounded-full">
                                 <ArrowDownLeft size={14} />

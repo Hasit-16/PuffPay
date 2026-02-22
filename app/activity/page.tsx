@@ -40,7 +40,7 @@ export default async function ActivityPage() {
                     <div className="space-y-6">
                         {Object.entries(groupedActivity).map(([dateLabel, items]) => (
                             <div key={dateLabel}>
-                                <h3 className="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-3 px-1 sticky top-16 bg-slate-50 dark:bg-slate-950 z-10 py-1">
+                                <h3 className="text-zinc-400 font-semibold tracking-wider text-sm mb-3 sticky top-16 z-10 py-1 bg-transparent backdrop-blur-sm">
                                     {dateLabel}
                                 </h3>
                                 <div className="space-y-3">

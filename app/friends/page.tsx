@@ -198,7 +198,7 @@ export default function FriendsPage() {
                             </div>
                         ) : (
                             processedFriends.map(friend => (
-                                <Card key={friend.id} className="border-slate-200 dark:border-slate-800">
+                                <Card key={friend.id} className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl mb-3 transition-all hover:bg-white/10 active:scale-[0.98]">
                                     <CardContent className="p-4 flex items-center gap-4">
                                         <Avatar>
                                             <AvatarImage src={friend.avatar_url || ""} />
@@ -206,7 +206,7 @@ export default function FriendsPage() {
                                         </Avatar>
                                         <div className="flex-1">
                                             <div className="flex items-center gap-2">
-                                                <p className="font-semibold text-slate-900 dark:text-white">{friend.username}</p>
+                                                <p className="font-semibold text-zinc-50">{friend.username}</p>
                                                 <button
                                                     onClick={() => handleToggleFavorite(friend)}
                                                     className="focus:outline-none"
@@ -243,13 +243,13 @@ export default function FriendsPage() {
                         ) : (
                             groups.map(group => (
                                 <Link key={group.id} href={`/groups/${group.id}`} className="block">
-                                    <Card className="border-slate-200 dark:border-slate-800 hover:border-green-500 dark:hover:border-green-500 transition-colors">
+                                    <Card className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl mb-3 transition-all hover:bg-white/10 active:scale-[0.98]">
                                         <CardContent className="p-4 flex items-center gap-4">
                                             <div className="h-10 w-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
                                                 <Users className="h-5 w-5 text-slate-500" />
                                             </div>
                                             <div className="flex-1">
-                                                <p className="font-semibold text-slate-900 dark:text-white">{group.name}</p>
+                                                <p className="font-semibold text-zinc-50">{group.name}</p>
                                                 <p className="text-xs text-slate-500">Group</p>
                                             </div>
                                             <Button variant="ghost" size="icon" className="text-slate-400">
@@ -273,7 +273,7 @@ export default function FriendsPage() {
                                 <p className="text-sm text-slate-400 italic px-1">No pending requests.</p>
                             ) : (
                                 requests.map(req => (
-                                    <Card key={req.id} className="border-slate-200 dark:border-slate-800 mb-3">
+                                    <Card key={req.id} className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl mb-3 transition-all hover:bg-white/10 active:scale-[0.98]">
                                         <CardContent className="p-4 flex items-center justify-between">
                                             <div className="flex items-center gap-3">
                                                 <Avatar>
@@ -281,7 +281,7 @@ export default function FriendsPage() {
                                                     <AvatarFallback>{req.sender.username?.charAt(0).toUpperCase()}</AvatarFallback>
                                                 </Avatar>
                                                 <div>
-                                                    <p className="font-semibold text-sm">{req.sender.username}</p>
+                                                    <p className="font-semibold text-zinc-50 text-sm">{req.sender.username}</p>
                                                     <p className="text-xs text-slate-500">Sent you a request</p>
                                                 </div>
                                             </div>
@@ -304,7 +304,7 @@ export default function FriendsPage() {
                             <div>
                                 <h3 className="text-sm font-semibold text-slate-500 mb-3 px-1 mt-6">SENT</h3>
                                 {sentRequests.map(req => (
-                                    <Card key={req.id} className="border-slate-200 dark:border-slate-800 mb-3 opacity-80">
+                                    <Card key={req.id} className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl mb-3 transition-all hover:bg-white/10 active:scale-[0.98] opacity-80">
                                         <CardContent className="p-4 flex items-center justify-between">
                                             <div className="flex items-center gap-3">
                                                 <Avatar>
@@ -312,7 +312,7 @@ export default function FriendsPage() {
                                                     <AvatarFallback>{req.recipient.username?.charAt(0).toUpperCase()}</AvatarFallback>
                                                 </Avatar>
                                                 <div>
-                                                    <p className="font-semibold text-sm">{req.recipient.username}</p>
+                                                    <p className="font-semibold text-zinc-50 text-sm">{req.recipient.username}</p>
                                                     <p className="text-xs text-slate-500">Waiting for approval</p>
                                                 </div>
                                             </div>
