@@ -350,6 +350,7 @@ export default function AddExpensePage() {
                                                                 type="number"
                                                                 value={exactAmounts[member.id] || ""}
                                                                 onChange={(e) => handleExactAmountChange(member.id, e.target.value)}
+                                                                onFocus={(e) => e.target.select()}
                                                                 className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-md py-1 pl-5 pr-2 text-sm text-right focus:ring-1 focus:ring-green-500 outline-none"
                                                                 placeholder="0"
                                                             />

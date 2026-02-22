@@ -21,7 +21,8 @@ export default function FriendRow({ id, name, avatar, amount, hasPendingApproval
     const handleNudge = (e: React.MouseEvent) => {
         e.preventDefault();
         e.stopPropagation();
-        const text = encodeURIComponent(`Hey ${name}! Just a quick reminder that you owe me ₹${Math.abs(amount)} on PuffPay. 💸 Settle up whenever you can!`);
+        const formattedAmount = (Math.round(Math.abs(amount) * 100) / 100).toFixed(2);
+        const text = encodeURIComponent(`Hey ${name}! Just a quick reminder that you owe me ₹${formattedAmount} on PuffPay. 💸 Settle up whenever you can!`);
         window.open(`https://wa.me/?text=${text}`, '_blank');
     };
 
@@ -56,7 +57,7 @@ export default function FriendRow({ id, name, avatar, amount, hasPendingApproval
                             <Badge variant="secondary" className="bg-slate-100 text-slate-500 font-normal">Settled</Badge>
                         ) : (
                             <span className={`text-lg font-bold tabular-nums ${isOwed ? 'text-green-600' : 'text-red-500'}`}>
-                                {isOwed ? '+' : '-'}₹{Math.abs(amount)}
+                                {isOwed ? '+' : '-'}₹{(Math.round(Math.abs(amount) * 100) / 100).toFixed(2)}
                             </span>
                         )}
                         {hasPendingApproval && (

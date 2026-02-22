@@ -20,9 +20,9 @@ export default async function ActivityPage() {
             <main className="px-4 py-6">
                 <div className="flex items-center justify-between mb-6">
                     <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Activity</h1>
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center justify-end gap-2">
                         <Button asChild variant="outline" className="gap-2">
-                            <Link href="/analytics">📈 View Analytics</Link>
+                            <Link href="/analytics">📈 <span className="hidden sm:inline">View </span>Analytics</Link>
                         </Button>
                         {hasActivity && <ExportButton transactions={Object.values(groupedActivity).flat()} />}
                     </div>

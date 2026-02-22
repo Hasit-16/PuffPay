@@ -22,7 +22,7 @@ export default function BalanceCard({ netBalance, toPay, toReceive }: BalanceCar
                         Net Balance
                     </p>
                     <h2 className={`text-4xl font-black tracking-tighter ${isPositive ? 'text-green-400' : 'text-red-400'}`}>
-                        {isPositive ? "+" : "-"}₹{Math.abs(netBalance).toFixed(2)}
+                        {isPositive ? "+" : "-"}₹{(Math.round(Math.abs(netBalance) * 100) / 100).toFixed(2)}
                     </h2>
                 </div>
 
@@ -34,7 +34,7 @@ export default function BalanceCard({ netBalance, toPay, toReceive }: BalanceCar
                             </div>
                             <span className="text-xs font-semibold">You Owe</span>
                         </div>
-                        <p className="text-lg font-bold text-white">₹{toPay.toFixed(0)}</p>
+                        <p className="text-lg font-bold text-white">₹{(Math.round(toPay * 100) / 100).toFixed(2)}</p>
                     </div>
 
                     <div className="bg-white/5 rounded-xl p-3 backdrop-blur-sm border border-white/10">
@@ -44,7 +44,7 @@ export default function BalanceCard({ netBalance, toPay, toReceive }: BalanceCar
                             </div>
                             <span className="text-xs font-bold">Owed to You</span>
                         </div>
-                        <p className="text-lg font-bold text-white">₹{toReceive.toFixed(0)}</p>
+                        <p className="text-lg font-bold text-white">₹{(Math.round(toReceive * 100) / 100).toFixed(2)}</p>
                     </div>
                 </div>
             </CardContent>
