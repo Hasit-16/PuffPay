@@ -14,7 +14,7 @@ export default async function ActivityPage() {
     const hasActivity = Object.keys(groupedActivity).length > 0;
 
     return (
-        <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-20">
+        <div className="min-h-screen bg-transparent pb-20">
             <TopBar />
 
             <main className="px-4 py-6">

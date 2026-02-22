@@ -17,8 +17,8 @@ export default function BottomNav() {
     ];
 
     return (
-        <nav className="fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800 pb-safe z-50">
-            <div className="flex justify-around items-center h-16">
+        <nav className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[92%] max-w-md rounded-full z-50 glass-panel bg-[#18181B]/80 backdrop-blur-md border border-white/10">
+            <div className="flex justify-between items-center px-6 py-3">
                 {navItems.map((item) => {
                     const Icon = item.icon;
                     const isActive = pathname === item.href;
@@ -26,33 +26,23 @@ export default function BottomNav() {
                     if (item.isMain) {
                         return (
                             <Link key={item.name} href={item.href}>
-                                <div className="flex flex-col items-center justify-center -mt-6">
-                                    <div className="bg-green-500 rounded-full p-4 shadow-lg ring-4 ring-white dark:ring-slate-950">
-                                        <Icon className="text-white w-7 h-7" />
+                                <div className="flex items-center justify-center">
+                                    <div className="bg-green-500 rounded-full p-3 shadow-[0_0_15px_rgba(34,197,94,0.4)]">
+                                        <Icon className="text-white w-6 h-6" />
                                     </div>
-                                    <span className="text-xs font-semibold text-slate-500 mt-1">
-                                        {item.name}
-                                    </span>
                                 </div>
                             </Link>
                         );
                     }
 
                     return (
-                        <Link key={item.name} href={item.href} className="w-full h-full flex items-center justify-center">
-                            <div className="flex flex-col items-center justify-center gap-1">
-                                <Icon
-                                    className={`w-6 h-6 transition-colors ${isActive
-                                        ? "text-green-500"
-                                        : "text-slate-400 dark:text-slate-500"
-                                        }`}
-                                />
-                                <span
-                                    className={`text-[10px] font-medium ${isActive
-                                        ? "text-green-500"
-                                        : "text-slate-400 dark:text-slate-500"
-                                        }`}
-                                >
+                        <Link key={item.name} href={item.href} className="flex items-center justify-center">
+                            <div className={`flex flex-col items-center justify-center gap-1 transition-all ${isActive
+                                    ? "bg-white/10 text-green-400 rounded-full px-4 py-2"
+                                    : "text-slate-400 dark:text-slate-500 py-2"
+                                }`}>
+                                <Icon className="w-5 h-5" />
+                                <span className="text-[10px] font-medium">
                                     {item.name}
                                 </span>
                             </div>

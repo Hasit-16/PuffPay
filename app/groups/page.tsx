@@ -108,8 +108,8 @@ export default function CreateGroupPage() {
                                         key={friend.id}
                                         onClick={() => toggleFriend(friend.id)}
                                         className={`flex items-center p-3 rounded-xl border cursor-pointer transition-all ${isSelected
-                                                ? "bg-indigo-50 dark:bg-indigo-900/20 border-indigo-500 dark:border-indigo-400"
-                                                : "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700"
+                                            ? "bg-indigo-50 dark:bg-indigo-900/20 border-indigo-500 dark:border-indigo-400"
+                                            : "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700"
                                             }`}
                                     >
                                         <Avatar className="h-10 w-10 mr-3 border border-slate-200 dark:border-slate-700">

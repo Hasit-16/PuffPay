@@ -19,7 +19,7 @@ export default async function Dashboard() {
     const { username, userBalance, totalToPay, totalToReceive, friendList } = data;
 
     return (
-        <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-20">
+        <div className="min-h-screen bg-transparent pb-20">
             {/* 1. Sticky Top Bar */}
             <TopBar />
 
