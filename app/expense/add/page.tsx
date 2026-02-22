@@ -158,24 +158,24 @@ export default function AddExpensePage() {
     const isExactValid = Math.abs(difference) < 0.01; // Float tolerance
 
     return (
-        <div className="min-h-screen bg-slate-50 dark:bg-slate-950 px-4 py-6">
+        <div className="min-h-screen bg-transparent px-4 py-6">
             {/* Header */}
             <div className="flex items-center mb-6">
                 <Link href="/dashboard">
-                    <Button variant="ghost" size="icon" className="-ml-2">
-                        <ArrowLeft className="w-6 h-6 text-slate-600 dark:text-slate-400" />
+                    <Button variant="ghost" size="icon" className="-ml-2 hover:bg-white/10">
+                        <ArrowLeft className="w-6 h-6 text-zinc-50" />
                     </Button>
                 </Link>
-                <h1 className="text-xl font-semibold ml-2 text-slate-900 dark:text-white">Add Expense</h1>
+                <h1 className="text-xl font-semibold ml-2 text-zinc-50">Add Expense</h1>
             </div>
 
             {/* Mode Toggle */}
-            <div className="flex p-1 bg-slate-200 dark:bg-slate-800 rounded-xl mb-6 max-w-md mx-auto">
+            <div className="flex p-1 bg-black/40 rounded-2xl mb-6 max-w-md mx-auto border border-white/5">
                 <button
                     onClick={() => setMode("individual")}
-                    className={`flex-1 flex items-center justify-center py-2 rounded-lg text-sm font-medium transition-all ${mode === "individual"
-                        ? "bg-white dark:bg-slate-700 shadow-sm text-slate-900 dark:text-white"
-                        : "text-slate-500 dark:text-slate-400 hover:text-slate-700"
+                    className={`flex-1 flex items-center justify-center py-2 rounded-xl text-sm font-medium transition-all ${mode === "individual"
+                        ? "bg-white/10 text-zinc-50 shadow-sm"
+                        : "text-zinc-500 hover:text-zinc-300"
                         }`}
                 >
                     <User className="w-4 h-4 mr-2" />
@@ -183,9 +183,9 @@ export default function AddExpensePage() {
                 </button>
                 <button
                     onClick={() => setMode("group")}
-                    className={`flex-1 flex items-center justify-center py-2 rounded-lg text-sm font-medium transition-all ${mode === "group"
-                        ? "bg-white dark:bg-slate-700 shadow-sm text-slate-900 dark:text-white"
-                        : "text-slate-500 dark:text-slate-400 hover:text-slate-700"
+                    className={`flex-1 flex items-center justify-center py-2 rounded-xl text-sm font-medium transition-all ${mode === "group"
+                        ? "bg-white/10 text-zinc-50 shadow-sm"
+                        : "text-zinc-500 hover:text-zinc-300"
                         }`}
                 >
                     <Users className="w-4 h-4 mr-2" />
@@ -193,13 +193,13 @@ export default function AddExpensePage() {
                 </button>
             </div>
 
-            <form action={clientAction} className="space-y-8 max-w-md mx-auto">
+            <form action={clientAction} className="bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl p-6 space-y-8 max-w-md mx-auto">
 
                 {/* Amount Input */}
                 <div className="space-y-2">
-                    <label className="text-sm font-medium text-slate-500 uppercase tracking-wider">Amount</label>
+                    <label className="text-sm font-medium text-zinc-500 uppercase tracking-wider pl-1">Amount</label>
                     <div className="relative">
-                        <span className="absolute left-0 top-1/2 -translate-y-1/2 text-3xl font-bold text-slate-400">₹</span>
+                        <span className="absolute left-5 top-1/2 -translate-y-1/2 text-3xl font-bold text-zinc-400">₹</span>
                         <input
                             ref={amountInputRef}
                             type="number"
@@ -207,7 +207,7 @@ export default function AddExpensePage() {
                             value={amount}
                             onChange={(e) => setAmount(e.target.value)}
                             placeholder="0"
-                            className="w-full bg-transparent text-5xl font-bold text-slate-900 dark:text-white border-b-2 border-slate-200 dark:border-slate-800 focus:border-green-500 focus:outline-none pl-8 py-2 placeholder:text-slate-200 dark:placeholder:text-slate-800"
+                            className="bg-black/20 border border-white/10 rounded-2xl h-20 w-full text-4xl font-bold text-zinc-50 placeholder:text-zinc-600 focus-visible:ring-1 focus-visible:ring-green-500 focus-visible:border-green-500 transition-all outline-none pl-12 py-2"
                             required
                             min="1"
                             step="any"
@@ -219,24 +219,24 @@ export default function AddExpensePage() {
                 {mode === "individual" ? (
                     /* INDIVIDUAL MODE */
                     <div className="space-y-4">
-                        <div className="flex items-center justify-between p-3 bg-white dark:bg-slate-900 rounded-lg border border-slate-100 dark:border-slate-800">
-                            <span className="text-slate-500">Paid by</span>
-                            <span className="font-medium text-slate-900 dark:text-white">You</span>
+                        <div className="flex items-center justify-between p-4 bg-white/5 backdrop-blur-md rounded-2xl border border-white/10">
+                            <span className="text-zinc-400">Paid by</span>
+                            <span className="font-medium text-zinc-50">You</span>
                         </div>
 
                         <div className="space-y-2">
-                            <label className="text-sm font-medium text-slate-500">Split with</label>
+                            <label className="text-sm font-medium text-zinc-500 pl-1">Split with</label>
                             {loading ? (
-                                <div className="h-12 w-full bg-slate-100 dark:bg-slate-800 animate-pulse rounded-lg" />
+                                <div className="h-16 w-full bg-black/20 animate-pulse rounded-2xl border border-white/10" />
                             ) : (
                                 <select
                                     name="borrower_id"
-                                    className="w-full p-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg text-slate-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none appearance-none"
+                                    className="w-full h-16 px-4 bg-black/20 border border-white/10 rounded-2xl text-lg text-zinc-50 focus:ring-1 focus:ring-green-500 focus:border-green-500 outline-none appearance-none"
                                     required
                                 >
-                                    <option value="" disabled>Select a friend</option>
+                                    <option value="" disabled className="text-zinc-900">Select a friend</option>
                                     {friends.map(friend => (
-                                        <option key={friend.id} value={friend.id}>
+                                        <option key={friend.id} value={friend.id} className="text-zinc-900">
                                             {friend.username}
                                         </option>
                                     ))}
@@ -249,23 +249,23 @@ export default function AddExpensePage() {
                     <div className="space-y-6">
                         {/* Group Selector */}
                         <div className="space-y-2">
-                            <label className="text-sm font-medium text-slate-500">Select Group</label>
+                            <label className="text-sm font-medium text-zinc-500 pl-1">Select Group</label>
                             <select
                                 value={selectedGroupId}
                                 onChange={(e) => setSelectedGroupId(e.target.value)}
-                                className="w-full p-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg text-slate-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none appearance-none"
+                                className="w-full h-16 px-4 bg-black/20 border border-white/10 rounded-2xl text-lg text-zinc-50 focus:ring-1 focus:ring-green-500 focus:border-green-500 outline-none appearance-none"
                                 required
                             >
-                                <option value="" disabled>Select a group</option>
+                                <option value="" disabled className="text-zinc-900">Select a group</option>
                                 {groups.map(group => (
-                                    <option key={group.id} value={group.id}>
+                                    <option key={group.id} value={group.id} className="text-zinc-900">
                                         {group.name}
                                     </option>
                                 ))}
                             </select>
 
                             <div className="flex justify-end mt-2">
-                                <Link href="/groups" className="text-xs flex items-center text-green-600 font-medium hover:underline">
+                                <Link href="/groups" className="text-xs flex items-center text-green-500 font-medium hover:underline">
                                     <Plus className="w-3 h-3 mr-1" />
                                     Create new group
                                 </Link>
@@ -276,13 +276,13 @@ export default function AddExpensePage() {
                         {selectedGroupId && (
                             <>
                                 {/* Split Type Toggle */}
-                                <div className="flex p-1 bg-slate-100 dark:bg-slate-800/50 rounded-lg max-w-sm mx-auto mb-4">
+                                <div className="flex p-1 bg-black/40 rounded-2xl max-w-sm mx-auto mb-4 border border-white/5">
                                     <button
                                         type="button"
                                         onClick={() => setSplitType("equal")}
-                                        className={`flex-1 py-1.5 text-xs font-medium rounded-md transition-all ${splitType === "equal"
-                                            ? "bg-white dark:bg-slate-700 shadow-sm text-slate-900 dark:text-white"
-                                            : "text-slate-500 hover:text-slate-700 dark:text-slate-400"
+                                        className={`flex-1 py-2 text-sm font-medium rounded-xl transition-all ${splitType === "equal"
+                                            ? "bg-white/10 text-zinc-50 shadow-sm"
+                                            : "text-zinc-500 hover:text-zinc-300"
                                             }`}
                                     >
                                         = Split Equally
@@ -290,9 +290,9 @@ export default function AddExpensePage() {
                                     <button
                                         type="button"
                                         onClick={() => setSplitType("exact")}
-                                        className={`flex-1 py-1.5 text-xs font-medium rounded-md transition-all ${splitType === "exact"
-                                            ? "bg-white dark:bg-slate-700 shadow-sm text-slate-900 dark:text-white"
-                                            : "text-slate-500 hover:text-slate-700 dark:text-slate-400"
+                                        className={`flex-1 py-2 text-sm font-medium rounded-xl transition-all ${splitType === "exact"
+                                            ? "bg-white/10 text-zinc-50 shadow-sm"
+                                            : "text-zinc-500 hover:text-zinc-300"
                                             }`}
                                     >
                                         ✎ Exact Amounts
@@ -301,26 +301,24 @@ export default function AddExpensePage() {
 
                                 {/* Avatar Row & Inputs */}
                                 <div className="space-y-3">
-                                    <label className="text-sm font-medium text-slate-500">Tap to exclude</label>
-                                    <div className="flex overflow-x-auto pb-2 gap-4">
+                                    <label className="text-sm font-medium text-zinc-500 pl-1">Tap to exclude</label>
+                                    <div className="flex overflow-x-auto pb-4 pt-2 px-2 gap-4">
                                         {selectedGroupMembers.map(member => {
                                             const isIncluded = includedUserIds.includes(member.id);
                                             return (
                                                 <div
                                                     key={member.id}
-                                                    className="flex flex-col items-center space-y-1 cursor-pointer min-w-[64px]"
+                                                    className="flex flex-col items-center space-y-2 cursor-pointer min-w-[72px]"
                                                     onClick={() => toggleMemberInclusion(member.id)}
                                                 >
                                                     <div className="relative">
-                                                        <Avatar className={`h-14 w-14 border-2 transition-all ${isIncluded ? 'border-green-500 shadow-md opacity-100' : 'border-slate-300 opacity-50 grayscale'}`}>
+                                                        <Avatar className={`h-16 w-16 transition-all ${isIncluded ? 'ring-2 ring-green-500 ring-offset-4 ring-offset-[#09090b] opacity-100 scale-105' : 'opacity-40 grayscale border-none'}`}>
                                                             <AvatarImage src={member.avatar_url || ""} />
-                                                            <AvatarFallback>{member.username?.charAt(0)}</AvatarFallback>
+                                                            <AvatarFallback className="bg-white/10 text-zinc-300">{member.username?.charAt(0)}</AvatarFallback>
                                                         </Avatar>
-                                                        <div className={`absolute -top-1 -right-1 h-5 w-5 rounded-full flex items-center justify-center border border-white dark:border-slate-900 ${isIncluded ? 'bg-green-500' : 'bg-red-500'}`}>
-                                                            {isIncluded ? <Check className="w-3 h-3 text-white" /> : <X className="w-3 h-3 text-white" />}
-                                                        </div>
+
                                                     </div>
-                                                    <span className={`text-xs font-medium truncate w-full text-center ${isIncluded ? 'text-slate-900 dark:text-white' : 'text-slate-400'}`}>
+                                                    <span className={`text-xs font-medium truncate w-full text-center ${isIncluded ? 'text-zinc-50' : 'text-zinc-500'}`}>
                                                         {member.username}
                                                     </span>
                                                 </div>
@@ -330,28 +328,28 @@ export default function AddExpensePage() {
 
                                     {/* Exact Amounts Inputs */}
                                     {splitType === "exact" && (
-                                        <div className="space-y-3 mt-4 px-1">
+                                        <div className="space-y-4 mt-4 px-1">
                                             {selectedGroupMembers
                                                 .filter(m => includedUserIds.includes(m.id))
                                                 .map(member => (
                                                     <div key={member.id} className="flex items-center justify-between gap-3">
-                                                        <div className="flex items-center gap-2">
-                                                            <Avatar className="h-8 w-8">
+                                                        <div className="flex items-center gap-3">
+                                                            <Avatar className="h-10 w-10">
                                                                 <AvatarImage src={member.avatar_url || ""} />
-                                                                <AvatarFallback>{member.username?.charAt(0)}</AvatarFallback>
+                                                                <AvatarFallback className="bg-white/10 text-zinc-300">{member.username?.charAt(0)}</AvatarFallback>
                                                             </Avatar>
-                                                            <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                                                            <span className="text-sm font-medium text-zinc-50">
                                                                 {member.username}
                                                             </span>
                                                         </div>
-                                                        <div className="relative w-24">
-                                                            <span className="absolute left-2 top-1/2 -translate-y-1/2 text-slate-400 text-xs">₹</span>
+                                                        <div className="relative w-32">
+                                                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500 font-medium text-sm">₹</span>
                                                             <input
                                                                 type="number"
                                                                 value={exactAmounts[member.id] || ""}
                                                                 onChange={(e) => handleExactAmountChange(member.id, e.target.value)}
                                                                 onFocus={(e) => e.target.select()}
-                                                                className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-md py-1 pl-5 pr-2 text-sm text-right focus:ring-1 focus:ring-green-500 outline-none"
+                                                                className="w-full bg-black/20 border border-white/10 rounded-xl py-2 pl-7 pr-3 text-sm text-right text-zinc-50 focus:ring-1 focus:ring-green-500 focus:border-green-500 outline-none transition-all placeholder:text-zinc-600"
                                                                 placeholder="0"
                                                             />
                                                         </div>
@@ -361,15 +359,15 @@ export default function AddExpensePage() {
                                             {/* Validation Message */}
                                             <div className="pt-2 text-center text-sm font-medium">
                                                 {difference > 0.01 ? (
-                                                    <span className="text-red-500">
+                                                    <span className="text-red-400">
                                                         ₹{difference.toFixed(2)} remaining to allocate
                                                     </span>
                                                 ) : difference < -0.01 ? (
-                                                    <span className="text-red-500">
+                                                    <span className="text-red-400">
                                                         ₹{Math.abs(difference).toFixed(2)} over-allocated!
                                                     </span>
                                                 ) : (
-                                                    <span className="text-green-600 flex items-center justify-center gap-1">
+                                                    <span className="text-green-500 flex items-center justify-center gap-1 drop-shadow-[0_0_8px_rgba(34,197,94,0.4)]">
                                                         <Check className="w-4 h-4" /> Perfectly split!
                                                     </span>
                                                 )}
@@ -379,11 +377,11 @@ export default function AddExpensePage() {
 
                                     {/* Equal Split Message */}
                                     {splitType === "equal" && includedUserIds.length > 0 ? (
-                                        <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg text-center">
-                                            <p className="text-green-700 dark:text-green-300 font-medium text-sm">
+                                        <div className="p-4 bg-white/5 border border-white/10 rounded-2xl text-center backdrop-blur-sm">
+                                            <p className="text-zinc-200 font-medium text-sm">
                                                 Splitting ₹{parsedAmount.toLocaleString()} between {splitCount} people
                                             </p>
-                                            <p className="text-green-600 dark:text-green-400 text-xs mt-1">
+                                            <p className="text-green-400 font-medium text-xs mt-1">
                                                 Since you paid, you'll be owed ₹{splitAmount} from each.
                                             </p>
                                         </div>
@@ -396,33 +394,40 @@ export default function AddExpensePage() {
 
                 {/* Description */}
                 <div className="space-y-3">
-                    <label className="text-sm font-medium text-slate-500">For</label>
+                    <label className="text-sm font-medium text-zinc-500 pl-1">For</label>
                     <Input
                         name="description"
                         placeholder="What's this for?"
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
                         required
-                        className="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800"
+                        className="bg-black/20 border border-white/10 rounded-2xl h-16 text-lg text-zinc-50 placeholder:text-zinc-600 focus-visible:ring-1 focus-visible:ring-green-500 focus-visible:border-green-500 transition-all"
                     />
 
                     {/* Quick Chips */}
-                    <div className="flex flex-wrap gap-2">
-                        {QUICK_CHIPS.map(chip => (
-                            <button
-                                key={chip}
-                                type="button"
-                                onClick={() => handleChipClick(chip.split(" ")[1])}
-                                className="text-xs px-3 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-full text-slate-600 dark:text-slate-300 transition-colors"
-                            >
-                                {chip}
-                            </button>
-                        ))}
+                    <div className="flex flex-wrap gap-2 pt-2">
+                        {QUICK_CHIPS.map(chip => {
+                            const word = chip.split(" ")[1];
+                            const isActive = description === word;
+                            return (
+                                <button
+                                    key={chip}
+                                    type="button"
+                                    onClick={() => handleChipClick(word)}
+                                    className={`transition-colors text-sm ${isActive
+                                            ? "bg-green-500 text-black font-semibold rounded-full px-5 py-2 shadow-[0_0_15px_rgba(34,197,94,0.3)] border-none"
+                                            : "bg-white/5 text-zinc-400 border border-white/10 rounded-full px-5 py-2 hover:bg-white/10"
+                                        }`}
+                                >
+                                    {chip}
+                                </button>
+                            );
+                        })}
                     </div>
                 </div>
 
                 {/* Submit */}
-                <div className="pt-4 pb-10">
+                <div className="pt-4 pb-2">
                     <SubmitButton disabled={
                         (mode === "group" && includedUserIds.length === 0) ||
                         (mode === "group" && splitType === "exact" && !isExactValid)
