@@ -3,7 +3,6 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { Friendship, Transaction, Profile } from "@/types";
-import { calculatePuffScore } from "@/utils/puffScore";
 
 export interface FriendWithBalance {
     id: string; // The friend's profile ID
@@ -52,7 +51,7 @@ export async function getDashboardData(): Promise<DashboardData | null> {
       friend_id,
       status,
       is_favorite,
-      friend:profiles!friendships_friend_id_fkey(id, username, avatar_url)
+      friend:profiles!friendships_friend_id_fkey(id, username, avatar_url, puff_score)
     `
         )
         .eq("status", "accepted")
@@ -140,8 +139,11 @@ export async function getDashboardData(): Promise<DashboardData | null> {
         const otherProfile = f.friend;
 
         if (otherProfile) {
-            const mutualTransactions = transactions.filter(t => t.payer_id === otherProfile.id || t.borrower_id === otherProfile.id);
-            const { score, badge } = calculatePuffScore(mutualTransactions, otherProfile.id);
+            const score = otherProfile.puff_score ?? 500;
+            let badge = "⚪";
+            if (score >= 800) badge = "💎";
+            else if (score >= 600) badge = "🥇";
+            else if (score >= 400) badge = "🥈";
 
             friendList.push({
                 id: otherProfile.id,

@@ -153,6 +153,21 @@ export async function createTransaction(formData: FormData) {
         return { error: "Failed to create some transactions" };
     }
 
+    // Phase 19.5: Grant +5 PuffScore to the payer for initiating an expense
+    const { data: profile } = await supabase
+        .from('profiles')
+        .select('puff_score')
+        .eq('id', user.id)
+        .single();
+
+    if (profile) {
+        const newScore = (profile.puff_score || 500) + 5;
+        await supabase
+            .from('profiles')
+            .update({ puff_score: newScore })
+            .eq('id', user.id);
+    }
+
     revalidatePath("/dashboard");
     revalidatePath("/activity");
     return { success: true };
