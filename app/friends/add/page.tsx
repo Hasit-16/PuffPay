@@ -87,16 +87,16 @@ export default function AddFriendPage() {
 
                     <div className="flex gap-2">
                         <div className="relative flex-1">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400 w-4 h-4" />
                             <Input
                                 placeholder="Search username..."
-                                className="pl-9"
+                                className="pl-9 bg-black/20 border border-white/10 rounded-2xl text-zinc-50 placeholder:text-zinc-500 focus-visible:ring-white/20"
                                 value={query}
                                 onChange={onInputChange}
                                 onKeyDown={(e) => e.key === 'Enter' && executeSearch()}
                             />
                         </div>
-                        <Button onClick={executeSearch} disabled={loading}>
+                        <Button onClick={executeSearch} disabled={loading} className="rounded-2xl">
                             {loading ? '...' : 'Search'}
                         </Button>
                     </div>
@@ -108,8 +108,8 @@ export default function AddFriendPage() {
                     )}
 
                     {results.map((user) => (
-                        <Card key={user.id} className="border-slate-200 dark:border-slate-800 bg-transparent">
-                            <CardContent className="p-4 flex items-center justify-between">
+                        <div key={user.id} className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-[2rem] p-6 shadow-2xl mb-4">
+                            <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-3">
                                     <Avatar>
                                         <AvatarImage src={user.avatar_url || ""} />
@@ -153,8 +153,8 @@ export default function AddFriendPage() {
                                     </Button>
                                 )}
 
-                            </CardContent>
-                        </Card>
+                            </div>
+                        </div>
                     ))}
                 </div>
             </main>

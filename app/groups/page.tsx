@@ -80,23 +80,23 @@ export default function CreateGroupPage() {
                 <h1 className="text-xl font-semibold ml-2 text-slate-900 dark:text-white">New Group</h1>
             </div>
 
-            <form action={clientAction} className="space-y-8 max-w-md mx-auto">
+            <form action={clientAction} className="space-y-8 max-w-md mx-auto bg-white/5 backdrop-blur-xl border border-white/10 rounded-[2rem] p-6 shadow-2xl">
                 <div className="space-y-3">
-                    <label className="text-sm font-medium text-slate-500">Group Name</label>
+                    <label className="text-sm font-medium text-zinc-400">Group Name</label>
                     <Input
                         name="name"
                         placeholder="e.g. Goa Trip, Flatmates"
                         required
-                        className="border-slate-200 dark:border-slate-800"
+                        className="bg-black/20 border border-white/10 rounded-2xl text-zinc-50 placeholder:text-zinc-600 focus-visible:ring-1 focus-visible:ring-white/20"
                     />
                 </div>
 
                 <div className="space-y-3">
-                    <label className="text-sm font-medium text-slate-500">Add Members</label>
+                    <label className="text-sm font-medium text-zinc-400">Add Members</label>
                     {loading ? (
                         <div className="space-y-2">
                             {[1, 2, 3].map(i => (
-                                <div key={i} className="h-16 w-full animate-pulse rounded-xl" />
+                                <div key={i} className="h-16 w-full animate-pulse bg-white/5 rounded-2xl" />
                             ))}
                         </div>
                     ) : (
@@ -107,23 +107,23 @@ export default function CreateGroupPage() {
                                     <div
                                         key={friend.id}
                                         onClick={() => toggleFriend(friend.id)}
-                                        className={`flex items-center p-3 rounded-xl border cursor-pointer transition-all ${isSelected
-                                            ? "border-indigo-500 dark:border-indigo-400"
-                                            : "border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700"
+                                        className={`flex items-center p-3 rounded-2xl border cursor-pointer transition-all ${isSelected
+                                            ? "bg-indigo-500/20 border-indigo-500/50"
+                                            : "bg-black/20 border border-white/10 hover:border-white/20 hover:bg-white/5"
                                             }`}
                                     >
-                                        <Avatar className="h-10 w-10 mr-3 border border-slate-200 dark:border-slate-700">
+                                        <Avatar className="h-10 w-10 mr-3 border border-white/10">
                                             <AvatarImage src={friend.avatar_url || ""} />
                                             <AvatarFallback>{friend.username?.charAt(0)}</AvatarFallback>
                                         </Avatar>
                                         <div className="flex-1">
-                                            <p className={`font-medium ${isSelected ? "text-indigo-700 dark:text-indigo-300" : "text-slate-900 dark:text-white"}`}>
+                                            <p className={`font-medium ${isSelected ? "text-indigo-400" : "text-zinc-50"}`}>
                                                 {friend.username}
                                             </p>
                                         </div>
                                         {isSelected && (
-                                            <div className="h-6 w-6 rounded-full flex items-center justify-center">
-                                                <Check className="w-4 h-4" />
+                                            <div className="h-6 w-6 rounded-full bg-indigo-500 flex items-center justify-center">
+                                                <Check className="w-4 h-4 text-white" />
                                             </div>
                                         )}
                                     </div>

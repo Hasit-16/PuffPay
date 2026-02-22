@@ -143,7 +143,7 @@ export default function ProfilePage() {
                     <p className="text-slate-500">{user.email}</p>
                 </div>
 
-                <div className="rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 p-6 space-y-6">
+                <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-[2rem] p-6 shadow-2xl space-y-6">
                     <div className="flex items-center justify-between">
                         <h2 className="text-lg font-semibold text-slate-900 dark:text-white">Edit Profile</h2>
                     </div>
@@ -212,8 +212,8 @@ export default function ProfilePage() {
                                 </TabsContent>
 
                                 <TabsContent value="upload" className="space-y-4">
-                                    <div className="border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-lg p-6 flex flex-col items-center gap-4 transition-colors cursor-pointer" onClick={() => fileInputRef.current?.click()}>
-                                        <div className="p-3 rounded-full">
+                                    <div className="bg-white/5 border border-white/10 rounded-2xl p-6 flex flex-col items-center gap-4 transition-colors cursor-pointer hover:bg-white/10" onClick={() => fileInputRef.current?.click()}>
+                                        <div className="p-3 rounded-full bg-white/10">
                                             <Camera className="w-6 h-6 text-slate-500" />
                                         </div>
                                         <div className="text-center">
@@ -240,6 +240,7 @@ export default function ProfilePage() {
                                 placeholder="Enter username"
                                 minLength={3}
                                 required
+                                className="bg-black/20 border-white/10 rounded-2xl focus-visible:ring-1 focus-visible:ring-white/20"
                             />
                         </div>
 
@@ -261,9 +262,9 @@ export default function ProfilePage() {
                     </Button>
                 </div>
 
-                <div className="mt-8 pt-8 border-t border-slate-200 dark:border-slate-800">
-                    <div className="border border-red-200 dark:border-red-900/30 rounded-lg p-4">
-                        <p className="text-sm text-red-700 dark:text-red-400 mb-4">
+                <div className="mt-8 pt-8 border-t border-white/10">
+                    <div className="bg-red-500/10 border border-red-500/20 rounded-2xl p-6">
+                        <p className="text-sm text-red-400 mb-4">
                             Deactivating your account will permanently remove your profile and access to groups. This action cannot be undone.
                         </p>
 
