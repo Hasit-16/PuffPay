@@ -198,8 +198,8 @@ export default function FriendsPage() {
                             </div>
                         ) : (
                             processedFriends.map(friend => (
-                                <Card key={friend.id} className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl mb-3 transition-all hover:bg-white/10 active:scale-[0.98]">
-                                    <CardContent className="p-4 flex items-center gap-4">
+                                <div key={friend.id} className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-4 mb-3 transition-all hover:bg-white/10">
+                                    <div className="flex items-center gap-4">
                                         <Avatar>
                                             <AvatarImage src={friend.avatar_url || ""} />
                                             <AvatarFallback>{friend.username?.charAt(0).toUpperCase()}</AvatarFallback>
@@ -220,8 +220,8 @@ export default function FriendsPage() {
                                         <Button variant="ghost" size="sm" asChild>
                                             <Link href={`/settle/${friend.id}`}>View</Link>
                                         </Button>
-                                    </CardContent>
-                                </Card>
+                                    </div>
+                                </div>
                             ))
                         )}
                     </TabsContent>
@@ -243,8 +243,8 @@ export default function FriendsPage() {
                         ) : (
                             groups.map(group => (
                                 <Link key={group.id} href={`/groups/${group.id}`} className="block">
-                                    <Card className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl mb-3 transition-all hover:bg-white/10 active:scale-[0.98]">
-                                        <CardContent className="p-4 flex items-center gap-4">
+                                    <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-4 mb-3 transition-all hover:bg-white/10">
+                                        <div className="flex items-center gap-4">
                                             <div className="h-10 w-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
                                                 <Users className="h-5 w-5 text-slate-500" />
                                             </div>
@@ -256,8 +256,8 @@ export default function FriendsPage() {
                                                 <span className="sr-only">View</span>
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-chevron-right w-4 h-4"><path d="m9 18 6-6-6-6" /></svg>
                                             </Button>
-                                        </CardContent>
-                                    </Card>
+                                        </div>
+                                    </div>
                                 </Link>
                             ))
                         )}
@@ -273,8 +273,8 @@ export default function FriendsPage() {
                                 <p className="text-sm text-slate-400 italic px-1">No pending requests.</p>
                             ) : (
                                 requests.map(req => (
-                                    <Card key={req.id} className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl mb-3 transition-all hover:bg-white/10 active:scale-[0.98]">
-                                        <CardContent className="p-4 flex items-center justify-between">
+                                    <div key={req.id} className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-4 mb-3 transition-all hover:bg-white/10">
+                                        <div className="flex items-center justify-between">
                                             <div className="flex items-center gap-3">
                                                 <Avatar>
                                                     <AvatarImage src={req.sender.avatar_url || ""} />
@@ -293,8 +293,8 @@ export default function FriendsPage() {
                                                     <Check className="h-4 w-4" />
                                                 </Button>
                                             </div>
-                                        </CardContent>
-                                    </Card>
+                                        </div>
+                                    </div>
                                 ))
                             )}
                         </div>
@@ -304,8 +304,8 @@ export default function FriendsPage() {
                             <div>
                                 <h3 className="text-sm font-semibold text-slate-500 mb-3 px-1 mt-6">SENT</h3>
                                 {sentRequests.map(req => (
-                                    <Card key={req.id} className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl mb-3 transition-all hover:bg-white/10 active:scale-[0.98] opacity-80">
-                                        <CardContent className="p-4 flex items-center justify-between">
+                                    <div key={req.id} className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-4 mb-3 transition-all hover:bg-white/10 opacity-80">
+                                        <div className="flex items-center justify-between">
                                             <div className="flex items-center gap-3">
                                                 <Avatar>
                                                     <AvatarImage src={req.recipient.avatar_url || ""} />
@@ -319,8 +319,8 @@ export default function FriendsPage() {
                                             <Button size="sm" variant="outline" disabled className="text-xs h-8">
                                                 Pending
                                             </Button>
-                                        </CardContent>
-                                    </Card>
+                                        </div>
+                                    </div>
                                 ))}
                             </div>
                         )}

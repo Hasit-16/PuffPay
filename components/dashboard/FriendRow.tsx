@@ -28,7 +28,7 @@ export default function FriendRow({ id, name, avatar, amount, hasPendingApproval
 
     return (
         <Link href={`/settle/${id}`}>
-            <div className="flex items-center justify-between bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-4 mb-3 transition-all hover:bg-white/10 active:scale-[0.98] group">
+            <div className="flex items-center justify-between bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-4 mb-3 transition-all hover:bg-white/10">
                 <div className="flex items-center gap-3">
                     <Avatar className="h-12 w-12 border border-slate-100 dark:border-slate-800">
                         <AvatarImage src={avatar} alt={name} />
