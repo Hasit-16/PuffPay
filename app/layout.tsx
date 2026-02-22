@@ -41,7 +41,8 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} text-zinc-50 antialiased`}>
-        <div className="fixed inset-0 -z-10 h-full w-full bg-[#09090B] bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-zinc-800 via-[#09090B] to-[#09090B]"></div>
+        <div className="fixed inset-0 -z-20 bg-[#09090B]"></div>
+        <div className="fixed top-[-150px] left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-green-500/15 blur-[120px] rounded-[100%] pointer-events-none -z-10"></div>
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"

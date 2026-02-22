@@ -12,7 +12,7 @@ export default function BalanceCard({ netBalance, toPay, toReceive }: BalanceCar
     const isPositive = netBalance >= 0;
 
     return (
-        <Card className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-[2rem] p-6 shadow-2xl text-white relative overflow-hidden">
+        <Card className="bg-white/5 backdrop-blur-md border border-white/10 rounded-[2rem] p-6 shadow-2xl relative overflow-hidden">
             {/* Decorative background blobs */}
             <div className={`absolute -right-10 -top-10 w-40 h-40 rounded-full blur-[60px] opacity-20 ${isPositive ? 'bg-green-500' : 'bg-red-500'}`}></div>
 

@@ -17,7 +17,7 @@ export default function BottomNav() {
     ];
 
     return (
-        <nav className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[92%] max-w-md rounded-full z-50 glass-panel bg-[#18181B]/80 backdrop-blur-md border border-white/10">
+        <nav className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[92%] max-w-md rounded-full bg-white/5 backdrop-blur-xl border border-white/10 overflow-hidden z-50">
             <div className="flex justify-between items-center px-6 py-3">
                 {navItems.map((item) => {
                     const Icon = item.icon;
@@ -38,8 +38,8 @@ export default function BottomNav() {
                     return (
                         <Link key={item.name} href={item.href} className="flex items-center justify-center">
                             <div className={`flex flex-col items-center justify-center gap-1 transition-all ${isActive
-                                    ? "bg-white/10 text-green-400 rounded-full px-4 py-2"
-                                    : "text-slate-400 dark:text-slate-500 py-2"
+                                ? "bg-white/10 text-green-400 rounded-full px-4 py-2"
+                                : "text-slate-400 dark:text-slate-500 py-2"
                                 }`}>
                                 <Icon className="w-5 h-5" />
                                 <span className="text-[10px] font-medium">
