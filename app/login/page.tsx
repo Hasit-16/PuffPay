@@ -31,7 +31,7 @@ function LoginForm() {
 
             {/* Header */}
             <div className="p-6 text-center border-b border-slate-800 bg-slate-900 flex flex-col items-center">
-                <Image src="/icons/android-chrome-192x192.png" width={100} height={100} alt="PuffPay Logo" className="mx-auto mb-6" />
+                <Image src="/logo-transparent.png" width={180} height={60} alt="PuffPay Logo" className="object-contain mx-auto mb-6" />
                 <h1 className="text-2xl font-bold text-white mb-2">Login to PuffPay</h1>
                 <p className="text-slate-400 text-sm">
                     {mode === "login"

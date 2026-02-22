@@ -25,10 +25,11 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   title: "PuffPay",
   description: "Track shared expenses with friends.",
+  manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     title: "PuffPay",
-    statusBarStyle: "black-translucent",
+    statusBarStyle: "default",
   },
 };
 
