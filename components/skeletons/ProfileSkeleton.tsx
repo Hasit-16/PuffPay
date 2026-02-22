@@ -2,7 +2,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export default function ProfileSkeleton() {
     return (
-        <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-20">
+        <div className="min-h-screen pb-20">
             <div className="px-4 py-8 flex flex-col items-center">
                 <Skeleton className="h-8 w-32 mb-8" />
 

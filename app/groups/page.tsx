@@ -70,7 +70,7 @@ export default function CreateGroupPage() {
     };
 
     return (
-        <div className="min-h-screen bg-slate-50 dark:bg-slate-950 px-4 py-6">
+        <div className="min-h-screen px-4 py-6">
             <div className="flex items-center mb-8">
                 <Link href="/dashboard">
                     <Button variant="ghost" size="icon" className="-ml-2">
@@ -87,7 +87,7 @@ export default function CreateGroupPage() {
                         name="name"
                         placeholder="e.g. Goa Trip, Flatmates"
                         required
-                        className="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800"
+                        className="border-slate-200 dark:border-slate-800"
                     />
                 </div>
 
@@ -96,7 +96,7 @@ export default function CreateGroupPage() {
                     {loading ? (
                         <div className="space-y-2">
                             {[1, 2, 3].map(i => (
-                                <div key={i} className="h-16 w-full bg-slate-100 dark:bg-slate-800 animate-pulse rounded-xl" />
+                                <div key={i} className="h-16 w-full animate-pulse rounded-xl" />
                             ))}
                         </div>
                     ) : (
@@ -108,8 +108,8 @@ export default function CreateGroupPage() {
                                         key={friend.id}
                                         onClick={() => toggleFriend(friend.id)}
                                         className={`flex items-center p-3 rounded-xl border cursor-pointer transition-all ${isSelected
-                                            ? "bg-indigo-50 dark:bg-indigo-900/20 border-indigo-500 dark:border-indigo-400"
-                                            : "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700"
+                                            ? "border-indigo-500 dark:border-indigo-400"
+                                            : "border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700"
                                             }`}
                                     >
                                         <Avatar className="h-10 w-10 mr-3 border border-slate-200 dark:border-slate-700">
@@ -122,8 +122,8 @@ export default function CreateGroupPage() {
                                             </p>
                                         </div>
                                         {isSelected && (
-                                            <div className="h-6 w-6 bg-indigo-500 rounded-full flex items-center justify-center">
-                                                <Check className="w-4 h-4 text-white" />
+                                            <div className="h-6 w-6 rounded-full flex items-center justify-center">
+                                                <Check className="w-4 h-4" />
                                             </div>
                                         )}
                                     </div>

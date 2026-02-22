@@ -114,7 +114,7 @@ export default function ProfilePage() {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center">
+            <div className="min-h-screen flex items-center justify-center">
                 <p className="text-slate-500">Loading profile...</p>
             </div>
         );
@@ -122,7 +122,7 @@ export default function ProfilePage() {
 
     if (!user) {
         return (
-            <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col items-center justify-center p-4">
+            <div className="min-h-screen flex flex-col items-center justify-center p-4">
                 <h1 className="text-xl font-bold mb-2">Profile Not Found</h1>
                 <Button onClick={() => router.push("/login")}>Go to Login</Button>
             </div>
@@ -130,7 +130,7 @@ export default function ProfilePage() {
     }
 
     return (
-        <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-20">
+        <div className="min-h-screen pb-20">
             <TopBar />
 
             <main className="px-4 py-8 max-w-md mx-auto">
@@ -143,7 +143,7 @@ export default function ProfilePage() {
                     <p className="text-slate-500">{user.email}</p>
                 </div>
 
-                <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 p-6 space-y-6">
+                <div className="rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 p-6 space-y-6">
                     <div className="flex items-center justify-between">
                         <h2 className="text-lg font-semibold text-slate-900 dark:text-white">Edit Profile</h2>
                     </div>
@@ -153,7 +153,7 @@ export default function ProfilePage() {
                         <div className="w-full max-w-md mb-8">
                             <div className="flex justify-center mb-6">
                                 <div className="relative group">
-                                    <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-white dark:border-slate-800 shadow-lg relative bg-slate-200">
+                                    <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-white dark:border-slate-800 shadow-lg relative">
                                         {avatarUrl ? (
                                             <Image
                                                 src={avatarUrl}
@@ -163,7 +163,7 @@ export default function ProfilePage() {
                                                 priority
                                             />
                                         ) : (
-                                            <div className="w-full h-full flex items-center justify-center bg-slate-100 dark:bg-slate-800 text-slate-400">
+                                            <div className="w-full h-full flex items-center justify-center text-slate-400">
                                                 <User className="w-12 h-12" />
                                             </div>
                                         )}
@@ -212,8 +212,8 @@ export default function ProfilePage() {
                                 </TabsContent>
 
                                 <TabsContent value="upload" className="space-y-4">
-                                    <div className="border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-lg p-6 flex flex-col items-center gap-4 hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors cursor-pointer" onClick={() => fileInputRef.current?.click()}>
-                                        <div className="p-3 bg-slate-100 dark:bg-slate-800 rounded-full">
+                                    <div className="border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-lg p-6 flex flex-col items-center gap-4 transition-colors cursor-pointer" onClick={() => fileInputRef.current?.click()}>
+                                        <div className="p-3 rounded-full">
                                             <Camera className="w-6 h-6 text-slate-500" />
                                         </div>
                                         <div className="text-center">
@@ -262,7 +262,7 @@ export default function ProfilePage() {
                 </div>
 
                 <div className="mt-8 pt-8 border-t border-slate-200 dark:border-slate-800">
-                    <div className="bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-900/30 rounded-lg p-4">
+                    <div className="border border-red-200 dark:border-red-900/30 rounded-lg p-4">
                         <p className="text-sm text-red-700 dark:text-red-400 mb-4">
                             Deactivating your account will permanently remove your profile and access to groups. This action cannot be undone.
                         </p>

@@ -77,7 +77,7 @@ export default function AddFriendPage() {
     };
 
     return (
-        <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-20">
+        <div className="min-h-screen pb-20">
             <TopBar />
 
             <main className="px-4 py-6 space-y-6">
@@ -90,7 +90,7 @@ export default function AddFriendPage() {
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
                             <Input
                                 placeholder="Search username..."
-                                className="pl-9 bg-white dark:bg-slate-900"
+                                className="pl-9"
                                 value={query}
                                 onChange={onInputChange}
                                 onKeyDown={(e) => e.key === 'Enter' && executeSearch()}
@@ -108,7 +108,7 @@ export default function AddFriendPage() {
                     )}
 
                     {results.map((user) => (
-                        <Card key={user.id} className="border-slate-200 dark:border-slate-800">
+                        <Card key={user.id} className="border-slate-200 dark:border-slate-800 bg-transparent">
                             <CardContent className="p-4 flex items-center justify-between">
                                 <div className="flex items-center gap-3">
                                     <Avatar>
