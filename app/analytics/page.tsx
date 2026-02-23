@@ -12,7 +12,7 @@ export default async function AnalyticsPage() {
     const data = await getAnalyticsData();
 
     return (
-        <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-20">
+        <div className="min-h-screen pb-20">
             <TopBar />
 
             <main className="px-4 py-6 max-w-4xl mx-auto">
@@ -26,7 +26,7 @@ export default async function AnalyticsPage() {
                 </div>
 
                 {!data ? (
-                    <div className="p-8 text-center text-slate-500 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800">
+                    <div className="p-8 text-center text-slate-500 bg-white/5 backdrop-blur-xl rounded-[2rem] border border-white/10 shadow-2xl">
                         Failed to load analytics data.
                     </div>
                 ) : (

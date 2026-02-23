@@ -27,10 +27,10 @@ function LoginForm() {
     };
 
     return (
-        <div className="w-full max-w-md bg-white dark:bg-slate-900 rounded-xl shadow-2xl overflow-hidden border border-slate-800">
+        <div className="w-full max-w-md bg-white/5 backdrop-blur-xl rounded-[2rem] shadow-2xl overflow-hidden border border-white/10">
 
             {/* Header */}
-            <div className="p-6 text-center border-b border-slate-800 bg-slate-900 flex flex-col items-center">
+            <div className="p-6 text-center border-b border-white/10 flex flex-col items-center">
                 <Image src="/logo-transparent.png" width={180} height={60} alt="PuffPay Logo" className="object-contain mx-auto mb-6" />
                 <h1 className="text-2xl font-bold text-white mb-2">Login to PuffPay</h1>
                 <p className="text-slate-400 text-sm">
@@ -41,12 +41,12 @@ function LoginForm() {
             </div>
 
             {/* Tabs */}
-            <div className="flex border-b border-slate-800">
+            <div className="flex border-b border-white/10">
                 <button
                     onClick={() => setMode("login")}
                     className={`flex-1 py-3 text-sm font-medium transition-colors ${mode === "login"
-                        ? "bg-slate-800 text-white border-b-2 border-green-500"
-                        : "text-slate-400 hover:text-white"
+                        ? "bg-white/10 text-white border-b-2 border-green-500"
+                        : "text-slate-400 hover:text-white hover:bg-white/5"
                         }`}
                 >
                     Login
@@ -54,8 +54,8 @@ function LoginForm() {
                 <button
                     onClick={() => setMode("signup")}
                     className={`flex-1 py-3 text-sm font-medium transition-colors ${mode === "signup"
-                        ? "bg-slate-800 text-white border-b-2 border-green-500"
-                        : "text-slate-400 hover:text-white"
+                        ? "bg-white/10 text-white border-b-2 border-green-500"
+                        : "text-slate-400 hover:text-white hover:bg-white/5"
                         }`}
                 >
                     Sign Up
@@ -63,7 +63,7 @@ function LoginForm() {
             </div>
 
             {/* Form Body */}
-            <div className="p-6 bg-slate-900">
+            <div className="p-6">
                 {error && (
                     <div className="mb-4 p-3 bg-red-500/10 border border-red-500/50 rounded-lg text-red-500 text-sm text-center">
                         {error}
@@ -80,7 +80,7 @@ function LoginForm() {
                                 name="username"
                                 required
                                 placeholder="johndoe"
-                                className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+                                className="w-full px-3 py-2 bg-black/20 border border-white/10 rounded-2xl text-zinc-50 placeholder:text-zinc-500 focus:outline-none focus:ring-1 focus:ring-white/20 transition-all"
                             />
                         </div>
                     )}
@@ -94,7 +94,7 @@ function LoginForm() {
                             type="email"
                             required
                             placeholder="john@example.com"
-                            className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+                            className="w-full px-3 py-2 bg-black/20 border border-white/10 rounded-2xl text-zinc-50 placeholder:text-zinc-500 focus:outline-none focus:ring-1 focus:ring-white/20 transition-all"
                         />
                     </div>
 
@@ -108,7 +108,7 @@ function LoginForm() {
                             required
                             minLength={6}
                             placeholder="••••••••"
-                            className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+                            className="w-full px-3 py-2 bg-black/20 border border-white/10 rounded-2xl text-zinc-50 placeholder:text-zinc-500 focus:outline-none focus:ring-1 focus:ring-white/20 transition-all"
                         />
                     </div>
 
@@ -135,7 +135,7 @@ function LoginForm() {
 
 export default function LoginPage() {
     return (
-        <div className="min-h-screen flex items-center justify-center bg-slate-950 p-4">
+        <div className="min-h-screen flex items-center justify-center p-4">
             <Suspense fallback={<div className="text-white">Loading...</div>}>
                 <LoginForm />
             </Suspense>

@@ -14,7 +14,7 @@ export default function AnalyticsCharts({ data }: { data: AnalyticsPayload }) {
     return (
         <div className="space-y-8">
             {/* Chart 1: Category Pie Chart */}
-            <div className="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+            <div className="bg-white/5 backdrop-blur-xl p-6 rounded-[2rem] border border-white/10 shadow-2xl">
                 <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-6">Where Does My Money Go?</h3>
                 {data.categories.length > 0 ? (
                     <div className="h-64 w-full">
@@ -44,7 +44,7 @@ export default function AnalyticsCharts({ data }: { data: AnalyticsPayload }) {
             </div>
 
             {/* Chart 2: Friendship Graph */}
-            <div className="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+            <div className="bg-white/5 backdrop-blur-xl p-6 rounded-[2rem] border border-white/10 shadow-2xl">
                 <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-6">The Friendship Graph</h3>
                 {data.friendships.length > 0 ? (
                     <div className="h-72 w-full">
@@ -66,7 +66,7 @@ export default function AnalyticsCharts({ data }: { data: AnalyticsPayload }) {
             </div>
 
             {/* Chart 3: Monthly Spending Trend */}
-            <div className="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+            <div className="bg-white/5 backdrop-blur-xl p-6 rounded-[2rem] border border-white/10 shadow-2xl">
                 <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-6">Monthly Spending Trend</h3>
                 <div className="h-64 w-full">
                     <ResponsiveContainer width="100%" height="100%">
