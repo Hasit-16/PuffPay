@@ -84,9 +84,10 @@ export default async function SettlePage({ params }: { params: Promise<{ id: str
             <TopBar />
 
             <main className="p-4 flex flex-col items-center pt-10">
-                <Avatar className="h-24 w-24 mb-4 border-4 border-white dark:border-slate-800 shadow-xl">
+                <Avatar className="h-24 w-24 mb-4 shadow-xl">
                     <AvatarImage src={friend.avatar_url || ""} />
-                    <AvatarFallback className="text-2xl">{friend.username?.charAt(0)}</AvatarFallback>
+                    <AvatarFallback className="text-2xl bg-white/5 text-zinc-300">{friend.username?.charAt(0)}</AvatarFallback>
+
                 </Avatar>
 
                 <h1 className="text-2xl font-bold text-slate-900 dark:text-white mb-1">

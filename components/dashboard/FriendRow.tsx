@@ -30,9 +30,9 @@ export default function FriendRow({ id, name, avatar, amount, hasPendingApproval
         <Link href={`/settle/${id}`}>
             <div className="flex items-center justify-between bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-4 mb-3 transition-all hover:bg-white/10">
                 <div className="flex items-center gap-3">
-                    <Avatar className="h-12 w-12 border border-slate-100 dark:border-slate-800">
+                    <Avatar className="h-12 w-12">
                         <AvatarImage src={avatar} alt={name} />
-                        <AvatarFallback className="bg-gradient-to-br from-indigo-500 to-purple-500 text-white font-bold">
+                        <AvatarFallback className="bg-white/5 text-zinc-300 font-bold">
                             {name.charAt(0)}
                         </AvatarFallback>
                     </Avatar>
@@ -42,9 +42,9 @@ export default function FriendRow({ id, name, avatar, amount, hasPendingApproval
                             {name}
                         </h3>
                         {isSettled ? (
-                            <p className="text-xs text-slate-400 mt-0.5">All settled up</p>
+                            <p className="text-xs text-zinc-400 mt-0.5">All settled up</p>
                         ) : (
-                            <p className={`text-xs font-medium mt-0.5 ${isOwed ? 'text-green-600' : 'text-red-500'}`}>
+                            <p className={`text-xs font-medium mt-0.5 ${isOwed ? 'text-green-500' : 'text-red-400'}`}>
                                 {isOwed ? 'Owes you' : 'You owe'}
                             </p>
                         )}
@@ -54,9 +54,9 @@ export default function FriendRow({ id, name, avatar, amount, hasPendingApproval
                 <div className="flex items-center gap-3">
                     <div className="text-right">
                         {isSettled ? (
-                            <Badge variant="secondary" className="bg-slate-100 text-slate-500 font-normal">Settled</Badge>
+                            <Badge variant="secondary" className="bg-white/10 text-zinc-400 font-normal border-none hover:bg-white/10">Settled</Badge>
                         ) : (
-                            <span className={`text-lg font-bold tabular-nums ${isOwed ? 'text-green-600' : 'text-red-500'}`}>
+                            <span className={`text-lg font-bold tabular-nums ${isOwed ? 'text-green-500' : 'text-zinc-50'}`}>
                                 {isOwed ? '+' : '-'}₹{(Math.round(Math.abs(amount) * 100) / 100).toFixed(2)}
                             </span>
                         )}

@@ -17,7 +17,7 @@ export default function DashboardGreeting({ username }: { username: string }) {
     }, []);
 
     return (
-        <h1 className="text-2xl font-bold text-slate-900 dark:text-white mb-2 tracking-tight">
+        <h1 className="text-2xl font-bold text-zinc-50 mb-2 tracking-tight">
             {greeting}, {username} 👋
         </h1>
     );

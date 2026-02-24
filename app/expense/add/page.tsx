@@ -312,7 +312,7 @@ export default function AddExpensePage() {
                                                     onClick={() => toggleMemberInclusion(member.id)}
                                                 >
                                                     <div className="relative">
-                                                        <Avatar className={`h-16 w-16 transition-all ${isIncluded ? 'ring-2 ring-green-500 ring-offset-4 ring-offset-[#09090b] opacity-100 scale-105' : 'opacity-40 grayscale border-none'}`}>
+                                                        <Avatar className={`h-16 w-16 transition-all ${isIncluded ? 'ring-2 ring-green-500 ring-offset-4 ring-offset-[#09090b] opacity-100 scale-105' : 'opacity-40 grayscale'}`}>
                                                             <AvatarImage src={member.avatar_url || ""} />
                                                             <AvatarFallback className="bg-white/10 text-zinc-300">{member.username?.charAt(0)}</AvatarFallback>
                                                         </Avatar>
@@ -415,8 +415,8 @@ export default function AddExpensePage() {
                                     type="button"
                                     onClick={() => handleChipClick(word)}
                                     className={`transition-colors text-sm ${isActive
-                                            ? "bg-green-500 text-black font-semibold rounded-full px-5 py-2 shadow-[0_0_15px_rgba(34,197,94,0.3)] border-none"
-                                            : "bg-white/5 text-zinc-400 border border-white/10 rounded-full px-5 py-2 hover:bg-white/10"
+                                        ? "bg-green-500 text-black font-semibold rounded-full px-5 py-2 shadow-[0_0_15px_rgba(34,197,94,0.3)] border-none"
+                                        : "bg-white/5 text-zinc-400 border border-white/10 rounded-full px-5 py-2 hover:bg-white/10"
                                         }`}
                                 >
                                     {chip}

@@ -135,12 +135,12 @@ export default function ProfilePage() {
 
             <main className="px-4 py-8 max-w-md mx-auto">
                 <div className="flex flex-col items-center mb-8">
-                    <Avatar className="w-24 h-24 mb-4 border-4 border-white dark:border-slate-800 shadow-lg">
+                    <Avatar className="w-24 h-24 mb-4 shadow-lg">
                         <AvatarImage src={avatarUrl || user.avatar_url || ""} />
                         <AvatarFallback className="text-2xl">{username?.charAt(0)?.toUpperCase() || "?"}</AvatarFallback>
                     </Avatar>
-                    <h1 className="text-2xl font-bold text-slate-900 dark:text-white">{user.username || "User"}</h1>
-                    <p className="text-slate-500">{user.email}</p>
+                    <h1 className="text-2xl font-bold text-zinc-50">{user.username || "User"}</h1>
+                    <p className="text-sm text-zinc-400">{user.email}</p>
                 </div>
 
                 <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-[2rem] p-6 shadow-2xl space-y-6">
@@ -153,7 +153,7 @@ export default function ProfilePage() {
                         <div className="w-full max-w-md mb-8">
                             <div className="flex justify-center mb-6">
                                 <div className="relative group">
-                                    <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-white dark:border-slate-800 shadow-lg relative">
+                                    <div className="w-32 h-32 rounded-full overflow-hidden shadow-lg relative">
                                         {avatarUrl ? (
                                             <Image
                                                 src={avatarUrl}
@@ -177,9 +177,9 @@ export default function ProfilePage() {
                             </div>
 
                             <Tabs defaultValue="defaults" className="w-full">
-                                <TabsList className="grid w-full grid-cols-2 mb-4">
-                                    <TabsTrigger value="defaults">Illustrations</TabsTrigger>
-                                    <TabsTrigger value="upload">Upload</TabsTrigger>
+                                <TabsList className="grid w-full grid-cols-2 mb-4 bg-white/5 border border-white/10 p-1 rounded-xl">
+                                    <TabsTrigger value="defaults" className="text-zinc-500 data-[state=active]:bg-white/10 data-[state=active]:text-zinc-50 rounded-lg">Illustrations</TabsTrigger>
+                                    <TabsTrigger value="upload" className="text-zinc-500 data-[state=active]:bg-white/10 data-[state=active]:text-zinc-50 rounded-lg">Upload</TabsTrigger>
                                 </TabsList>
 
                                 <TabsContent value="defaults" className="space-y-4">
@@ -192,9 +192,9 @@ export default function ProfilePage() {
                                                 key={seed}
                                                 type="button"
                                                 onClick={() => setAvatarUrl(`https://api.dicebear.com/9.x/adventurer/svg?seed=${seed}`)}
-                                                className={`relative aspect-square rounded-lg overflow-hidden border-2 transition-all ${avatarUrl?.includes(seed)
-                                                    ? "border-green-500 ring-2 ring-green-500/20"
-                                                    : "border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700"
+                                                className={`relative aspect-square rounded-full overflow-hidden transition-all ${avatarUrl?.includes(seed)
+                                                    ? "ring-2 ring-green-500 ring-offset-2 ring-offset-[#09090B]"
+                                                    : "border border-white/10 hover:border-white/20"
                                                     }`}
                                             >
                                                 <Image
@@ -206,8 +206,8 @@ export default function ProfilePage() {
                                             </button>
                                         ))}
                                     </div>
-                                    <p className="text-xs text-center text-slate-500">
-                                        Powered by <a href="https://dicebear.com" target="_blank" rel="noreferrer" className="underline">DiceBear</a>
+                                    <p className="text-xs text-center text-zinc-600">
+                                        Powered by <a href="https://dicebear.com" target="_blank" rel="noreferrer" className="underline hover:text-zinc-400">DiceBear</a>
                                     </p>
                                 </TabsContent>
 
@@ -233,7 +233,7 @@ export default function ProfilePage() {
                         </div>
                         {/* Avatar URL is managed by above UI now */}
                         <div className="space-y-2">
-                            <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Username</label>
+                            <label className="text-sm font-medium text-zinc-400">Username</label>
                             <Input
                                 value={username}
                                 onChange={(e) => setUsername(e.target.value)}
@@ -244,13 +244,13 @@ export default function ProfilePage() {
                             />
                         </div>
 
-                        <Button type="submit" className="w-full bg-green-600 hover:bg-green-700" disabled={saving}>
+                        <Button type="submit" className="w-full bg-green-500 text-zinc-950 font-semibold hover:bg-green-400 shadow-[0_0_15px_rgba(34,197,94,0.3)] transition-all rounded-2xl" disabled={saving}>
                             {saving ? "Saving..." : "Save Changes"}
                         </Button>
                     </form>
                 </div>
 
-                <div className="mt-8 border-t border-slate-200 dark:border-slate-800 pt-6">
+                <div className="mt-8 border-t border-white/10 pt-6">
                     <Button variant="outline" className="w-full" onClick={async () => {
                         const supabase = createClient();
                         await supabase.auth.signOut();

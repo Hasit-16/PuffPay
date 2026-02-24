@@ -38,8 +38,8 @@ export default function BottomNav() {
                     return (
                         <Link key={item.name} href={item.href} className="flex items-center justify-center">
                             <div className={`flex flex-col items-center justify-center gap-1 transition-all ${isActive
-                                ? "bg-white/10 text-green-400 rounded-full px-4 py-2"
-                                : "text-slate-400 dark:text-slate-500 py-2"
+                                ? "bg-white/10 text-green-500 rounded-full px-4 py-2"
+                                : "text-zinc-500 py-2"
                                 }`}>
                                 <Icon className="w-5 h-5" />
                                 <span className="text-[10px] font-medium">

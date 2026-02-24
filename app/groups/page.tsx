@@ -112,7 +112,7 @@ export default function CreateGroupPage() {
                                             : "bg-black/20 border border-white/10 hover:border-white/20 hover:bg-white/5"
                                             }`}
                                     >
-                                        <Avatar className="h-10 w-10 mr-3 border border-white/10">
+                                        <Avatar className="h-10 w-10 mr-3">
                                             <AvatarImage src={friend.avatar_url || ""} />
                                             <AvatarFallback>{friend.username?.charAt(0)}</AvatarFallback>
                                         </Avatar>

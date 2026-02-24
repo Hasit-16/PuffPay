@@ -97,28 +97,29 @@ export async function getAnalyticsData(): Promise<AnalyticsPayload | null> {
         // Let's use "I am the borrower" to represent "Money I spent/owed".
         if (isBorrower) {
             const cat = deriveCategory(t.description);
-            categoryMap[cat] = (categoryMap[cat] || 0) + amount;
+            if (cat !== "Smokes") {
+                categoryMap[cat] = (categoryMap[cat] || 0) + amount;
 
-            const date = new Date(t.created_at);
-            const monthLabel = date.toLocaleDateString('en-US', { month: 'short' });
-            if (monthlyMap[monthLabel] !== undefined) {
-                monthlyMap[monthLabel] += amount;
+                const date = new Date(t.created_at);
+                const monthLabel = date.toLocaleDateString('en-US', { month: 'short' });
+                if (monthlyMap[monthLabel] !== undefined) {
+                    monthlyMap[monthLabel] += amount;
+                }
             }
         }
 
         // Chart 2: Friendship Graph
-        // Only active debts (pending/confirming)
-        if (t.status === 'pending' || t.status === 'confirming') {
-            if (friendId && friendId !== user.id) {
-                if (!friendshipMap[friendId]) {
-                    friendshipMap[friendId] = { name: friendName, "I Owe": 0, "They Owe Me": 0 };
-                }
+        // Calculate GROSS Historical Volume (Total lent vs Total borrowed)
+        // Regardless of status (we want the lifetime tally), we track every expense
+        if (friendId && friendId !== user.id) {
+            if (!friendshipMap[friendId]) {
+                friendshipMap[friendId] = { name: friendName, "I Owe": 0, "They Owe Me": 0 };
+            }
 
-                if (isPayer) { // They owe me
-                    friendshipMap[friendId]["They Owe Me"] += amount;
-                } else if (isBorrower) { // I owe them
-                    friendshipMap[friendId]["I Owe"] += amount;
-                }
+            if (isPayer) { // They owe me
+                friendshipMap[friendId]["They Owe Me"] += amount;
+            } else if (isBorrower) { // I owe them
+                friendshipMap[friendId]["I Owe"] += amount;
             }
         }
     });

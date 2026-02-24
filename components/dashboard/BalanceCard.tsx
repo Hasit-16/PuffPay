@@ -18,7 +18,7 @@ export default function BalanceCard({ netBalance, toPay, toReceive }: BalanceCar
 
             <CardContent className="p-6 relative z-10">
                 <div className="text-center mb-6">
-                    <p className="text-slate-400 text-sm font-medium uppercase tracking-wider mb-1">
+                    <p className="text-zinc-400 text-sm font-medium uppercase tracking-wider mb-1">
                         Net Balance
                     </p>
                     <h2 className={`text-4xl font-black tracking-tighter ${isPositive ? 'text-green-400' : 'text-red-400'}`}>
@@ -32,9 +32,9 @@ export default function BalanceCard({ netBalance, toPay, toReceive }: BalanceCar
                             <div className="p-1 bg-red-500/10 rounded-full">
                                 <ArrowUpRight size={14} />
                             </div>
-                            <span className="text-xs font-semibold">You Owe</span>
+                            <span className="text-xs font-semibold text-zinc-50">You Owe</span>
                         </div>
-                        <p className="text-lg font-bold text-white">₹{(Math.round(toPay * 100) / 100).toFixed(2)}</p>
+                        <p className="text-lg font-bold text-zinc-50">₹{(Math.round(toPay * 100) / 100).toFixed(2)}</p>
                     </div>
 
                     <div className="bg-white/5 border border-white/10 rounded-2xl p-4">
@@ -42,9 +42,9 @@ export default function BalanceCard({ netBalance, toPay, toReceive }: BalanceCar
                             <div className="p-1 bg-green-500/10 rounded-full">
                                 <ArrowDownLeft size={14} />
                             </div>
-                            <span className="text-xs font-bold">Owed to You</span>
+                            <span className="text-xs font-bold text-zinc-50">Owed to You</span>
                         </div>
-                        <p className="text-lg font-bold text-white">₹{(Math.round(toReceive * 100) / 100).toFixed(2)}</p>
+                        <p className="text-lg font-bold text-zinc-50">₹{(Math.round(toReceive * 100) / 100).toFixed(2)}</p>
                     </div>
                 </div>
             </CardContent>

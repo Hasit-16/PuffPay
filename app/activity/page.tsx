@@ -33,8 +33,8 @@ export default async function ActivityPage() {
                         <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-slate-100 dark:bg-slate-900 text-slate-400 mb-4">
                             <ArrowUpRight className="w-8 h-8" />
                         </div>
-                        <h3 className="text-lg font-medium text-slate-900 dark:text-white mb-2">No activity yet</h3>
-                        <p className="text-slate-500">Expenses and settlements will appear here.</p>
+                        <h3 className="text-lg font-medium text-zinc-50 mb-2">No activity yet</h3>
+                        <p className="text-zinc-400">Expenses and settlements will appear here.</p>
                     </div>
                 ) : (
                     <div className="space-y-6">
