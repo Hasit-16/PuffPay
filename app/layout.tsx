@@ -4,6 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import IOSInstallPrompt from "@/components/IOSInstallPrompt";
+import PWAProvider from "@/components/PWAProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -42,9 +43,10 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        <meta name="theme-color" content="#09090b" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-        <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
+        <link rel="apple-touch-icon" href="/icons/android-chrome-192x192.png" />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} text-zinc-50 antialiased`}>
         <div className="fixed inset-0 -z-20 bg-[#09090B]"></div>
@@ -59,9 +61,11 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <main className="pb-28">
-            {children}
-          </main>
+          <PWAProvider>
+            <main className="pb-28">
+              {children}
+            </main>
+          </PWAProvider>
           <IOSInstallPrompt />
         </ThemeProvider>
         <Toaster />
