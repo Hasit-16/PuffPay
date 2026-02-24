@@ -182,7 +182,17 @@ export default function FriendsPage() {
                         </div>
 
                         {loading ? (
-                            <p className="text-center text-slate-500 mt-8">Loading friends...</p>
+                            <div className="space-y-4">
+                                {[1, 2, 3, 4, 5].map((i) => (
+                                    <div key={i} className="bg-white/5 border border-white/10 rounded-2xl p-4 mb-3 flex items-center justify-between animate-pulse">
+                                        <div className="flex items-center gap-4">
+                                            <div className="h-10 w-10 bg-white/10 rounded-full"></div>
+                                            <div className="h-5 w-24 bg-white/10 rounded-md"></div>
+                                        </div>
+                                        <div className="h-5 w-16 bg-white/10 rounded-md"></div>
+                                    </div>
+                                ))}
+                            </div>
                         ) : processedFriends.length === 0 ? (
                             <div className="text-center py-12">
                                 <div className="bg-white/5 border border-white/10 p-4 rounded-full inline-block mb-4">
@@ -228,7 +238,20 @@ export default function FriendsPage() {
 
                     <TabsContent value="groups" className="space-y-4">
                         {loading ? (
-                            <p className="text-center text-slate-500 mt-8">Loading groups...</p>
+                            <div className="space-y-4">
+                                {[1, 2, 3].map((i) => (
+                                    <div key={i} className="bg-white/5 border border-white/10 rounded-2xl p-4 mb-3 flex items-center justify-between animate-pulse">
+                                        <div className="flex items-center gap-4">
+                                            <div className="h-10 w-10 bg-white/10 rounded-full"></div>
+                                            <div className="flex flex-col gap-2">
+                                                <div className="h-5 w-32 bg-white/10 rounded-md"></div>
+                                                <div className="h-4 w-20 bg-white/10 rounded-md"></div>
+                                            </div>
+                                        </div>
+                                        <div className="h-8 w-8 bg-white/10 rounded-md"></div>
+                                    </div>
+                                ))}
+                            </div>
                         ) : groups.length === 0 ? (
                             <div className="text-center py-12">
                                 <div className="bg-white/5 border border-white/10 p-4 rounded-full inline-block mb-4">
@@ -268,7 +291,23 @@ export default function FriendsPage() {
                         <div>
                             <h3 className="text-sm font-semibold text-zinc-500 mb-3 px-1 uppercase tracking-wider">Incoming</h3>
                             {loading ? (
-                                <p className="text-center text-zinc-500 mt-2">Loading...</p>
+                                <div className="space-y-4 mt-2">
+                                    {[1, 2].map((i) => (
+                                        <div key={i} className="bg-white/5 border border-white/10 rounded-2xl p-4 mb-3 flex items-center justify-between animate-pulse">
+                                            <div className="flex items-center gap-4">
+                                                <div className="h-10 w-10 bg-white/10 rounded-full"></div>
+                                                <div className="flex flex-col gap-2">
+                                                    <div className="h-5 w-24 bg-white/10 rounded-md"></div>
+                                                    <div className="h-4 w-32 bg-white/10 rounded-md"></div>
+                                                </div>
+                                            </div>
+                                            <div className="flex gap-2">
+                                                <div className="h-8 w-16 bg-white/10 rounded-md"></div>
+                                                <div className="h-8 w-16 bg-white/10 rounded-md"></div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
                             ) : requests.length === 0 ? (
                                 <p className="text-sm text-zinc-500 italic px-1">No pending requests.</p>
                             ) : (
