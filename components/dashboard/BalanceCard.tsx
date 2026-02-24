@@ -13,8 +13,8 @@ export default function BalanceCard({ netBalance, toPay, toReceive }: BalanceCar
 
     return (
         <Card className="bg-white/5 backdrop-blur-md border border-white/10 rounded-[2rem] p-6 shadow-2xl relative overflow-hidden">
-            {/* Decorative background blobs */}
-            <div className={`absolute -right-10 -top-10 w-40 h-40 rounded-full blur-[60px] opacity-20 ${isPositive ? 'bg-green-500' : 'bg-red-500'}`}></div>
+            {/* Centered horizontal underglow */}
+            <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[40%] blur-[60px] rounded-full pointer-events-none z-0 ${isPositive ? 'bg-green-500/10' : 'bg-red-500/10'}`}></div>
 
             <CardContent className="p-6 relative z-10">
                 <div className="text-center mb-6">

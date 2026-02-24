@@ -208,8 +208,9 @@ export default function FriendsPage() {
                             </div>
                         ) : (
                             processedFriends.map(friend => (
-                                <div key={friend.id} className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-4 mb-3 transition-all hover:bg-white/10">
-                                    <div className="flex items-center gap-4">
+                                <div key={friend.id} className="relative overflow-hidden bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-4 mb-3 transition-all hover:bg-white/10">
+                                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[70%] h-[50%] blur-[30px] rounded-full pointer-events-none z-0 bg-white/5"></div>
+                                    <div className="relative z-10 flex items-center gap-4">
                                         <Avatar>
                                             <AvatarImage src={friend.avatar_url || ""} />
                                             <AvatarFallback>{friend.username?.charAt(0).toUpperCase()}</AvatarFallback>

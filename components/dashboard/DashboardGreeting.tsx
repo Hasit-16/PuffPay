@@ -24,8 +24,8 @@ export default function DashboardGreeting({ username }: { username: string }) {
             <span className="text-xl text-zinc-400 font-medium tracking-wide">
                 {greeting}
             </span>
-            <span className="text-4xl font-extrabold text-zinc-50 mt-1">
-                {username}
+            <span className="text-3xl font-extrabold text-zinc-50 mt-1">
+                {username}!
             </span>
         </div>
     );
