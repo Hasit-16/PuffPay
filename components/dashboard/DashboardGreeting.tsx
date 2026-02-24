@@ -2,23 +2,31 @@
 
 import { useEffect, useState } from "react";
 
+const GREETINGS = [
+    "Welcome back,",
+    "Good to see you,",
+    "Hello,",
+    "Greetings,",
+    "Ready to settle up,",
+    "Nice to see you,"
+];
+
 export default function DashboardGreeting({ username }: { username: string }) {
-    const [greeting, setGreeting] = useState("Good Day");
+    const [greeting, setGreeting] = useState("Welcome back,");
 
     useEffect(() => {
-        const hour = new Date().getHours();
-        if (hour < 12) {
-            setGreeting("Good Morning");
-        } else if (hour < 17) {
-            setGreeting("Good Afternoon");
-        } else {
-            setGreeting("Good Evening");
-        }
+        const randomGreeting = GREETINGS[Math.floor(Math.random() * GREETINGS.length)];
+        setGreeting(randomGreeting);
     }, []);
 
     return (
-        <h1 className="text-2xl font-bold text-zinc-50 mb-2 tracking-tight">
-            {greeting}, {username} 👋
-        </h1>
+        <div className="flex flex-col mb-6">
+            <span className="text-xl text-zinc-400 font-medium tracking-wide">
+                {greeting}
+            </span>
+            <span className="text-4xl font-extrabold text-zinc-50 mt-1">
+                {username}
+            </span>
+        </div>
     );
 }
