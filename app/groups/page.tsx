@@ -20,7 +20,7 @@ function SubmitButton() {
     const { pending } = useFormStatus();
 
     return (
-        <Button type="submit" className="w-full bg-slate-900 hover:bg-slate-800 text-white dark:bg-slate-100 dark:hover:bg-slate-200 dark:text-slate-900" size="lg" disabled={pending}>
+        <Button type="submit" className="w-full bg-green-600 hover:bg-green-700 text-white" size="lg" disabled={pending}>
             {pending ? "Creating..." : "Create Group"}
             {!pending && <Plus className="ml-2 w-4 h-4" />}
         </Button>
@@ -73,11 +73,11 @@ export default function CreateGroupPage() {
         <div className="min-h-screen px-4 py-6">
             <div className="flex items-center mb-8">
                 <Link href="/dashboard">
-                    <Button variant="ghost" size="icon" className="-ml-2">
-                        <ArrowLeft className="w-6 h-6 text-slate-600 dark:text-slate-400" />
+                    <Button variant="ghost" size="icon" className="-ml-2 hover:bg-white/10">
+                        <ArrowLeft className="w-6 h-6 text-zinc-50" />
                     </Button>
                 </Link>
-                <h1 className="text-xl font-semibold ml-2 text-slate-900 dark:text-white">New Group</h1>
+                <h1 className="text-xl font-semibold ml-2 text-zinc-50">New Group</h1>
             </div>
 
             <form action={clientAction} className="space-y-8 max-w-md mx-auto bg-white/5 backdrop-blur-xl border border-white/10 rounded-[2rem] p-6 shadow-2xl">

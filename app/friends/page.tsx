@@ -185,14 +185,14 @@ export default function FriendsPage() {
                             <p className="text-center text-slate-500 mt-8">Loading friends...</p>
                         ) : processedFriends.length === 0 ? (
                             <div className="text-center py-12">
-                                <div className="bg-slate-100 dark:bg-slate-800 p-4 rounded-full inline-block mb-4">
-                                    <UserPlus className="w-8 h-8 text-slate-400" />
+                                <div className="bg-white/5 border border-white/10 p-4 rounded-full inline-block mb-4">
+                                    <UserPlus className="w-8 h-8 text-zinc-400" />
                                 </div>
-                                <h3 className="text-lg font-medium mb-2">{searchQuery ? "No matching friends" : "No friends yet"}</h3>
-                                <p className="text-slate-500 mb-6">{searchQuery ? "Try a different search term" : "Add friends to start sharing expenses."}</p>
+                                <h3 className="text-lg font-medium mb-2 text-zinc-50">{searchQuery ? "No matching friends" : "No friends yet"}</h3>
+                                <p className="text-zinc-500 mb-6">{searchQuery ? "Try a different search term" : "Add friends to start sharing expenses."}</p>
                                 {!searchQuery && (
                                     <Link href="/friends/add">
-                                        <Button variant="outline">Find Friends</Button>
+                                        <Button className="bg-white/5 border border-white/10 text-zinc-300 hover:bg-white/10 hover:text-zinc-50 rounded-full">Find Friends</Button>
                                     </Link>
                                 )}
                             </div>
@@ -231,13 +231,13 @@ export default function FriendsPage() {
                             <p className="text-center text-slate-500 mt-8">Loading groups...</p>
                         ) : groups.length === 0 ? (
                             <div className="text-center py-12">
-                                <div className="bg-slate-100 dark:bg-slate-800 p-4 rounded-full inline-block mb-4">
-                                    <Users className="w-8 h-8 text-slate-400" />
+                                <div className="bg-white/5 border border-white/10 p-4 rounded-full inline-block mb-4">
+                                    <Users className="w-8 h-8 text-zinc-400" />
                                 </div>
-                                <h3 className="text-lg font-medium mb-2">No groups yet</h3>
-                                <p className="text-slate-500 mb-6">Create a group to split expenses with multiple people.</p>
+                                <h3 className="text-lg font-medium mb-2 text-zinc-50">No groups yet</h3>
+                                <p className="text-zinc-500 mb-6">Create a group to split expenses with multiple people.</p>
                                 <Link href="/groups">
-                                    <Button variant="outline">Create Group</Button>
+                                    <Button className="bg-white/5 border border-white/10 text-zinc-300 hover:bg-white/10 hover:text-zinc-50 rounded-full">Create Group</Button>
                                 </Link>
                             </div>
                         ) : (
@@ -245,8 +245,8 @@ export default function FriendsPage() {
                                 <Link key={group.id} href={`/groups/${group.id}`} className="block">
                                     <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-4 mb-3 transition-all hover:bg-white/10">
                                         <div className="flex items-center gap-4">
-                                            <div className="h-10 w-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
-                                                <Users className="h-5 w-5 text-slate-500" />
+                                            <div className="h-10 w-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center">
+                                                <Users className="h-5 w-5 text-zinc-400" />
                                             </div>
                                             <div className="flex-1">
                                                 <p className="font-semibold text-zinc-50">{group.name}</p>
@@ -286,10 +286,10 @@ export default function FriendsPage() {
                                                 </div>
                                             </div>
                                             <div className="flex gap-2">
-                                                <Button size="icon" variant="outline" className="h-8 w-8 text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950" onClick={() => handleIgnore(req.id)}>
+                                                <Button size="icon" className="h-8 w-8 bg-white/5 border border-white/10 text-zinc-400 hover:text-zinc-50 hover:bg-white/10 rounded-lg" onClick={() => handleIgnore(req.id)}>
                                                     <X className="h-4 w-4" />
                                                 </Button>
-                                                <Button size="icon" className="h-8 w-8 bg-green-600 hover:bg-green-700 text-white" onClick={() => handleAccept(req.id)}>
+                                                <Button size="icon" className="h-8 w-8 bg-green-500 text-zinc-950 font-semibold hover:bg-green-400 rounded-lg" onClick={() => handleAccept(req.id)}>
                                                     <Check className="h-4 w-4" />
                                                 </Button>
                                             </div>

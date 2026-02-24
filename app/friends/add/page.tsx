@@ -82,8 +82,8 @@ export default function AddFriendPage() {
 
             <main className="px-4 py-6 space-y-6">
                 <div>
-                    <h1 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">Find Friends</h1>
-                    <p className="text-slate-500 mb-6">Search for users by username or email.</p>
+                    <h1 className="text-2xl font-bold text-zinc-50 mb-2">Find Friends</h1>
+                    <p className="text-zinc-400 mb-6">Search for users by username or email.</p>
 
                     <div className="flex gap-2">
                         <div className="relative flex-1">
@@ -96,7 +96,7 @@ export default function AddFriendPage() {
                                 onKeyDown={(e) => e.key === 'Enter' && executeSearch()}
                             />
                         </div>
-                        <Button onClick={executeSearch} disabled={loading} className="rounded-2xl">
+                        <Button onClick={executeSearch} disabled={loading} className="bg-white/5 border border-white/10 text-zinc-300 hover:bg-white/10 rounded-2xl">
                             {loading ? '...' : 'Search'}
                         </Button>
                     </div>
@@ -104,7 +104,7 @@ export default function AddFriendPage() {
 
                 <div className="space-y-4">
                     {results.length === 0 && query.length >= 3 && !loading && (
-                        <p className="text-center text-slate-400 py-8">No users found.</p>
+                        <p className="text-center text-zinc-500 py-8">No users found.</p>
                     )}
 
                     {results.map((user) => (
@@ -116,14 +116,14 @@ export default function AddFriendPage() {
                                         <AvatarFallback>{user.username?.charAt(0).toUpperCase()}</AvatarFallback>
                                     </Avatar>
                                     <div>
-                                        <p className="font-semibold text-slate-900 dark:text-white">{user.username}</p>
+                                        <p className="font-semibold text-zinc-50">{user.username}</p>
                                     </div>
                                 </div>
 
                                 {user.friendship_status === 'none' && (
                                     <Button
                                         size="sm"
-                                        variant="outline"
+                                        className="bg-green-600 hover:bg-green-700 text-white"
                                         onClick={() => handleAddFriend(user.id)}
                                         disabled={pendingRequests.has(user.id)}
                                     >
@@ -133,21 +133,21 @@ export default function AddFriendPage() {
                                 )}
 
                                 {user.friendship_status === 'pending' && (
-                                    <Button size="sm" variant="secondary" disabled>
+                                    <Button size="sm" className="bg-white/5 text-zinc-500 border border-white/10" disabled>
                                         <UserPlus className="w-4 h-4 mr-2" />
                                         Pending
                                     </Button>
                                 )}
 
                                 {user.friendship_status === 'sent' && (
-                                    <Button size="sm" variant="secondary" disabled>
+                                    <Button size="sm" className="bg-white/5 text-zinc-500 border border-white/10" disabled>
                                         <Check className="w-4 h-4 mr-2" />
                                         Sent
                                     </Button>
                                 )}
 
                                 {user.friendship_status === 'accepted' && (
-                                    <Button size="sm" variant="ghost" className="text-green-600 cursor-default hover:bg-transparent">
+                                    <Button size="sm" className="bg-transparent text-green-500 cursor-default hover:bg-transparent" disabled>
                                         <Check className="w-4 h-4 mr-2" />
                                         Friends
                                     </Button>
