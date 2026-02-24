@@ -7,8 +7,8 @@ export default function manifest(): MetadataRoute.Manifest {
         description: 'Track debts and expenses with friends.',
         start_url: '/',
         display: 'standalone',
-        background_color: '#020617',
-        theme_color: '#020617',
+        background_color: '#09090b',
+        theme_color: '#09090b',
         icons: [
             {
                 src: '/icons/icon-192x192.png',

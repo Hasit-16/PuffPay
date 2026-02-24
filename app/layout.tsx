@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
+import IOSInstallPrompt from "@/components/IOSInstallPrompt";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -15,7 +16,7 @@ const geistMono = Geist_Mono({
 });
 
 export const viewport: Viewport = {
-  themeColor: "#020617",
+  themeColor: "#09090B",
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
@@ -29,7 +30,7 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     title: "PuffPay",
-    statusBarStyle: "default",
+    statusBarStyle: "black-translucent",
   },
 };
 
@@ -40,6 +41,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
+      </head>
       <body className={`${geistSans.variable} ${geistMono.variable} text-zinc-50 antialiased`}>
         <div className="fixed inset-0 -z-20 bg-[#09090B]"></div>
         {/* The main soft bulb */}
@@ -56,6 +62,7 @@ export default function RootLayout({
           <main className="pb-28">
             {children}
           </main>
+          <IOSInstallPrompt />
         </ThemeProvider>
         <Toaster />
       </body>
