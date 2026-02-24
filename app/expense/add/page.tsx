@@ -170,10 +170,10 @@ export default function AddExpensePage() {
             </div>
 
             {/* Mode Toggle */}
-            <div className="flex p-1 bg-black/40 rounded-2xl mb-6 max-w-md mx-auto border border-white/5">
+            <div className="flex p-1 bg-white/5 border border-white/10 rounded-xl mb-6 max-w-sm mx-auto backdrop-blur-md">
                 <button
                     onClick={() => setMode("individual")}
-                    className={`flex-1 flex items-center justify-center py-2 rounded-xl text-sm font-medium transition-all ${mode === "individual"
+                    className={`flex-1 flex items-center justify-center py-2 rounded-lg text-sm font-medium transition-all ${mode === "individual"
                         ? "bg-white/10 text-zinc-50 shadow-sm"
                         : "text-zinc-500 hover:text-zinc-300"
                         }`}
@@ -183,7 +183,7 @@ export default function AddExpensePage() {
                 </button>
                 <button
                     onClick={() => setMode("group")}
-                    className={`flex-1 flex items-center justify-center py-2 rounded-xl text-sm font-medium transition-all ${mode === "group"
+                    className={`flex-1 flex items-center justify-center py-2 rounded-lg text-sm font-medium transition-all ${mode === "group"
                         ? "bg-white/10 text-zinc-50 shadow-sm"
                         : "text-zinc-500 hover:text-zinc-300"
                         }`}
@@ -193,13 +193,13 @@ export default function AddExpensePage() {
                 </button>
             </div>
 
-            <form action={clientAction} className="bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl p-6 space-y-8 max-w-md mx-auto">
+            <form action={clientAction} className="bg-white/5 backdrop-blur-md border border-white/10 rounded-[2rem] p-5 space-y-5 max-w-md mx-auto shadow-2xl">
 
                 {/* Amount Input */}
-                <div className="space-y-2">
-                    <label className="text-sm font-medium text-zinc-500 uppercase tracking-wider pl-1">Amount</label>
-                    <div className="relative">
-                        <span className="absolute left-5 top-1/2 -translate-y-1/2 text-3xl font-bold text-zinc-400">₹</span>
+                <div className="space-y-1 mb-4">
+                    <label className="text-xs font-medium text-zinc-500 uppercase tracking-wider text-center block w-full">Amount</label>
+                    <div className="relative flex justify-center items-center">
+                        <span className="absolute left-1/2 -translate-x-[4.5rem] text-2xl font-bold text-zinc-400">₹</span>
                         <input
                             ref={amountInputRef}
                             type="number"
@@ -207,7 +207,7 @@ export default function AddExpensePage() {
                             value={amount}
                             onChange={(e) => setAmount(e.target.value)}
                             placeholder="0"
-                            className="bg-black/20 border border-white/10 rounded-2xl h-20 w-full text-4xl font-bold text-zinc-50 placeholder:text-zinc-600 focus-visible:ring-1 focus-visible:ring-green-500 focus-visible:border-green-500 transition-all outline-none pl-12 py-2"
+                            className="bg-transparent border-none w-full text-center text-4xl font-bold text-zinc-50 placeholder:text-zinc-700 focus:outline-none focus:ring-0 transition-all py-2"
                             required
                             min="1"
                             step="any"
@@ -218,20 +218,20 @@ export default function AddExpensePage() {
                 {/* Logic Switch based on Mode */}
                 {mode === "individual" ? (
                     /* INDIVIDUAL MODE */
-                    <div className="space-y-4">
-                        <div className="flex items-center justify-between p-4 bg-white/5 backdrop-blur-md rounded-2xl border border-white/10">
-                            <span className="text-zinc-400">Paid by</span>
-                            <span className="font-medium text-zinc-50">You</span>
+                    <div className="space-y-3">
+                        <div className="flex items-center justify-between p-3 bg-black/20 rounded-2xl border border-white/10">
+                            <span className="text-sm text-zinc-400">Paid by</span>
+                            <span className="font-semibold text-zinc-50 text-sm">You</span>
                         </div>
 
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium text-zinc-500 pl-1">Split with</label>
+                        <div className="space-y-1">
+                            <label className="text-xs font-medium text-zinc-500 pl-1">Split with</label>
                             {loading ? (
-                                <div className="h-16 w-full bg-black/20 animate-pulse rounded-2xl border border-white/10" />
+                                <div className="h-12 w-full bg-black/20 animate-pulse rounded-2xl border border-white/10 mb-3" />
                             ) : (
                                 <select
                                     name="borrower_id"
-                                    className="w-full h-16 px-4 bg-black/20 border border-white/10 rounded-2xl text-lg text-zinc-50 focus:ring-1 focus:ring-green-500 focus:border-green-500 outline-none appearance-none"
+                                    className="w-full h-12 px-3 bg-black/20 border border-white/10 rounded-2xl text-base text-zinc-50 focus:ring-1 focus:ring-green-500 focus:border-green-500 outline-none appearance-none mb-3"
                                     required
                                 >
                                     <option value="" disabled className="text-zinc-900">Select a friend</option>
@@ -246,14 +246,14 @@ export default function AddExpensePage() {
                     </div>
                 ) : (
                     /* GROUP MODE */
-                    <div className="space-y-6">
+                    <div className="space-y-4">
                         {/* Group Selector */}
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium text-zinc-500 pl-1">Select Group</label>
+                        <div className="space-y-1">
+                            <label className="text-xs font-medium text-zinc-500 pl-1">Select Group</label>
                             <select
                                 value={selectedGroupId}
                                 onChange={(e) => setSelectedGroupId(e.target.value)}
-                                className="w-full h-16 px-4 bg-black/20 border border-white/10 rounded-2xl text-lg text-zinc-50 focus:ring-1 focus:ring-green-500 focus:border-green-500 outline-none appearance-none"
+                                className="w-full h-12 px-3 bg-black/20 border border-white/10 rounded-2xl text-base text-zinc-50 focus:ring-1 focus:ring-green-500 focus:border-green-500 outline-none appearance-none mb-2"
                                 required
                             >
                                 <option value="" disabled className="text-zinc-900">Select a group</option>
@@ -300,9 +300,9 @@ export default function AddExpensePage() {
                                 </div>
 
                                 {/* Avatar Row & Inputs */}
-                                <div className="space-y-3">
-                                    <label className="text-sm font-medium text-zinc-500 pl-1">Tap to exclude</label>
-                                    <div className="flex overflow-x-auto pb-4 pt-2 px-2 gap-4">
+                                <div className="space-y-2">
+                                    <label className="text-xs font-medium text-zinc-500 pl-1">Tap to exclude</label>
+                                    <div className="flex overflow-x-auto pb-2 pt-1 px-1 gap-3">
                                         {selectedGroupMembers.map(member => {
                                             const isIncluded = includedUserIds.includes(member.id);
                                             return (
@@ -312,13 +312,13 @@ export default function AddExpensePage() {
                                                     onClick={() => toggleMemberInclusion(member.id)}
                                                 >
                                                     <div className="relative">
-                                                        <Avatar className={`h-16 w-16 transition-all ${isIncluded ? 'ring-2 ring-green-500 ring-offset-4 ring-offset-[#09090b] opacity-100 scale-105' : 'opacity-40 grayscale'}`}>
+                                                        <Avatar className={`h-12 w-12 transition-all ${isIncluded ? 'ring-2 ring-green-500 ring-offset-2 ring-offset-[#09090b] opacity-100 scale-105' : 'opacity-40 grayscale'}`}>
                                                             <AvatarImage src={member.avatar_url || ""} />
-                                                            <AvatarFallback className="bg-white/10 text-zinc-300">{member.username?.charAt(0)}</AvatarFallback>
+                                                            <AvatarFallback className="bg-white/10 text-zinc-300 text-xs">{member.username?.charAt(0)}</AvatarFallback>
                                                         </Avatar>
 
                                                     </div>
-                                                    <span className={`text-xs font-medium truncate w-full text-center ${isIncluded ? 'text-zinc-50' : 'text-zinc-500'}`}>
+                                                    <span className={`text-[10px] font-medium truncate w-full text-center ${isIncluded ? 'text-zinc-50' : 'text-zinc-500'}`}>
                                                         {member.username}
                                                     </span>
                                                 </div>
@@ -393,19 +393,19 @@ export default function AddExpensePage() {
                 )}
 
                 {/* Description */}
-                <div className="space-y-3">
-                    <label className="text-sm font-medium text-zinc-500 pl-1">For</label>
+                <div className="space-y-2">
+                    <label className="text-xs font-medium text-zinc-500 pl-1">For</label>
                     <Input
                         name="description"
                         placeholder="What's this for?"
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
                         required
-                        className="bg-black/20 border border-white/10 rounded-2xl h-16 text-lg text-zinc-50 placeholder:text-zinc-600 focus-visible:ring-1 focus-visible:ring-green-500 focus-visible:border-green-500 transition-all"
+                        className="bg-black/20 border border-white/10 rounded-2xl h-12 text-base text-zinc-50 placeholder:text-zinc-600 focus-visible:ring-1 focus-visible:ring-green-500 focus-visible:border-green-500 transition-all mb-3"
                     />
 
                     {/* Quick Chips */}
-                    <div className="flex flex-wrap gap-2 pt-2">
+                    <div className="flex flex-wrap gap-2 pt-1">
                         {QUICK_CHIPS.map(chip => {
                             const word = chip.split(" ")[1];
                             const isActive = description === word;
@@ -414,9 +414,9 @@ export default function AddExpensePage() {
                                     key={chip}
                                     type="button"
                                     onClick={() => handleChipClick(word)}
-                                    className={`transition-colors text-sm ${isActive
-                                        ? "bg-green-500 text-black font-semibold rounded-full px-5 py-2 shadow-[0_0_15px_rgba(34,197,94,0.3)] border-none"
-                                        : "bg-white/5 text-zinc-400 border border-white/10 rounded-full px-5 py-2 hover:bg-white/10"
+                                    className={`transition-colors text-xs font-medium px-4 py-2 rounded-full border ${isActive
+                                        ? "bg-green-500 text-zinc-950 border-green-500 shadow-[0_0_15px_rgba(34,197,94,0.3)]"
+                                        : "bg-white/5 text-zinc-400 border-white/10 hover:bg-white/10 hover:text-zinc-300"
                                         }`}
                                 >
                                     {chip}

@@ -13,15 +13,15 @@ export interface FriendshipData {
     "They Owe Me": number;
 }
 
-export interface MonthlyData {
-    month: string;
+export interface WeeklyData {
+    week: string;
     spending: number;
 }
 
 export interface AnalyticsPayload {
     categories: CategoryData[];
     friendships: FriendshipData[];
-    monthly: MonthlyData[];
+    weekly: WeeklyData[];
 }
 
 // Simple helper to derive category from description
@@ -71,15 +71,34 @@ export async function getAnalyticsData(): Promise<AnalyticsPayload | null> {
     // 2. Process Friendship Graph
     const friendshipMap: Record<string, FriendshipData> = {};
 
-    // 3. Process Monthly Trend
-    const monthlyMap: Record<string, number> = {};
+    // 3. Process Weekly Trend
+    const weeklyMap: Record<string, number> = {};
+    const weekLabels: string[] = [];
 
-    // Get last 6 months labels
+    // Get last 5 weeks labels (Current week and 4 previous)
     const today = new Date();
-    for (let i = 5; i >= 0; i--) {
-        const d = new Date(today.getFullYear(), today.getMonth() - i, 1);
-        const monthLabel = d.toLocaleDateString('en-US', { month: 'short' });
-        monthlyMap[monthLabel] = 0;
+    // Normalize today to start of current day
+    today.setHours(0, 0, 0, 0);
+
+    // Calculate the start of the current week (assuming Monday is start)
+    const dayOfWeek = today.getDay();
+    const diffToMonday = today.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1);
+    const startOfCurrentWeek = new Date(today.setDate(diffToMonday));
+
+    for (let i = 4; i >= 0; i--) {
+        const weekStart = new Date(startOfCurrentWeek);
+        weekStart.setDate(weekStart.getDate() - (i * 7));
+
+        const weekEnd = new Date(weekStart);
+        weekEnd.setDate(weekEnd.getDate() + 6);
+
+        // Format label as "Mon DD - Mon DD" e.g., "Oct 12 - Oct 18"
+        const startStr = weekStart.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        const endStr = weekEnd.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        const label = `${startStr} - ${endStr}`;
+
+        weekLabels.push(label);
+        weeklyMap[label] = 0;
     }
 
     transactions.forEach((t) => {
@@ -107,10 +126,27 @@ export async function getAnalyticsData(): Promise<AnalyticsPayload | null> {
                 const cat = rawDesc.charAt(0).toUpperCase() + lowerDesc.slice(1);
                 categoryMap[cat] = (categoryMap[cat] || 0) + amount;
 
+                // Find matching week bucket
                 const date = new Date(t.created_at);
-                const monthLabel = date.toLocaleDateString('en-US', { month: 'short' });
-                if (monthlyMap[monthLabel] !== undefined) {
-                    monthlyMap[monthLabel] += amount;
+                date.setHours(0, 0, 0, 0);
+
+                // We need to figure out which week bucket this falls into
+                for (let i = 0; i < 5; i++) {
+                    const weekEnd = new Date(startOfCurrentWeek);
+                    weekEnd.setDate(weekEnd.getDate() - ((4 - i) * 7) + 6);
+                    weekEnd.setHours(23, 59, 59, 999);
+
+                    const weekStart = new Date(startOfCurrentWeek);
+                    weekStart.setDate(weekStart.getDate() - ((4 - i) * 7));
+                    weekStart.setHours(0, 0, 0, 0);
+
+                    if (date >= weekStart && date <= weekEnd) {
+                        const label = weekLabels[i];
+                        if (weeklyMap[label] !== undefined) {
+                            weeklyMap[label] += amount;
+                        }
+                        break;
+                    }
                 }
             }
         }
@@ -147,11 +183,11 @@ export async function getAnalyticsData(): Promise<AnalyticsPayload | null> {
     const categories = allCategories;
     // Filter out friends with 0 balance both ways
     const friendships = Object.values(friendshipMap).filter(f => f["I Owe"] > 0 || f["They Owe Me"] > 0);
-    const monthly = Object.keys(monthlyMap).map(k => ({ month: k, spending: monthlyMap[k] }));
+    const weekly = Object.keys(weeklyMap).map(k => ({ week: k, spending: weeklyMap[k] }));
 
     return {
         categories,
         friendships,
-        monthly
+        weekly
     };
 }

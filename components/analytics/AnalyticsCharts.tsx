@@ -91,19 +91,19 @@ export default function AnalyticsCharts({ data }: { data: AnalyticsPayload }) {
                 )}
             </div>
 
-            {/* Chart 3: Monthly Spending Trend */}
+            {/* Chart 3: Weekly Spending Trend */}
             <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-[2rem] p-6 shadow-2xl mb-6">
-                <h3 className="text-zinc-50 font-bold text-lg mb-4">Monthly Spending Trend</h3>
+                <h3 className="text-zinc-50 font-bold text-lg mb-4">Weekly Spending Trend</h3>
                 <div className="h-64 w-full">
                     <ResponsiveContainer width="100%" height="100%">
-                        <LineChart data={data.monthly} margin={{ top: 20, right: 20, left: 0, bottom: 5 }} style={{ outline: 'none' }}>
+                        <LineChart data={data.weekly} margin={{ top: 20, right: 20, left: 0, bottom: 5 }} style={{ outline: 'none' }}>
                             <defs>
                                 <filter id="neonLine" x="-10%" y="-10%" width="120%" height="120%">
                                     <feDropShadow dx="0" dy="0" stdDeviation="6" floodColor="#22C55E" floodOpacity="0.9" />
                                 </filter>
                             </defs>
                             <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
-                            <XAxis dataKey="month" tick={{ fill: '#a1a1aa', fontSize: 12 }} />
+                            <XAxis dataKey="week" tick={{ fill: '#a1a1aa', fontSize: 12 }} />
                             <YAxis tick={{ fill: '#a1a1aa', fontSize: 12 }} />
                             <BarTooltip formatter={(value) => `₹${value}`} contentStyle={{ backgroundColor: 'rgba(9, 9, 11, 0.9)', borderColor: 'rgba(255,255,255,0.1)', borderRadius: '12px', color: '#fafafa' }} itemStyle={{ color: '#fafafa' }} />
                             <Line type="monotone" dataKey="spending" stroke="#22C55E" strokeWidth={4} dot={{ r: 5, fill: '#14532d', stroke: '#22C55E', strokeWidth: 2 }} activeDot={{ r: 8, fill: '#22C55E', stroke: 'none' }} filter="url(#neonLine)" />
