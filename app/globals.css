@@ -123,3 +123,18 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Recharts overrides for mobile tap highlights/focus rings */
+.recharts-wrapper,
+.recharts-surface,
+.recharts-cartesian-grid-bg,
+.recharts-default-tooltip {
+  outline: none !important;
+  -webkit-tap-highlight-color: transparent !important;
+}
+
+.recharts-wrapper:focus,
+.recharts-surface:focus,
+.recharts-responsive-container:focus {
+  outline: none !important;
+}

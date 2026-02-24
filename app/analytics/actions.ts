@@ -96,8 +96,15 @@ export async function getAnalyticsData(): Promise<AnalyticsPayload | null> {
         // Or if I paid for a group expense, part of it is my consumption (not tracked neatly in our DB, we track I/O).
         // Let's use "I am the borrower" to represent "Money I spent/owed".
         if (isBorrower) {
-            const cat = deriveCategory(t.description);
-            if (cat !== "Smokes") {
+            const rawDesc = t.description?.trim() || "Unknown";
+            const lowerDesc = rawDesc.toLowerCase();
+
+            // Filter out smokes
+            const isSmokes = lowerDesc.includes("puff") || lowerDesc.includes("smoke") || lowerDesc.includes("cig");
+
+            if (!isSmokes) {
+                // Normalize string (Capitalize first letter)
+                const cat = rawDesc.charAt(0).toUpperCase() + lowerDesc.slice(1);
                 categoryMap[cat] = (categoryMap[cat] || 0) + amount;
 
                 const date = new Date(t.created_at);
@@ -124,7 +131,20 @@ export async function getAnalyticsData(): Promise<AnalyticsPayload | null> {
         }
     });
 
-    const categories = Object.keys(categoryMap).map(k => ({ name: k, value: categoryMap[k] })).sort((a, b) => b.value - a.value);
+    // Sort all categories descending
+    let allCategories = Object.keys(categoryMap)
+        .map(k => ({ name: k, value: categoryMap[k] }))
+        .sort((a, b) => b.value - a.value);
+
+    // Take top 4, group the rest into "Other"
+    if (allCategories.length > 4) {
+        const top4 = allCategories.slice(0, 4);
+        const otherSum = allCategories.slice(4).reduce((sum, item) => sum + item.value, 0);
+        top4.push({ name: "Other", value: otherSum });
+        allCategories = top4;
+    }
+
+    const categories = allCategories;
     // Filter out friends with 0 balance both ways
     const friendships = Object.values(friendshipMap).filter(f => f["I Owe"] > 0 || f["They Owe Me"] > 0);
     const monthly = Object.keys(monthlyMap).map(k => ({ month: k, spending: monthlyMap[k] }));
