@@ -3,12 +3,10 @@ import Link from "next/link";
 
 export default function TopBar() {
     return (
-        <header className="sticky top-0 z-40 w-full bg-transparent pt-4 pb-2 px-4">
-            <div className="flex items-center justify-between">
-                <Link href="/dashboard" className="flex items-center">
-                    <Image src="/logo-transparent.png" width={110} height={36} alt="PuffPay Logo" className="object-contain" />
-                </Link>
-            </div>
+        <header className="sticky top-0 z-40 w-full bg-white/5 backdrop-blur-md [mask-image:linear-gradient(to_bottom,black_50%,transparent)] py-2 px-4 flex items-center justify-between transition-all">
+            <Link href="/dashboard" className="flex items-center">
+                <Image src="/logo-transparent-white.png" width={140} height={63} alt="PuffPay Logo" className="h-10 w-auto object-contain" />
+            </Link>
         </header>
     );
 }
