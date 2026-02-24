@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
+import Link from "next/link";
 import DashboardControls from "@/components/dashboard/DashboardControls";
 import FriendRow from "@/components/dashboard/FriendRow";
 import { FriendWithBalance } from "./actions";
@@ -14,6 +15,21 @@ interface DashboardClientViewProps {
 export default function DashboardClientView({ initialFriends }: DashboardClientViewProps) {
     const [hideFavorites, setHideFavorites] = useState(false);
     const [sortOption, setSortOption] = useState("newest");
+
+    useEffect(() => {
+        const saved = localStorage.getItem('puffpay_hide_favorites');
+        if (saved !== null) {
+            setHideFavorites(saved === 'true');
+        }
+    }, []);
+
+    const handleToggleFavorites = () => {
+        setHideFavorites(prev => {
+            const newState = !prev;
+            localStorage.setItem('puffpay_hide_favorites', String(newState));
+            return newState;
+        });
+    };
 
     const filteredAndSortedFriends = useMemo(() => {
         // 1. Base Filter: Always exclude 0 balance
@@ -60,7 +76,7 @@ export default function DashboardClientView({ initialFriends }: DashboardClientV
         <section className="space-y-4">
             <DashboardControls
                 hideFavorites={hideFavorites}
-                setHideFavorites={setHideFavorites}
+                setHideFavorites={handleToggleFavorites}
                 sortOption={sortOption}
                 setSortOption={setSortOption}
             />
@@ -77,10 +93,11 @@ export default function DashboardClientView({ initialFriends }: DashboardClientV
                         <p className="text-xs text-zinc-400 max-w-[200px] mb-4">
                             Try adjusting your filters or add new friends to start splitting expenses!
                         </p>
-                        {/* Placeholder button */}
-                        <button className="px-4 py-2 bg-green-500 text-black text-xs font-bold rounded-lg shadow-[0_0_15px_rgba(34,197,94,0.3)]">
-                            Add Friend
-                        </button>
+                        <Link href="/friends/add">
+                            <button className="px-4 py-2 bg-green-500 text-black text-xs font-bold rounded-lg shadow-[0_0_15px_rgba(34,197,94,0.3)]">
+                                Add Friend
+                            </button>
+                        </Link>
                     </div>
                 </div>
             ) : (

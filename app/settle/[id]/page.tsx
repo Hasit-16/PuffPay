@@ -80,25 +80,26 @@ export default async function SettlePage({ params }: { params: Promise<{ id: str
     const settleAction = settleAllTransactions.bind(null, friendId);
 
     return (
-        <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-20">
+        <div className="min-h-screen pb-20">
             <TopBar />
 
-            <main className="p-4 flex flex-col items-center pt-10">
-                <Avatar className="h-24 w-24 mb-4 shadow-xl">
-                    <AvatarImage src={friend.avatar_url || ""} />
-                    <AvatarFallback className="text-2xl bg-white/5 text-zinc-300">{friend.username?.charAt(0)}</AvatarFallback>
+            <main className="p-4 flex flex-col items-center pt-4">
+                <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-[2rem] p-8 shadow-2xl flex flex-col items-center text-center w-full max-w-sm mx-auto mt-8">
+                    <Avatar className="h-24 w-24 mb-4 border-4 border-white/10 shadow-lg">
+                        <AvatarImage src={friend.avatar_url || ""} />
+                        <AvatarFallback className="text-2xl bg-white/5 text-zinc-300">{friend.username?.charAt(0)}</AvatarFallback>
+                    </Avatar>
 
-                </Avatar>
+                    <h1 className="text-2xl font-bold text-zinc-50 mt-4">
+                        {friend.username}
+                    </h1>
 
-                <h1 className="text-2xl font-bold text-slate-900 dark:text-white mb-1">
-                    {friend.username}
-                </h1>
-
-                <div className={`text-4xl font-bold my-6 tabular-nums ${isDebt ? 'text-red-500' : 'text-green-500'}`}>
-                    {isDebt ? '-' : '+'}₹{absBalance.toLocaleString()}
+                    <div className={`text-4xl font-extrabold mt-2 tracking-tight tabular-nums ${isDebt ? 'text-red-500' : 'text-green-500'}`}>
+                        {isDebt ? '-' : '+'}₹{absBalance.toLocaleString()}
+                    </div>
                 </div>
 
-                <div className="w-full max-w-sm space-y-4">
+                <div className="w-full max-w-sm space-y-4 mt-8">
                     {isDebt && (
                         <>
                             {/* If we have pending confirmation */}
@@ -126,9 +127,9 @@ export default async function SettlePage({ params }: { params: Promise<{ id: str
                             {/* Pay Button */}
                             {pendingTransactions.length > 0 && (
                                 <form action={settleAction}>
-                                    <Button className="w-full h-12 text-lg font-bold bg-green-600 hover:bg-green-700 shadow-lg shadow-green-200 dark:shadow-none">
+                                    <button className="w-full bg-green-500 text-zinc-950 font-bold text-lg rounded-xl py-4 mt-8 shadow-[0_0_15px_rgba(34,197,94,0.3)] hover:bg-green-400 transition-all flex items-center justify-center">
                                         I Have Paid This
-                                    </Button>
+                                    </button>
                                 </form>
                             )}
                         </>
@@ -165,22 +166,16 @@ export default async function SettlePage({ params }: { params: Promise<{ id: str
                             )}
 
                             {/* If balance is positive, show Nudge option */}
-                            {/* Only show if we don't have confirming ones taking up space? Or always? */}
-                            {/* Let's show if confirming is 0 OR just always enable nudge if owed */}
                             {confirmingTransactions.filter(t => t.payer_id === user.id).length === 0 && (
-                                <Button
-                                    className="w-full h-12 text-lg font-bold bg-slate-900 dark:bg-white text-white dark:text-slate-900 shadow-lg"
-                                    asChild
+                                <a
+                                    href={`https://wa.me/?text=${encodeURIComponent(`Hey ${friend.username}! You owe me ₹${absBalance}. Can you settle this?`)}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="w-full bg-white/5 backdrop-blur-md border border-white/10 text-zinc-50 font-semibold text-lg rounded-xl py-4 hover:bg-white/10 transition-all flex items-center justify-center gap-2"
                                 >
-                                    <a
-                                        href={`https://wa.me/?text=${encodeURIComponent(`Hey ${friend.username}! You owe me ₹${absBalance}. Can you settle this?`)}`}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                    >
-                                        <Bell className="w-5 h-5 mr-2" />
-                                        Remind to Pay
-                                    </a>
-                                </Button>
+                                    <Bell className="w-5 h-5" />
+                                    Remind to Pay
+                                </a>
                             )}
                         </>
                     )}

@@ -40,16 +40,16 @@ export default async function GroupDetailsPage({ params }: { params: Promise<{ i
     const friends = await getMyFriends();
 
     return (
-        <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-20">
+        <div className="min-h-screen pb-20">
             <TopBar />
 
             <main className="px-4 py-6 max-w-2xl mx-auto">
                 <div className="mb-4">
                     <Link href="/friends?tab=groups">
-                        <Button variant="ghost" size="sm" className="pl-0 hover:bg-transparent hover:text-slate-900 dark:hover:text-white">
+                        <button className="flex items-center text-zinc-400 hover:text-zinc-50 font-medium transition-colors focus:outline-none">
                             <ArrowLeft className="w-4 h-4 mr-2" />
                             Back to Groups
-                        </Button>
+                        </button>
                     </Link>
                 </div>
 

@@ -141,13 +141,13 @@ export default function FriendsPage() {
                 </div>
 
                 <Tabs defaultValue="friends" className="w-full">
-                    <TabsList className="grid w-full grid-cols-3 mb-6">
-                        <TabsTrigger value="friends">My Friends</TabsTrigger>
-                        <TabsTrigger value="groups">My Groups</TabsTrigger>
-                        <TabsTrigger value="requests" className="relative">
+                    <TabsList className="grid w-full grid-cols-3 mb-6 bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-1">
+                        <TabsTrigger value="friends" className="rounded-lg data-[state=active]:bg-white/10 data-[state=active]:text-zinc-50 data-[state=active]:shadow-sm text-zinc-400 transition-all">My Friends</TabsTrigger>
+                        <TabsTrigger value="groups" className="rounded-lg data-[state=active]:bg-white/10 data-[state=active]:text-zinc-50 data-[state=active]:shadow-sm text-zinc-400 transition-all">My Groups</TabsTrigger>
+                        <TabsTrigger value="requests" className="relative rounded-lg data-[state=active]:bg-white/10 data-[state=active]:text-zinc-50 data-[state=active]:shadow-sm text-zinc-400 transition-all">
                             Requests
                             {requests.length > 0 && (
-                                <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] text-white">
+                                <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] text-zinc-50">
                                     {requests.length}
                                 </span>
                             )}
@@ -250,9 +250,9 @@ export default function FriendsPage() {
                                             </div>
                                             <div className="flex-1">
                                                 <p className="font-semibold text-zinc-50">{group.name}</p>
-                                                <p className="text-xs text-slate-500">Group</p>
+                                                <p className="text-xs text-zinc-500">Group</p>
                                             </div>
-                                            <Button variant="ghost" size="icon" className="text-slate-400">
+                                            <Button variant="ghost" size="icon" className="text-zinc-500 hover:text-zinc-300">
                                                 <span className="sr-only">View</span>
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-chevron-right w-4 h-4"><path d="m9 18 6-6-6-6" /></svg>
                                             </Button>
@@ -266,11 +266,11 @@ export default function FriendsPage() {
                     <TabsContent value="requests" className="space-y-6">
                         {/* Incoming Requests */}
                         <div>
-                            <h3 className="text-sm font-semibold text-slate-500 mb-3 px-1">INCOMING</h3>
+                            <h3 className="text-sm font-semibold text-zinc-500 mb-3 px-1 uppercase tracking-wider">Incoming</h3>
                             {loading ? (
-                                <p className="text-center text-slate-500 mt-2">Loading...</p>
+                                <p className="text-center text-zinc-500 mt-2">Loading...</p>
                             ) : requests.length === 0 ? (
-                                <p className="text-sm text-slate-400 italic px-1">No pending requests.</p>
+                                <p className="text-sm text-zinc-500 italic px-1">No pending requests.</p>
                             ) : (
                                 requests.map(req => (
                                     <div key={req.id} className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-4 mb-3 transition-all hover:bg-white/10">
@@ -282,15 +282,17 @@ export default function FriendsPage() {
                                                 </Avatar>
                                                 <div>
                                                     <p className="font-semibold text-zinc-50 text-sm">{req.sender.username}</p>
-                                                    <p className="text-xs text-slate-500">Sent you a request</p>
+                                                    <p className="text-xs text-zinc-500">Sent you a request</p>
                                                 </div>
                                             </div>
                                             <div className="flex gap-2">
-                                                <Button size="icon" className="h-8 w-8 bg-white/5 border border-white/10 text-zinc-400 hover:text-zinc-50 hover:bg-white/10 rounded-lg" onClick={() => handleIgnore(req.id)}>
-                                                    <X className="h-4 w-4" />
+                                                <Button size="sm" className="h-8 px-3 bg-white/5 border border-white/10 text-zinc-400 hover:text-zinc-50 hover:bg-white/10 rounded-lg" onClick={() => handleIgnore(req.id)}>
+                                                    <X className="h-4 w-4 mr-1" />
+                                                    Decline
                                                 </Button>
-                                                <Button size="icon" className="h-8 w-8 bg-green-500 text-zinc-950 font-semibold hover:bg-green-400 rounded-lg" onClick={() => handleAccept(req.id)}>
-                                                    <Check className="h-4 w-4" />
+                                                <Button size="sm" className="h-8 px-3 bg-green-500 text-zinc-950 font-semibold hover:bg-green-400 rounded-lg" onClick={() => handleAccept(req.id)}>
+                                                    <Check className="h-4 w-4 mr-1" />
+                                                    Accept
                                                 </Button>
                                             </div>
                                         </div>
@@ -302,7 +304,7 @@ export default function FriendsPage() {
                         {/* Sent Requests */}
                         {sentRequests.length > 0 && (
                             <div>
-                                <h3 className="text-sm font-semibold text-slate-500 mb-3 px-1 mt-6">SENT</h3>
+                                <h3 className="text-sm font-semibold text-zinc-500 mb-3 px-1 mt-6 uppercase tracking-wider">Sent</h3>
                                 {sentRequests.map(req => (
                                     <div key={req.id} className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-4 mb-3 transition-all hover:bg-white/10 opacity-80">
                                         <div className="flex items-center justify-between">
@@ -313,10 +315,10 @@ export default function FriendsPage() {
                                                 </Avatar>
                                                 <div>
                                                     <p className="font-semibold text-zinc-50 text-sm">{req.recipient.username}</p>
-                                                    <p className="text-xs text-slate-500">Waiting for approval</p>
+                                                    <p className="text-xs text-zinc-500">Waiting for approval</p>
                                                 </div>
                                             </div>
-                                            <Button size="sm" variant="outline" disabled className="text-xs h-8">
+                                            <Button size="sm" className="bg-white/5 border border-white/10 text-zinc-500 text-xs h-8" disabled>
                                                 Pending
                                             </Button>
                                         </div>

@@ -134,78 +134,77 @@ export default function GroupDetailsClient({ group, members, currentUserId, avai
     return (
         <div className="space-y-6">
             {/* Header / Name Edit */}
-            <div className="bg-white dark:bg-slate-900 rounded-xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm">
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                        <div className="h-14 w-14 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
-                            <Users className="h-7 w-7 text-green-600 dark:text-green-400" />
-                        </div>
-                        <div>
-                            <h1 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                                {group.name}
-                                {isCreator && (
-                                    <Button
-                                        type="button"
-                                        variant="ghost"
-                                        size="icon"
-                                        className="h-6 w-6 text-slate-400 hover:text-slate-600"
-                                        onClick={() => {
-                                            console.log("Edit button clicked");
-                                            setIsEditingName(true);
-                                        }}
-                                    >
-                                        <Edit2 className="h-3 w-3" />
-                                    </Button>
-                                )}
-                            </h1>
-                            <p className="text-sm text-slate-500">{members.length} members</p>
-                        </div>
-                    </div>
+            <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-[2rem] p-6 shadow-2xl flex flex-col items-center text-center mt-6">
+                <div className="h-16 w-16 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mb-4">
+                    <Users className="h-8 w-8 text-zinc-400" />
                 </div>
+                <h1 className="text-2xl font-bold text-zinc-50 flex items-center justify-center">
+                    {group.name}
+                    {isCreator && (
+                        <button
+                            type="button"
+                            className="text-zinc-400 hover:text-zinc-50 transition-colors ml-2 cursor-pointer focus:outline-none"
+                            onClick={() => setIsEditingName(true)}
+                        >
+                            <Edit2 className="h-4 w-4" />
+                        </button>
+                    )}
+                </h1>
+                <p className="text-sm text-zinc-400 mt-1">{members.length} members</p>
             </div>
 
             {/* Members List */}
-            <Card className="border-slate-200 dark:border-slate-800">
-                <CardHeader className="flex flex-row items-center justify-between">
-                    <CardTitle className="text-lg">Members</CardTitle>
+            <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-[2rem] p-6 shadow-2xl mt-6">
+                <div className="flex items-center justify-between mb-4">
+                    <h2 className="text-xl font-bold text-zinc-50">Members</h2>
                     {isCreator && (
-                        <Button size="sm" variant="outline" onClick={() => setIsAddingMember(true)}>
-                            <UserPlus className="w-4 h-4 mr-2" />
-                            Add Member
-                        </Button>
+                        <button
+                            onClick={() => setIsAddingMember(true)}
+                            className="bg-white/5 border border-white/10 text-zinc-50 hover:bg-white/10 rounded-xl px-4 py-2 text-sm font-medium transition-all"
+                        >
+                            <div className="flex items-center">
+                                <UserPlus className="w-4 h-4 mr-2" />
+                                Add Member
+                            </div>
+                        </button>
                     )}
-                </CardHeader>
-                <CardContent className="space-y-4">
+                </div>
+                <div className="space-y-3">
                     {members.map(member => (
-                        <div key={member.id} className="flex items-center justify-between p-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors">
+                        <div key={member.id} className="bg-black/20 border border-white/10 rounded-2xl p-4 flex justify-between items-center transition-all hover:bg-white/5">
                             <div className="flex items-center gap-3">
                                 <Avatar>
                                     <AvatarImage src={member.avatar_url || ""} />
                                     <AvatarFallback>{member.username?.charAt(0).toUpperCase()}</AvatarFallback>
                                 </Avatar>
                                 <div>
-                                    <p className="font-medium text-slate-900 dark:text-white">{member.username}</p>
-                                    {member.id === group.created_by && (
-                                        <span className="text-[10px] bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 px-2 py-0.5 rounded-full">Admin</span>
-                                    )}
+                                    <p className="font-medium text-zinc-50">
+                                        {member.username}
+                                        {member.id === group.created_by && (
+                                            <span className="bg-green-500/10 text-green-400 border border-green-500/20 rounded-full px-2 py-0.5 text-xs font-semibold ml-2 inline-block -translate-y-[1px]">Admin</span>
+                                        )}
+                                    </p>
                                 </div>
                             </div>
                             {isCreator && member.id !== currentUserId && (
-                                <Button variant="ghost" size="icon" className="text-red-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30" onClick={() => handleRemoveMember(member.id)}>
+                                <button
+                                    className="text-red-500/70 hover:text-red-400 transition-colors cursor-pointer focus:outline-none p-2"
+                                    onClick={() => handleRemoveMember(member.id)}
+                                >
                                     <Trash2 className="h-4 w-4" />
-                                </Button>
+                                </button>
                             )}
                         </div>
                     ))}
-                </CardContent>
-            </Card>
+                </div>
+            </div>
 
             {/* Danger Zone */}
             {isCreator && (
-                <div className="mt-8 pt-8 border-t border-slate-200 dark:border-slate-800">
+                <div className="mt-8">
                     <AlertDialog>
                         <AlertDialogTrigger asChild>
-                            <Button variant="destructive">Delete Group</Button>
+                            <button className="w-full bg-red-500 text-zinc-950 font-bold text-lg rounded-xl py-4 flex items-center justify-center shadow-[0_0_15px_rgba(239,68,68,0.3)] hover:bg-red-400 transition-all">Delete Group</button>
                         </AlertDialogTrigger>
                         <AlertDialogContent>
                             <AlertDialogHeader>

@@ -13,7 +13,7 @@ import { Check, SlidersHorizontal } from "lucide-react";
 
 interface DashboardControlsProps {
     hideFavorites: boolean;
-    setHideFavorites: (value: boolean) => void;
+    setHideFavorites: () => void;
     sortOption: string;
     setSortOption: (value: string) => void;
 }
@@ -52,7 +52,7 @@ export default function DashboardControls({
             <div className="flex items-center gap-2">
                 {/* Hide Favorites Toggle */}
                 <button
-                    onClick={() => setHideFavorites(!hideFavorites)}
+                    onClick={setHideFavorites}
                     className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium transition-all border ${hideFavorites
                         ? "bg-green-500/20 text-green-400 border-green-500/50"
                         : "bg-white/5 backdrop-blur-md text-zinc-300 border-white/10 hover:bg-white/10"
