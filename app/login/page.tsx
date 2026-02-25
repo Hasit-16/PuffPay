@@ -31,7 +31,7 @@ function LoginForm() {
 
             {/* Header */}
             <div className="p-6 text-center border-b border-white/10 flex flex-col items-center">
-                <Image src="/logo-transparent.png" width={180} height={60} alt="PuffPay Logo" className="object-contain mx-auto mb-6" />
+                <Image src="/logo-transparent-white.png" width={180} height={60} alt="PuffPay Logo" className="object-contain mx-auto mb-6" />
                 <h1 className="text-2xl font-bold text-white mb-2">Login to PuffPay</h1>
                 <p className="text-slate-400 text-sm">
                     {mode === "login"
