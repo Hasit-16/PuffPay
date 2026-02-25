@@ -3,6 +3,18 @@ import { type NextRequest } from 'next/server'
 import { updateSession } from './lib/supabase/middleware'
 
 export async function middleware(request: NextRequest) {
+    const { pathname } = request.nextUrl;
+
+    // 1. PWA Asset Bypass
+    if (
+        pathname.startsWith('/manifest') ||
+        pathname.startsWith('/icon-') ||
+        pathname === '/sw.js' ||
+        pathname.startsWith('/workbox-')
+    ) {
+        return; // Early return to let Next.js handle it naturally without Supabase interference
+    }
+
     return await updateSession(request)
 }
 
