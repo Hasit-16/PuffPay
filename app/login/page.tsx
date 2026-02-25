@@ -2,7 +2,6 @@
 "use client";
 
 import { useState, Suspense } from "react";
-import Image from "next/image";
 import { login, signup } from "./actions";
 import { User, Mail, Lock, Loader2 } from "lucide-react";
 import { useSearchParams } from "next/navigation";
@@ -31,8 +30,13 @@ function LoginForm() {
 
             {/* Header */}
             <div className="p-6 text-center border-b border-white/10 flex flex-col items-center">
-                <Image src="/logo-transparent-white.png" width={180} height={60} alt="PuffPay Logo" className="object-contain mx-auto mb-6" />
-                <h1 className="text-2xl font-bold text-white mb-2">Login to PuffPay</h1>
+                <div className="flex items-center justify-center gap-1 mb-6">
+                    <span className="text-3xl">🍕</span>
+                    <h1 className="text-3xl font-extrabold tracking-tight text-white">
+                        Puff<span className="text-green-500">Pay</span>
+                    </h1>
+                </div>
+                <h2 className="text-xl font-bold text-white mb-2">Login to PuffPay</h2>
                 <p className="text-slate-400 text-sm">
                     {mode === "login"
                         ? "Welcome back! Login to your account."
