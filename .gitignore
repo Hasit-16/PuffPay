@@ -9,6 +9,11 @@ out/
 build/
 dist/
 
+# 🌐 PWA Auto-Generated Files
+public/sw.js
+public/sw.js.map
+public/workbox-*.js
+
 # 🔐 Environment Variables (CRITICAL for Supabase)
 # NEVER commit these. They contain your API Keys.
 .env

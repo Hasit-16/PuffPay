@@ -4,7 +4,6 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import IOSInstallPrompt from "@/components/IOSInstallPrompt";
-import PWAProvider from "@/components/PWAProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -62,11 +61,9 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <PWAProvider>
-            <main className="pb-28">
-              {children}
-            </main>
-          </PWAProvider>
+          <main className="pb-28">
+            {children}
+          </main>
           <IOSInstallPrompt />
         </ThemeProvider>
         <Toaster />
