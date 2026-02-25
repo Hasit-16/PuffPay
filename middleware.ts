@@ -10,11 +10,14 @@ export const config = {
     matcher: [
         /*
          * Match all request paths except for the ones starting with:
+         * - api (API routes)
          * - _next/static (static files)
          * - _next/image (image optimization files)
          * - favicon.ico (favicon file)
-         * Feel free to modify this pattern to include more paths.
+         * - icon-*.png (PWA icons)
+         * - manifest.ts, manifest.json, manifest.webmanifest (PWA manifests)
+         * - sw.js, workbox-*.js (Service workers)
          */
-        '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+        '/((?!api|_next/static|_next/image|favicon.ico|icon-.*\\.png|manifest\\.(?:ts|json|webmanifest)|sw\\.js|workbox-.*\\.js).*)',
     ],
 }
