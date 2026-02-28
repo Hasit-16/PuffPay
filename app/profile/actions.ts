@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { createClient as createAdminClient } from "@supabase/supabase-js";
 import { revalidatePath } from "next/cache";
 
 export async function updateProfile(formData: FormData) {
@@ -39,20 +40,43 @@ export async function deactivateAccount() {
 
     if (!user) throw new Error("Unauthorized");
 
-    // Deleting profile row.
-    // Assuming DB has ON DELETE CASCADE for relationships to avoid foreign key errors,
-    // otherwise this will fail if user has friendships/transactions.
-    const { error } = await supabase
-        .from("profiles")
-        .delete()
-        .eq("id", user.id);
+    // Initialize Admin Client to bypass RLS and delete from auth.users
+    const supabaseAdmin = createAdminClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.SUPABASE_SERVICE_ROLE_KEY!
+    );
 
-    if (error) {
-        console.error("Deactivate error:", error);
-        return { error: error.message };
+    try {
+        // Explicit Cascading Deletes
+
+        // 1. Remove from group_members
+        await supabaseAdmin.from('group_members').delete().eq('user_id', user.id);
+
+        // 2. Delete groups they created (Cascades to group_members by DB constraint)
+        await supabaseAdmin.from('groups').delete().eq('created_by', user.id);
+
+        // 3. Delete transactions they are part of
+        await supabaseAdmin.from('transactions').delete().or(`payer_id.eq.${user.id},borrower_id.eq.${user.id}`);
+
+        // 4. Delete friendships they are part of
+        await supabaseAdmin.from('friendships').delete().or(`user_id.eq.${user.id},friend_id.eq.${user.id}`);
+
+        // 5. Delete profile record
+        await supabaseAdmin.from('profiles').delete().eq('id', user.id);
+
+        // 6. Completely wipe from Supabase Auth
+        const { error: adminAuthError } = await supabaseAdmin.auth.admin.deleteUser(user.id);
+
+        if (adminAuthError) {
+            console.error("Auth deletion failed:", adminAuthError);
+            return { error: adminAuthError.message };
+        }
+
+        return { success: true };
+    } catch (error: any) {
+        console.error("Hard delete cascade error:", error);
+        return { error: error.message || "Failed to cascade delete user data" };
     }
-
-    return { success: true };
 }
 
 export async function getProfile() {

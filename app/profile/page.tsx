@@ -30,6 +30,7 @@ export default function ProfilePage() {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [uploading, setUploading] = useState(false);
+    const [isDeactivating, setIsDeactivating] = useState(false);
     const [user, setUser] = useState<{ id: string; username: string | null; avatar_url: string | null; email?: string } | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -100,15 +101,23 @@ export default function ProfilePage() {
     };
 
     const handleDeactivate = async () => {
+        setIsDeactivating(true);
         const result = await deactivateAccount();
+
         if (result?.error) {
             toast.error("Failed to deactivate: " + result.error);
+            setIsDeactivating(false);
         } else {
-            // Sign out
+            // Aggressively clear local cache
+            router.refresh();
+
+            // Sign out to clear session
             const supabase = createClient();
             await supabase.auth.signOut();
+
+            // Hard redirect
             router.push("/login");
-            toast.success("Account deactivated");
+            toast.success("Account permanently deleted");
         }
     };
 
@@ -280,9 +289,9 @@ export default function ProfilePage() {
                                     </AlertDialogDescription>
                                 </AlertDialogHeader>
                                 <AlertDialogFooter>
-                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                    <AlertDialogAction onClick={handleDeactivate} className="bg-red-600 hover:bg-red-700 focus:ring-red-600">
-                                        Yes, delete my account
+                                    <AlertDialogCancel disabled={isDeactivating}>Cancel</AlertDialogCancel>
+                                    <AlertDialogAction onClick={handleDeactivate} disabled={isDeactivating} className="bg-red-600 hover:bg-red-700 focus:ring-red-600">
+                                        {isDeactivating ? "Deleting..." : "Yes, delete my account"}
                                     </AlertDialogAction>
                                 </AlertDialogFooter>
                             </AlertDialogContent>
