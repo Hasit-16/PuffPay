@@ -30,11 +30,12 @@ function LoginForm() {
 
             {/* Header */}
             <div className="p-6 text-center border-b border-white/10 flex flex-col items-center">
-                <div className="flex items-center justify-center gap-1 mb-6">
-                    <span className="text-3xl">🍕</span>
-                    <h1 className="text-3xl font-extrabold tracking-tight text-white">
-                        Puff<span className="text-green-500">Pay</span>
-                    </h1>
+                <div className="flex items-center justify-center mb-6">
+                    <img
+                        src="/logo-transparent.png"
+                        alt="PuffPay Logo"
+                        className="h-16 w-auto object-contain drop-shadow-md"
+                    />
                 </div>
                 <h2 className="text-xl font-bold text-white mb-2">Login to PuffPay</h2>
                 <p className="text-slate-400 text-sm">

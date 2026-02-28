@@ -10,7 +10,8 @@ export async function middleware(request: NextRequest) {
         pathname.startsWith('/manifest') ||
         pathname.startsWith('/icon-') ||
         pathname === '/sw.js' ||
-        pathname.startsWith('/workbox-')
+        pathname.startsWith('/workbox-') ||
+        pathname === '/logo-transparent.png'
     ) {
         return; // Early return to let Next.js handle it naturally without Supabase interference
     }
@@ -29,7 +30,8 @@ export const config = {
          * - icon-*.png (PWA icons)
          * - manifest.ts, manifest.json, manifest.webmanifest (PWA manifests)
          * - sw.js, workbox-*.js (Service workers)
+         * - logo-transparent.png (Brand Logo)
          */
-        '/((?!api|_next/static|_next/image|favicon.ico|icon-.*\\.png|manifest\\.(?:ts|json|webmanifest)|sw\\.js|workbox-.*\\.js).*)',
+        '/((?!api|_next/static|_next/image|favicon.ico|icon-.*\\.png|manifest\\.(?:ts|json|webmanifest)|sw\\.js|workbox-.*\\.js|logo-transparent\\.png).*)',
     ],
 }
