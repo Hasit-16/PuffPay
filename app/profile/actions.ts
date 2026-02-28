@@ -47,22 +47,27 @@ export async function deactivateAccount() {
     );
 
     try {
-        // Explicit Cascading Deletes
+        // Explicit Cascading Deletes - Must be done sequentially to avoid FK constraints
 
-        // 1. Remove from group_members
-        await supabaseAdmin.from('group_members').delete().eq('user_id', user.id);
+        // 1. Delete friendships where the user is either the requester or the friend
+        const { error: friendErr } = await supabaseAdmin.from('friendships').delete().or(`user_id.eq.${user.id},friend_id.eq.${user.id}`);
+        if (friendErr) throw new Error(`Friendships cleanup failed: ${friendErr.message}`);
 
-        // 2. Delete groups they created (Cascades to group_members by DB constraint)
-        await supabaseAdmin.from('groups').delete().eq('created_by', user.id);
+        // 2. Delete transactions where the user is either the payer or the borrower
+        const { error: transErr } = await supabaseAdmin.from('transactions').delete().or(`payer_id.eq.${user.id},borrower_id.eq.${user.id}`);
+        if (transErr) throw new Error(`Transactions cleanup failed: ${transErr.message}`);
 
-        // 3. Delete transactions they are part of
-        await supabaseAdmin.from('transactions').delete().or(`payer_id.eq.${user.id},borrower_id.eq.${user.id}`);
+        // 3. Remove user from all groups they are a member of
+        const { error: gmErr } = await supabaseAdmin.from('group_members').delete().eq('user_id', user.id);
+        if (gmErr) throw new Error(`Group memberships cleanup failed: ${gmErr.message}`);
 
-        // 4. Delete friendships they are part of
-        await supabaseAdmin.from('friendships').delete().or(`user_id.eq.${user.id},friend_id.eq.${user.id}`);
+        // 4. Delete groups the user created (this natively cascades to other group_members)
+        const { error: groupsErr } = await supabaseAdmin.from('groups').delete().eq('created_by', user.id);
+        if (groupsErr) throw new Error(`Groups cleanup failed: ${groupsErr.message}`);
 
-        // 5. Delete profile record
-        await supabaseAdmin.from('profiles').delete().eq('id', user.id);
+        // 5. Delete the public profile record
+        const { error: profileErr } = await supabaseAdmin.from('profiles').delete().eq('id', user.id);
+        if (profileErr) throw new Error(`Profile cleanup failed: ${profileErr.message}`);
 
         // 6. Completely wipe from Supabase Auth
         const { error: adminAuthError } = await supabaseAdmin.auth.admin.deleteUser(user.id);
