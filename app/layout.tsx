@@ -61,12 +61,25 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <main className="pb-28">
+          <main className="pb-32 animate-in fade-in duration-500">
             {children}
           </main>
           <IOSInstallPrompt />
         </ThemeProvider>
-        <Toaster />
+        <Toaster
+          position="bottom-center"
+          toastOptions={{
+            classNames: {
+              toast: "group bg-black/60 backdrop-blur-xl border border-white/10 text-zinc-50 shadow-2xl rounded-2xl p-4",
+              title: "text-zinc-50 font-medium text-sm",
+              description: "text-zinc-400 text-xs",
+              actionButton: "bg-green-500 text-zinc-950",
+              cancelButton: "bg-white/10 text-zinc-300",
+              success: "group-[.toast]:border-green-500/50 group-[.toast]:text-green-400",
+              error: "group-[.toast]:border-red-500/50 group-[.toast]:text-red-400",
+            }
+          }}
+        />
       </body>
     </html>
   );

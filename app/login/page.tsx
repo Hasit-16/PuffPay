@@ -49,7 +49,7 @@ function LoginForm() {
             <div className="flex border-b border-white/10">
                 <button
                     onClick={() => setMode("login")}
-                    className={`flex-1 py-3 text-sm font-medium transition-colors ${mode === "login"
+                    className={`flex-1 py-3 text-sm font-medium transition-colors active:scale-95 duration-200 ${mode === "login"
                         ? "bg-white/10 text-white border-b-2 border-green-500"
                         : "text-slate-400 hover:text-white hover:bg-white/5"
                         }`}
@@ -58,7 +58,7 @@ function LoginForm() {
                 </button>
                 <button
                     onClick={() => setMode("signup")}
-                    className={`flex-1 py-3 text-sm font-medium transition-colors ${mode === "signup"
+                    className={`flex-1 py-3 text-sm font-medium transition-colors active:scale-95 duration-200 ${mode === "signup"
                         ? "bg-white/10 text-white border-b-2 border-green-500"
                         : "text-slate-400 hover:text-white hover:bg-white/5"
                         }`}
@@ -120,7 +120,7 @@ function LoginForm() {
                     <button
                         type="submit"
                         disabled={loading}
-                        className="w-full mt-6 py-3 bg-green-500 hover:bg-green-600 text-white font-bold rounded-lg transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="w-full mt-6 py-3 bg-green-500 hover:bg-green-600 text-white font-bold rounded-lg transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed active:scale-95 duration-200"
                     >
                         {loading ? (
                             <>

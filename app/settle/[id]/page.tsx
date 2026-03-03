@@ -127,7 +127,7 @@ export default async function SettlePage({ params }: { params: Promise<{ id: str
                             {/* Pay Button */}
                             {pendingTransactions.length > 0 && (
                                 <form action={settleAction}>
-                                    <button className="w-full bg-green-500 text-zinc-950 font-bold text-lg rounded-xl py-4 mt-8 shadow-[0_0_15px_rgba(34,197,94,0.3)] hover:bg-green-400 transition-all flex items-center justify-center">
+                                    <button className="w-full bg-green-500 text-zinc-950 font-bold text-lg rounded-xl py-4 mt-8 shadow-[0_0_15px_rgba(34,197,94,0.3)] hover:bg-green-400 transition-all flex items-center justify-center active:scale-95 duration-200">
                                         I Have Paid This
                                     </button>
                                 </form>
@@ -151,13 +151,13 @@ export default async function SettlePage({ params }: { params: Promise<{ id: str
                                         Payment Waiting for Approval
                                     </p>
                                     <form action={approveAllSettlements.bind(null, friendId)}>
-                                        <Button className="w-full bg-green-600 hover:bg-green-700 text-white mb-2">
+                                        <Button className="w-full bg-green-600 hover:bg-green-700 text-white mb-2 active:scale-95 transition-all duration-200">
                                             <Check className="w-4 h-4 mr-2" />
                                             Confirm Receipt
                                         </Button>
                                     </form>
                                     <form action={rejectAllSettlements.bind(null, friendId)}>
-                                        <Button variant="outline" className="w-full text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950/30">
+                                        <Button variant="outline" className="w-full text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950/30 active:scale-95 transition-all duration-200">
                                             <X className="w-4 h-4 mr-2" />
                                             Reject
                                         </Button>
@@ -171,7 +171,7 @@ export default async function SettlePage({ params }: { params: Promise<{ id: str
                                     href={`https://wa.me/?text=${encodeURIComponent(`Hey ${friend.username}! You owe me ₹${absBalance}. Can you settle this?`)}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="w-full bg-white/5 backdrop-blur-md border border-white/10 text-zinc-50 font-semibold text-lg rounded-xl py-4 hover:bg-white/10 transition-all flex items-center justify-center gap-2"
+                                    className="w-full bg-white/5 backdrop-blur-md border border-white/10 text-zinc-50 font-semibold text-lg rounded-xl py-4 hover:bg-white/10 transition-all flex items-center justify-center gap-2 active:scale-[0.98]"
                                 >
                                     <Bell className="w-5 h-5" />
                                     Remind to Pay

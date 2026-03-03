@@ -142,12 +142,12 @@ export default function ActivityItemRow({ item }: { item: ActivityItem }) {
                             )}
                             {item.type === 'borrowed' && item.status === 'confirming' && (
                                 <div className="flex gap-1 mt-1">
-                                    <Button size="sm" className="h-6 text-[10px] px-2 bg-green-600 hover:bg-green-700"
+                                    <Button size="sm" className="h-6 text-[10px] px-2 bg-green-600 hover:bg-green-700 active:scale-95 transition-all duration-200"
                                         onClick={() => handleConfirm(item.id)} // Need to implement
                                     >
                                         Confirm
                                     </Button>
-                                    <Button size="sm" variant="destructive" className="h-6 text-[10px] px-2"
+                                    <Button size="sm" variant="destructive" className="h-6 text-[10px] px-2 active:scale-95 transition-all duration-200"
                                         onClick={() => handleReject(item.id)} // Need to implement
                                     >
                                         Reject
@@ -214,7 +214,7 @@ export default function ActivityItemRow({ item }: { item: ActivityItem }) {
                         </div>
                     </div>
                     <DialogFooter>
-                        <Button type="submit" onClick={handleUpdate} disabled={isLoading}>
+                        <Button type="submit" onClick={handleUpdate} disabled={isLoading} className="active:scale-95 transition-all duration-200">
                             {isLoading ? "Saving..." : "Save changes"}
                         </Button>
                     </DialogFooter>

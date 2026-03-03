@@ -9,6 +9,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { searchUsers, sendFriendRequest, UserResult } from "@/app/friends/actions";
 import TopBar from "@/components/layout/TopBar";
 import BottomNav from "@/components/layout/BottomNav";
+import { toast } from "sonner";
 
 export default function AddFriendPage() {
     const [query, setQuery] = useState("");
@@ -69,7 +70,7 @@ export default function AddFriendPage() {
             const next = new Set(pendingRequests);
             next.delete(userId);
             setPendingRequests(next);
-            alert(res.error);
+            toast.error(res.error);
         } else {
             // Update the result status to 'pending' manually to reflect change
             setResults(prev => prev.map(u => u.id === userId ? { ...u, friendship_status: 'pending' } : u));

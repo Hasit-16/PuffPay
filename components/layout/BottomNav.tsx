@@ -27,7 +27,7 @@ export default function BottomNav() {
                         return (
                             <Link key={item.name} href={item.href}>
                                 <div className="flex items-center justify-center">
-                                    <div className="bg-green-500 rounded-full p-3 shadow-[0_0_15px_rgba(34,197,94,0.4)]">
+                                    <div className="bg-green-500 rounded-full p-3 shadow-[0_0_15px_rgba(34,197,94,0.4)] active:scale-90 active:bg-green-600 transition-all duration-200">
                                         <Icon className="text-white w-6 h-6" />
                                     </div>
                                 </div>
@@ -36,7 +36,7 @@ export default function BottomNav() {
                     }
 
                     return (
-                        <Link key={item.name} href={item.href} className="flex items-center justify-center">
+                        <Link key={item.name} href={item.href} className="flex items-center justify-center active:scale-95 transition-all duration-200">
                             <div className={`flex flex-col items-center justify-center gap-1 transition-all ${isActive
                                 ? "bg-white/10 text-green-500 rounded-full px-4 py-2"
                                 : "text-zinc-500 py-2"

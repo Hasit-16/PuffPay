@@ -162,7 +162,7 @@ export default function AddExpensePage() {
             {/* Header */}
             <div className="flex items-center mb-6">
                 <Link href="/dashboard">
-                    <Button variant="ghost" size="icon" className="-ml-2 hover:bg-white/10">
+                    <Button variant="ghost" size="icon" className="-ml-2 hover:bg-white/10 active:scale-95 transition-all duration-200">
                         <ArrowLeft className="w-6 h-6 text-zinc-50" />
                     </Button>
                 </Link>
@@ -173,7 +173,7 @@ export default function AddExpensePage() {
             <div className="flex p-1 bg-white/5 border border-white/10 rounded-xl mb-6 max-w-sm mx-auto backdrop-blur-md">
                 <button
                     onClick={() => setMode("individual")}
-                    className={`flex-1 flex items-center justify-center py-2 rounded-lg text-sm font-medium transition-all ${mode === "individual"
+                    className={`flex-1 flex items-center justify-center py-2 rounded-lg text-sm font-medium transition-all active:scale-95 duration-200 ${mode === "individual"
                         ? "bg-white/10 text-zinc-50 shadow-sm"
                         : "text-zinc-500 hover:text-zinc-300"
                         }`}
@@ -183,7 +183,7 @@ export default function AddExpensePage() {
                 </button>
                 <button
                     onClick={() => setMode("group")}
-                    className={`flex-1 flex items-center justify-center py-2 rounded-lg text-sm font-medium transition-all ${mode === "group"
+                    className={`flex-1 flex items-center justify-center py-2 rounded-lg text-sm font-medium transition-all active:scale-95 duration-200 ${mode === "group"
                         ? "bg-white/10 text-zinc-50 shadow-sm"
                         : "text-zinc-500 hover:text-zinc-300"
                         }`}
@@ -265,7 +265,7 @@ export default function AddExpensePage() {
                             </select>
 
                             <div className="flex justify-end mt-2">
-                                <Link href="/groups" className="text-xs flex items-center text-green-500 font-medium hover:underline">
+                                <Link href="/groups" className="text-xs flex items-center text-green-500 font-medium hover:underline active:scale-95 transition-all duration-200">
                                     <Plus className="w-3 h-3 mr-1" />
                                     Create new group
                                 </Link>
@@ -280,7 +280,7 @@ export default function AddExpensePage() {
                                     <button
                                         type="button"
                                         onClick={() => setSplitType("equal")}
-                                        className={`flex-1 py-2 text-sm font-medium rounded-xl transition-all ${splitType === "equal"
+                                        className={`flex-1 py-2 text-sm font-medium rounded-xl transition-all active:scale-95 duration-200 ${splitType === "equal"
                                             ? "bg-white/10 text-zinc-50 shadow-sm"
                                             : "text-zinc-500 hover:text-zinc-300"
                                             }`}
@@ -290,7 +290,7 @@ export default function AddExpensePage() {
                                     <button
                                         type="button"
                                         onClick={() => setSplitType("exact")}
-                                        className={`flex-1 py-2 text-sm font-medium rounded-xl transition-all ${splitType === "exact"
+                                        className={`flex-1 py-2 text-sm font-medium rounded-xl transition-all active:scale-95 duration-200 ${splitType === "exact"
                                             ? "bg-white/10 text-zinc-50 shadow-sm"
                                             : "text-zinc-500 hover:text-zinc-300"
                                             }`}
@@ -308,7 +308,7 @@ export default function AddExpensePage() {
                                             return (
                                                 <div
                                                     key={member.id}
-                                                    className="flex flex-col items-center space-y-2 cursor-pointer min-w-[72px]"
+                                                    className="flex flex-col items-center space-y-2 cursor-pointer min-w-[72px] active:scale-95 transition-transform duration-200"
                                                     onClick={() => toggleMemberInclusion(member.id)}
                                                 >
                                                     <div className="relative">

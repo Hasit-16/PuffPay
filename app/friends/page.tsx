@@ -194,15 +194,19 @@ export default function FriendsPage() {
                                 ))}
                             </div>
                         ) : processedFriends.length === 0 ? (
-                            <div className="text-center py-12">
-                                <div className="bg-white/5 border border-white/10 p-4 rounded-full inline-block mb-4">
-                                    <UserPlus className="w-8 h-8 text-zinc-400" />
-                                </div>
-                                <h3 className="text-lg font-medium mb-2 text-zinc-50">{searchQuery ? "No matching friends" : "No friends yet"}</h3>
-                                <p className="text-zinc-500 mb-6">{searchQuery ? "Try a different search term" : "Add friends to start sharing expenses."}</p>
+                            <div className="w-full p-8 rounded-2xl bg-white/5 border border-white/10 flex flex-col items-center text-center backdrop-blur-md drop-shadow-xl mt-4">
+                                <div className="text-5xl mb-4 drop-shadow-lg">👋</div>
+                                <h3 className="text-lg font-semibold text-zinc-50 mb-2">
+                                    {searchQuery ? "No matching friends" : "No activity yet"}
+                                </h3>
+                                <p className="text-sm text-zinc-400 mb-6 max-w-[220px]">
+                                    {searchQuery ? "Try a different search term" : "Tap the Add Friend button to get started."}
+                                </p>
                                 {!searchQuery && (
                                     <Link href="/friends/add">
-                                        <Button className="bg-white/5 border border-white/10 text-zinc-300 hover:bg-white/10 hover:text-zinc-50 rounded-full">Find Friends</Button>
+                                        <Button className="bg-white/5 border border-white/10 text-zinc-300 hover:bg-white/10 hover:text-zinc-50 rounded-full active:scale-95 transition-all duration-200">
+                                            Find Friends
+                                        </Button>
                                     </Link>
                                 )}
                             </div>
@@ -227,7 +231,7 @@ export default function FriendsPage() {
                                                 </button>
                                             </div>
                                         </div>
-                                        <Button variant="ghost" size="sm" asChild>
+                                        <Button variant="ghost" size="sm" asChild className="active:scale-95 transition-all duration-200">
                                             <Link href={`/settle/${friend.id}`}>View</Link>
                                         </Button>
                                     </div>
@@ -253,19 +257,19 @@ export default function FriendsPage() {
                                 ))}
                             </div>
                         ) : groups.length === 0 ? (
-                            <div className="text-center py-12">
-                                <div className="bg-white/5 border border-white/10 p-4 rounded-full inline-block mb-4">
-                                    <Users className="w-8 h-8 text-zinc-400" />
-                                </div>
-                                <h3 className="text-lg font-medium mb-2 text-zinc-50">No groups yet</h3>
-                                <p className="text-zinc-500 mb-6">Create a group to split expenses with multiple people.</p>
+                            <div className="w-full p-8 rounded-2xl bg-white/5 border border-white/10 flex flex-col items-center text-center backdrop-blur-md drop-shadow-xl mt-4">
+                                <div className="text-5xl mb-4 drop-shadow-lg">👥</div>
+                                <h3 className="text-lg font-semibold text-zinc-50 mb-2">No activity yet</h3>
+                                <p className="text-sm text-zinc-400 mb-6 max-w-[220px]">Tap the Create Group button to get started.</p>
                                 <Link href="/groups">
-                                    <Button className="bg-white/5 border border-white/10 text-zinc-300 hover:bg-white/10 hover:text-zinc-50 rounded-full">Create Group</Button>
+                                    <Button className="bg-white/5 border border-white/10 text-zinc-300 hover:bg-white/10 hover:text-zinc-50 rounded-full active:scale-95 transition-all duration-200">
+                                        Create Group
+                                    </Button>
                                 </Link>
                             </div>
                         ) : (
                             groups.map(group => (
-                                <Link key={group.id} href={`/groups/${group.id}`} className="block">
+                                <Link key={group.id} href={`/groups/${group.id}`} className="block active:scale-[0.98] active:bg-white/10 transition-transform duration-150 rounded-2xl">
                                     <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-4 mb-3 transition-all hover:bg-white/10">
                                         <div className="flex items-center gap-4">
                                             <div className="h-10 w-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center">
@@ -309,7 +313,10 @@ export default function FriendsPage() {
                                     ))}
                                 </div>
                             ) : requests.length === 0 ? (
-                                <p className="text-sm text-zinc-500 italic px-1">No pending requests.</p>
+                                <div className="w-full p-8 rounded-2xl bg-white/5 border border-white/10 flex flex-col items-center text-center backdrop-blur-md drop-shadow-xl mt-2">
+                                    <div className="text-4xl mb-3 drop-shadow-lg">✨</div>
+                                    <p className="text-sm text-zinc-400 font-medium">All caught up!</p>
+                                </div>
                             ) : (
                                 requests.map(req => (
                                     <div key={req.id} className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-4 mb-3 transition-all hover:bg-white/10">
@@ -325,11 +332,11 @@ export default function FriendsPage() {
                                                 </div>
                                             </div>
                                             <div className="flex gap-2">
-                                                <Button size="sm" className="h-8 px-3 bg-white/5 border border-white/10 text-zinc-400 hover:text-zinc-50 hover:bg-white/10 rounded-lg" onClick={() => handleIgnore(req.id)}>
+                                                <Button size="sm" className="h-8 px-3 bg-white/5 border border-white/10 text-zinc-400 hover:text-zinc-50 hover:bg-white/10 rounded-lg active:scale-95 transition-all duration-200" onClick={() => handleIgnore(req.id)}>
                                                     <X className="h-4 w-4 mr-1" />
                                                     Decline
                                                 </Button>
-                                                <Button size="sm" className="h-8 px-3 bg-green-500 text-zinc-950 font-semibold hover:bg-green-400 rounded-lg" onClick={() => handleAccept(req.id)}>
+                                                <Button size="sm" className="h-8 px-3 bg-green-500 text-zinc-950 font-semibold hover:bg-green-400 rounded-lg active:scale-95 transition-all duration-200" onClick={() => handleAccept(req.id)}>
                                                     <Check className="h-4 w-4 mr-1" />
                                                     Accept
                                                 </Button>
