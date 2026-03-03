@@ -1,5 +1,4 @@
 import TopBar from "@/components/layout/TopBar";
-import BottomNav from "@/components/layout/BottomNav";
 
 export default function Loading() {
     return (
@@ -37,7 +36,6 @@ export default function Loading() {
                 </div>
             </main>
 
-            <BottomNav />
         </div>
     );
 }

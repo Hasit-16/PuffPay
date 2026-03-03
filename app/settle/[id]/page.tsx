@@ -1,5 +1,4 @@
 import TopBar from "@/components/layout/TopBar";
-import BottomNav from "@/components/layout/BottomNav";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Check, X, Bell } from "lucide-react";
@@ -182,7 +181,6 @@ export default async function SettlePage({ params }: { params: Promise<{ id: str
                 </div>
             </main>
 
-            <BottomNav />
         </div>
     );
 }

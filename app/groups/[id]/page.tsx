@@ -4,7 +4,6 @@ import GroupDetailsClient from "./GroupDetailsClient";
 import { getGroupMembers } from "@/app/groups/list_actions";
 import { getMyFriends } from "@/app/friends/actions";
 import TopBar from "@/components/layout/TopBar";
-import BottomNav from "@/components/layout/BottomNav";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
@@ -63,7 +62,6 @@ export default async function GroupDetailsPage({ params }: { params: Promise<{ i
                 </div>
             </main>
 
-            <BottomNav />
         </div>
     );
 }

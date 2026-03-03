@@ -8,7 +8,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import { searchUsers, sendFriendRequest, UserResult } from "@/app/friends/actions";
 import TopBar from "@/components/layout/TopBar";
-import BottomNav from "@/components/layout/BottomNav";
 import { toast } from "sonner";
 
 export default function AddFriendPage() {
@@ -160,7 +159,6 @@ export default function AddFriendPage() {
                 </div>
             </main>
 
-            <BottomNav />
         </div>
     );
 }

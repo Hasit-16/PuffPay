@@ -1,7 +1,6 @@
 
 
 import TopBar from "@/components/layout/TopBar";
-import BottomNav from "@/components/layout/BottomNav";
 import BalanceCard from "@/components/dashboard/BalanceCard";
 import DashboardClientView from "./DashboardClientView";
 import DashboardGreeting from "@/components/dashboard/DashboardGreeting";
@@ -40,7 +39,6 @@ export default async function Dashboard() {
             </main>
 
             {/* 4. Bottom Navigation */}
-            <BottomNav />
         </div>
     );
 }

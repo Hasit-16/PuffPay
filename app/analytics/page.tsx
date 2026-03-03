@@ -1,5 +1,4 @@
 import TopBar from "@/components/layout/TopBar";
-import BottomNav from "@/components/layout/BottomNav";
 import { getAnalyticsData } from "./actions";
 import AnalyticsCharts from "@/components/analytics/AnalyticsCharts";
 import { ArrowLeft } from "lucide-react";
@@ -34,7 +33,6 @@ export default async function AnalyticsPage() {
                 )}
             </main>
 
-            <BottomNav />
         </div>
     );
 }

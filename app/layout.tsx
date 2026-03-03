@@ -4,6 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import IOSInstallPrompt from "@/components/IOSInstallPrompt";
+import BottomNav from "@/components/layout/BottomNav";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -64,6 +65,7 @@ export default function RootLayout({
           <main className="pb-32 animate-in fade-in duration-500">
             {children}
           </main>
+          <BottomNav />
           <IOSInstallPrompt />
         </ThemeProvider>
         <Toaster

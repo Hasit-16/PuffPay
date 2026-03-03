@@ -1,5 +1,4 @@
 import TopBar from "@/components/layout/TopBar";
-import BottomNav from "@/components/layout/BottomNav";
 
 export default function Loading() {
     return (
@@ -20,7 +19,6 @@ export default function Loading() {
                     <div className="h-14 w-full bg-white/10 rounded-xl"></div>
                 </div>
             </main>
-            <BottomNav />
         </div>
     );
 }

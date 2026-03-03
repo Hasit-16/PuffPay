@@ -2,7 +2,6 @@
 
 import { useEffect, useState, useMemo } from "react";
 import TopBar from "@/components/layout/TopBar";
-import BottomNav from "@/components/layout/BottomNav";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -376,7 +375,6 @@ export default function FriendsPage() {
                 </Tabs>
             </main>
 
-            <BottomNav />
         </div>
     );
 }

@@ -1,5 +1,4 @@
 import TopBar from "@/components/layout/TopBar";
-import BottomNav from "@/components/layout/BottomNav";
 import { getActivityLog } from "./actions";
 import { ArrowUpRight } from "lucide-react";
 import ActivityItemRow from "@/components/activity/ActivityItemRow";
@@ -54,7 +53,6 @@ export default async function ActivityPage() {
                 )}
             </main>
 
-            <BottomNav />
         </div>
     );
 }
