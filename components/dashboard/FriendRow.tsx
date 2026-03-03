@@ -60,7 +60,7 @@ export default function FriendRow({ id, name, avatar, amount, hasPendingApproval
                             {isSettled ? (
                                 <Badge variant="secondary" className="bg-white/10 text-zinc-400 font-normal border-none hover:bg-white/10">Settled</Badge>
                             ) : (
-                                <span className={`text-lg font-bold tabular-nums ${isOwed ? 'text-green-500' : 'text-zinc-50'}`}>
+                                <span className={`text-lg font-bold tabular-nums ${isOwed ? 'text-green-500' : isDebt ? 'text-red-500' : 'text-zinc-400'}`}>
                                     {isOwed ? '+' : '-'}₹{(Math.round(Math.abs(amount) * 100) / 100).toFixed(2)}
                                 </span>
                             )}
