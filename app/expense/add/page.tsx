@@ -158,7 +158,7 @@ export default function AddExpensePage() {
     const isExactValid = Math.abs(difference) < 0.01; // Float tolerance
 
     return (
-        <div className="min-h-screen bg-transparent px-4 py-6">
+        <div className="min-h-screen bg-transparent px-4 py-6 animate-in slide-in-from-bottom-8 fade-in duration-200 ease-out fill-mode-both">
             {/* Header */}
             <div className="flex items-center mb-6">
                 <Link href="/dashboard">
