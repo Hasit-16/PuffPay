@@ -168,12 +168,12 @@ export default function ActivityItemRow({ item }: { item: ActivityItem }) {
                                 {item.type === 'borrowed' && item.status === 'confirming' && (
                                     <div className="flex gap-1 mt-1">
                                         <Button size="sm" className="h-6 text-[10px] px-2 bg-green-600 hover:bg-green-700 active:scale-95 transition-all duration-200"
-                                            onClick={() => handleConfirm(item.id)} // Need to implement
+                                            onClick={() => handleConfirm(item.id)}
                                         >
                                             Confirm
                                         </Button>
                                         <Button size="sm" variant="destructive" className="h-6 text-[10px] px-2 active:scale-95 transition-all duration-200"
-                                            onClick={() => handleReject(item.id)} // Need to implement
+                                            onClick={() => handleReject(item.id)}
                                         >
                                             Reject
                                         </Button>
@@ -182,7 +182,6 @@ export default function ActivityItemRow({ item }: { item: ActivityItem }) {
                             </div>
 
                             <DropdownMenu>
-                                {/* ... rest of menu ... */}
                                 <DropdownMenuTrigger asChild>
                                     <Button variant="ghost" className="h-8 w-8 p-0">
                                         <span className="sr-only">Open menu</span>
@@ -201,6 +200,7 @@ export default function ActivityItemRow({ item }: { item: ActivityItem }) {
                                 </DropdownMenuContent>
                             </DropdownMenu>
                         </div>
+                    </div>
                 </motion.div>
             </div>
 
