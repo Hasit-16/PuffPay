@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useMemo } from "react";
+import { motion, useAnimation, PanInfo } from "framer-motion";
 import TopBar from "@/components/layout/TopBar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
@@ -26,6 +27,72 @@ type Friend = {
     is_favorite: boolean;
     created_at: string;
 };
+
+function IncomingRequestRow({ req, onAccept, onReject }: { req: Request, onAccept: (id: string) => void, onReject: (id: string) => void }) {
+    const controls = useAnimation();
+
+    const handleDragEnd = (event: any, info: PanInfo) => {
+        if (info.offset.x < -80) { // Swipe left: Accept
+            onAccept(req.id);
+        } else if (info.offset.x > 80) { // Swipe right: Decline
+            onReject(req.id);
+        }
+        controls.start({ x: 0, transition: { type: "spring", stiffness: 300, damping: 25 } });
+    };
+
+    return (
+        <div className="relative mb-3 rounded-2xl overflow-hidden active:scale-[0.98] transition-transform duration-150 relative">
+            {/* Background Actions */}
+            <div className="absolute inset-0 flex justify-between items-center rounded-2xl bg-zinc-950">
+                {/* Left side (revealed on right swipe) -> Reject */}
+                <div className="w-1/2 flex justify-start h-full items-center bg-red-500/80 pl-6 rounded-l-2xl">
+                    <span className="text-white font-bold text-sm tracking-wide flex items-center">
+                        <X className="w-5 h-5 mr-2" /> Decline
+                    </span>
+                </div>
+                {/* Right side (revealed on left swipe) -> Accept */}
+                <div className="w-1/2 flex justify-end h-full items-center bg-green-500/80 pr-6 rounded-r-2xl">
+                    <span className="text-white font-bold text-sm tracking-wide flex items-center">
+                        <Check className="w-5 h-5 mr-2" /> Accept
+                    </span>
+                </div>
+            </div>
+
+            {/* Foreground Swipeable Card */}
+            <motion.div
+                drag="x"
+                dragConstraints={{ left: 0, right: 0 }}
+                onDragEnd={handleDragEnd}
+                animate={controls}
+                style={{ touchAction: "pan-y" }}
+                className="relative bg-[#09090B] sm:bg-white/5 sm:backdrop-blur-md border border-white/10 rounded-2xl p-4 w-full h-full hover:bg-white/10 transition-colors"
+            >
+                <div className="flex items-center justify-between pointer-events-none">
+                    <div className="flex items-center gap-3">
+                        <Avatar>
+                            <AvatarImage src={req.sender.avatar_url || ""} />
+                            <AvatarFallback>{req.sender.username?.charAt(0).toUpperCase()}</AvatarFallback>
+                        </Avatar>
+                        <div>
+                            <p className="font-semibold text-zinc-50 text-sm">{req.sender.username}</p>
+                            <p className="text-xs text-zinc-500">Sent you a request <span className="opacity-50">• swipe context</span></p>
+                        </div>
+                    </div>
+                    <div className="flex gap-2 pointer-events-auto">
+                        <Button size="sm" className="h-8 px-3 bg-white/5 border border-white/10 text-zinc-400 hover:text-zinc-50 hover:bg-white/10 rounded-lg active:scale-95 transition-all duration-200" onClick={(e) => { e.stopPropagation(); onReject(req.id); }}>
+                            <X className="h-4 w-4 sm:mr-1" />
+                            <span className="hidden sm:inline">Decline</span>
+                        </Button>
+                        <Button size="sm" className="h-8 px-3 bg-green-500 text-zinc-950 font-semibold hover:bg-green-400 rounded-lg active:scale-95 transition-all duration-200" onClick={(e) => { e.stopPropagation(); onAccept(req.id); }}>
+                            <Check className="h-4 w-4 sm:mr-1" />
+                            <span className="hidden sm:inline">Accept</span>
+                        </Button>
+                    </div>
+                </div>
+            </motion.div>
+        </div>
+    );
+}
 
 export default function FriendsPage() {
     const [requests, setRequests] = useState<Request[]>([]);
@@ -318,30 +385,7 @@ export default function FriendsPage() {
                                 </div>
                             ) : (
                                 requests.map(req => (
-                                    <div key={req.id} className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-4 mb-3 transition-all hover:bg-white/10">
-                                        <div className="flex items-center justify-between">
-                                            <div className="flex items-center gap-3">
-                                                <Avatar>
-                                                    <AvatarImage src={req.sender.avatar_url || ""} />
-                                                    <AvatarFallback>{req.sender.username?.charAt(0).toUpperCase()}</AvatarFallback>
-                                                </Avatar>
-                                                <div>
-                                                    <p className="font-semibold text-zinc-50 text-sm">{req.sender.username}</p>
-                                                    <p className="text-xs text-zinc-500">Sent you a request</p>
-                                                </div>
-                                            </div>
-                                            <div className="flex gap-2">
-                                                <Button size="sm" className="h-8 px-3 bg-white/5 border border-white/10 text-zinc-400 hover:text-zinc-50 hover:bg-white/10 rounded-lg active:scale-95 transition-all duration-200" onClick={() => handleIgnore(req.id)}>
-                                                    <X className="h-4 w-4 mr-1" />
-                                                    Decline
-                                                </Button>
-                                                <Button size="sm" className="h-8 px-3 bg-green-500 text-zinc-950 font-semibold hover:bg-green-400 rounded-lg active:scale-95 transition-all duration-200" onClick={() => handleAccept(req.id)}>
-                                                    <Check className="h-4 w-4 mr-1" />
-                                                    Accept
-                                                </Button>
-                                            </div>
-                                        </div>
-                                    </div>
+                                    <IncomingRequestRow key={req.id} req={req} onAccept={handleAccept} onReject={handleIgnore} />
                                 ))
                             )}
                         </div>

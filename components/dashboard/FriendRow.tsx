@@ -1,9 +1,10 @@
 "use client";
 
-import { Bell } from "lucide-react";
+import { Bell, Wallet } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { motion, useAnimation, PanInfo } from "framer-motion";
 
 interface FriendRowProps {
     id: string;
@@ -18,17 +19,57 @@ export default function FriendRow({ id, name, avatar, amount, hasPendingApproval
     const isDebt = amount < 0;
     const isSettled = amount === 0;
 
-    const handleNudge = (e: React.MouseEvent) => {
-        e.preventDefault();
-        e.stopPropagation();
+    const router = useRouter();
+    const controls = useAnimation();
+
+    const handleNudge = () => {
         const formattedAmount = (Math.round(Math.abs(amount) * 100) / 100).toFixed(2);
         const text = encodeURIComponent(`Hey ${name}! Just a quick reminder that you owe me ₹${formattedAmount} on PuffPay. 💸 Settle up whenever you can!`);
         window.open(`https://wa.me/?text=${text}`, '_blank');
     };
 
+    const handleDragEnd = async (event: any, info: PanInfo) => {
+        const threshold = -80; // drag left to trigger action
+        if (info.offset.x < threshold) {
+            if (isOwed) {
+                handleNudge();
+            } else if (isDebt) {
+                router.push(`/settle/${id}`);
+            }
+        }
+        // Always snap back
+        controls.start({ x: 0, transition: { type: "spring", stiffness: 300, damping: 25 } });
+    };
+
     return (
-        <Link href={`/settle/${id}`} className="block active:scale-[0.98] active:bg-white/10 transition-transform duration-150 rounded-2xl">
-            <div className="relative overflow-hidden bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-4 mb-3 transition-all hover:bg-white/10">
+        <div className="relative mb-3 rounded-2xl overflow-hidden active:scale-[0.98] transition-all duration-150">
+            {/* Background Actions */}
+            {isOwed && (
+                <div className="absolute inset-y-0 right-0 w-full flex items-center justify-end px-6 bg-blue-500/80 rounded-2xl">
+                    <span className="text-white font-bold text-sm tracking-wide mr-2 flex items-center">
+                        <Bell className="w-5 h-5 mr-2" /> Nudge
+                    </span>
+                </div>
+            )}
+            {isDebt && (
+                <div className="absolute inset-y-0 right-0 w-full flex items-center justify-end px-6 bg-green-500/80 rounded-2xl">
+                    <span className="text-white font-bold text-sm tracking-wide mr-2 flex items-center">
+                        <Wallet className="w-5 h-5 mr-2" /> Pay
+                    </span>
+                </div>
+            )}
+
+            {/* Foreground Swipeable Card */}
+            <motion.div
+                drag={isSettled ? false : "x"}
+                dragConstraints={{ left: 0, right: 0 }}
+                dragElastic={{ left: 1, right: 0.1 }}
+                onDragEnd={handleDragEnd}
+                animate={controls}
+                style={{ touchAction: "pan-y" }}
+                onClick={() => router.push(`/settle/${id}`)}
+                className="relative overflow-hidden bg-[#0a0a0c] backdrop-blur-md border border-white/10 rounded-2xl p-4 w-full h-full cursor-pointer hover:bg-white/10"
+            >
                 {/* Dynamic Underglow */}
                 <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[70%] h-[50%] blur-[30px] rounded-full pointer-events-none z-0 ${amount >= 0 ? 'bg-green-500/10' : 'bg-red-500/10'}`}></div>
 
@@ -74,8 +115,8 @@ export default function FriendRow({ id, name, avatar, amount, hasPendingApproval
 
                         {isOwed && (
                             <button
-                                onClick={handleNudge}
-                                className="p-2 rounded-full hover:bg-white/10 text-zinc-400 hover:text-zinc-50 transition-colors"
+                                onClick={(e) => { e.stopPropagation(); handleNudge(); }}
+                                className="p-2 rounded-full hover:bg-white/10 text-zinc-400 hover:text-zinc-50 transition-colors pointer-events-auto relative z-20"
                                 title="Send Reminder"
                             >
                                 <Bell className="w-5 h-5" />
@@ -83,7 +124,7 @@ export default function FriendRow({ id, name, avatar, amount, hasPendingApproval
                         )}
                     </div>
                 </div>
-            </div>
-        </Link>
+            </motion.div>
+        </div>
     );
 }
