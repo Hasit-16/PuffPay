@@ -7,7 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { User, Camera, LogOut } from "lucide-react";
+import { User, Camera, LogOut, Bell, BellOff } from "lucide-react";
+import { usePushNotifications } from "@/hooks/usePushNotifications";
 import {
     AlertDialog,
     AlertDialogAction,
@@ -32,6 +33,7 @@ export default function ProfilePage() {
     const [isDeactivating, setIsDeactivating] = useState(false);
     const [user, setUser] = useState<{ id: string; username: string | null; avatar_url: string | null; email?: string } | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const { isSupported, subscription, subscribeToPush, unsubscribeFromPush, isLoading: isPushLoading } = usePushNotifications();
 
     // Form State
     const [username, setUsername] = useState("");
@@ -257,6 +259,36 @@ export default function ProfilePage() {
                         </Button>
                     </form>
                 </div>
+
+                {isSupported && (
+                    <div className="mt-8 bg-white/5 backdrop-blur-xl border border-white/10 rounded-[2rem] p-6 shadow-2xl space-y-4">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <h2 className="text-lg font-semibold text-slate-900 dark:text-white flex items-center gap-2">
+                                    <Bell className="w-5 h-5 text-blue-400" />
+                                    Push Notifications
+                                </h2>
+                                <p className="text-sm text-zinc-400 mt-1 max-w-[220px]">
+                                    Get alerts for new expenses and nudges on this device.
+                                </p>
+                            </div>
+                            <Button
+                                variant={subscription ? "outline" : "default"}
+                                className={subscription ? "border-red-500/50 text-red-400 hover:bg-red-500/10" : "bg-blue-600 hover:bg-blue-500 text-white"}
+                                onClick={() => {
+                                    if (subscription) {
+                                        unsubscribeFromPush();
+                                    } else if (user) {
+                                        subscribeToPush(user.id);
+                                    }
+                                }}
+                                disabled={isPushLoading}
+                            >
+                                {isPushLoading ? "Working..." : subscription ? "Disable" : "Enable"}
+                            </Button>
+                        </div>
+                    </div>
+                )}
 
                 <div className="mt-8 border-t border-white/10 pt-6">
                     <Button variant="outline" className="w-full" onClick={async () => {
