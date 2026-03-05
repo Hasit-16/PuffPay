@@ -1,6 +1,7 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowUpRight, ArrowDownLeft } from "lucide-react";
+import AnimatedNumber from "@/components/ui/AnimatedNumber";
 
 interface BalanceCardProps {
     netBalance: number;
@@ -22,7 +23,7 @@ export default function BalanceCard({ netBalance, toPay, toReceive }: BalanceCar
                         Net Balance
                     </p>
                     <h2 className={`text-4xl font-black tracking-tighter ${isPositive ? 'text-green-400' : 'text-red-400'}`}>
-                        {isPositive ? "+" : "-"}₹{(Math.round(Math.abs(netBalance) * 100) / 100).toFixed(2)}
+                        {isPositive ? "+" : "-"}₹<AnimatedNumber value={Math.abs(netBalance)} format={(v) => (Math.round(v * 100) / 100).toFixed(2)} />
                     </h2>
                 </div>
 
@@ -34,7 +35,7 @@ export default function BalanceCard({ netBalance, toPay, toReceive }: BalanceCar
                             </div>
                             <span className="text-xs font-semibold text-zinc-50">You Owe</span>
                         </div>
-                        <p className="text-lg font-bold text-zinc-50">₹{(Math.round(toPay * 100) / 100).toFixed(2)}</p>
+                        <p className="text-lg font-bold text-zinc-50">₹<AnimatedNumber value={toPay} format={(v) => (Math.round(v * 100) / 100).toFixed(2)} /></p>
                     </div>
 
                     <div className="bg-white/5 border border-white/10 rounded-2xl p-4">
@@ -44,7 +45,7 @@ export default function BalanceCard({ netBalance, toPay, toReceive }: BalanceCar
                             </div>
                             <span className="text-xs font-bold text-zinc-50">Owed to You</span>
                         </div>
-                        <p className="text-lg font-bold text-zinc-50">₹{(Math.round(toReceive * 100) / 100).toFixed(2)}</p>
+                        <p className="text-lg font-bold text-zinc-50">₹<AnimatedNumber value={toReceive} format={(v) => (Math.round(v * 100) / 100).toFixed(2)} /></p>
                     </div>
                 </div>
             </CardContent>
