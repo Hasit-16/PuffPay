@@ -27,7 +27,6 @@ export default function FriendRow({ id, name, avatar, amount, hasPendingApproval
     };
 
     return (
-    return (
         <div
             onClick={() => router.push(`/settle/${id}`)}
             className="relative mb-3 overflow-hidden bg-[#0a0a0c] backdrop-blur-md border border-white/10 rounded-2xl p-4 w-full cursor-pointer hover:bg-white/5 active:scale-[0.98] transition-all duration-150"
@@ -87,5 +86,5 @@ export default function FriendRow({ id, name, avatar, amount, hasPendingApproval
                 </div>
             </div>
         </div>
-        </div >
+    );
 }
