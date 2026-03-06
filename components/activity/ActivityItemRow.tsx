@@ -34,7 +34,6 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { motion, useAnimation, PanInfo } from "framer-motion";
 
 export default function ActivityItemRow({ item }: { item: ActivityItem }) {
     const [isEditOpen, setIsEditOpen] = useState(false);
@@ -43,18 +42,7 @@ export default function ActivityItemRow({ item }: { item: ActivityItem }) {
     const [editDesc, setEditDesc] = useState(item.description);
     const [isLoading, setIsLoading] = useState(false);
 
-    const controls = useAnimation();
-
     const router = useRouter();
-
-    const handleDragEnd = async (event: any, info: PanInfo) => {
-        const threshold = -80;
-        if (info.offset.x < threshold) {
-            setIsDeleteOpen(true);
-        }
-        // Snap back
-        controls.start({ x: 0, transition: { type: "spring", stiffness: 300, damping: 25 } });
-    };
 
     const handleUpdate = async () => {
         setIsLoading(true);
@@ -113,19 +101,7 @@ export default function ActivityItemRow({ item }: { item: ActivityItem }) {
     return (
         <>
             <div className="relative mb-3 rounded-2xl overflow-hidden">
-                <div className="absolute inset-y-0 right-0 w-full flex items-center justify-end px-6 bg-red-500/80 rounded-2xl z-0">
-                    <Trash className="w-6 h-6 text-white" />
-                </div>
-
-                <motion.div
-                    drag="x"
-                    dragConstraints={{ left: 0, right: 0 }}
-                    dragElastic={{ left: 1, right: 0.1 }}
-                    onDragEnd={handleDragEnd}
-                    animate={controls}
-                    style={{ touchAction: "pan-y" }}
-                    className="relative z-10 overflow-hidden bg-[#0a0a0c] backdrop-blur-md border border-white/10 rounded-2xl p-4 w-full h-full"
-                >
+                <div className="relative z-10 overflow-hidden bg-[#0a0a0c] backdrop-blur-md border border-white/10 rounded-2xl p-4 w-full h-full">
                     {/* Dynamic Underglow */}
                     <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[70%] h-[50%] blur-[30px] rounded-full pointer-events-none z-0 ${item.type === 'paid' ? 'bg-red-500/10' : 'bg-green-500/10'}`}></div>
 
@@ -201,7 +177,7 @@ export default function ActivityItemRow({ item }: { item: ActivityItem }) {
                             </DropdownMenu>
                         </div>
                     </div>
-                </motion.div>
+                </div>
             </div>
 
             {/* Edit Dialog */}

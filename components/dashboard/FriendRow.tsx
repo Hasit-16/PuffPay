@@ -4,7 +4,6 @@ import { Bell, Wallet } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { useRouter } from "next/navigation";
-import { motion, useAnimation, PanInfo } from "framer-motion";
 
 interface FriendRowProps {
     id: string;
@@ -20,7 +19,6 @@ export default function FriendRow({ id, name, avatar, amount, hasPendingApproval
     const isSettled = amount === 0;
 
     const router = useRouter();
-    const controls = useAnimation();
 
     const handleNudge = () => {
         const formattedAmount = (Math.round(Math.abs(amount) * 100) / 100).toFixed(2);
@@ -28,45 +26,10 @@ export default function FriendRow({ id, name, avatar, amount, hasPendingApproval
         window.open(`https://wa.me/?text=${text}`, '_blank');
     };
 
-    const handleDragEnd = async (event: any, info: PanInfo) => {
-        const threshold = -80; // drag left to trigger action
-        if (info.offset.x < threshold) {
-            if (isOwed) {
-                handleNudge();
-            } else if (isDebt) {
-                router.push(`/settle/${id}`);
-            }
-        }
-        // Always snap back
-        controls.start({ x: 0, transition: { type: "spring", stiffness: 300, damping: 25 } });
-    };
-
     return (
         <div className="relative mb-3 rounded-2xl overflow-hidden active:scale-[0.98] transition-all duration-150">
-            {/* Background Actions */}
-            {isOwed && (
-                <div className="absolute inset-y-0 right-0 w-full flex items-center justify-end px-6 bg-blue-500/80 rounded-2xl z-0">
-                    <span className="text-white font-bold text-sm tracking-wide mr-2 flex items-center">
-                        <Bell className="w-5 h-5 mr-2" /> Nudge
-                    </span>
-                </div>
-            )}
-            {isDebt && (
-                <div className="absolute inset-y-0 right-0 w-full flex items-center justify-end px-6 bg-green-500/80 rounded-2xl z-0">
-                    <span className="text-white font-bold text-sm tracking-wide mr-2 flex items-center">
-                        <Wallet className="w-5 h-5 mr-2" /> Pay
-                    </span>
-                </div>
-            )}
-
-            {/* Foreground Swipeable Card */}
-            <motion.div
-                drag={isSettled ? false : "x"}
-                dragConstraints={{ left: 0, right: 0 }}
-                dragElastic={{ left: 1, right: 0.1 }}
-                onDragEnd={handleDragEnd}
-                animate={controls}
-                style={{ touchAction: "pan-y" }}
+            {/* Foreground Card */}
+            <div
                 onClick={() => router.push(`/settle/${id}`)}
                 className="relative z-10 overflow-hidden bg-[#0a0a0c] backdrop-blur-md border border-white/10 rounded-2xl p-4 w-full h-full cursor-pointer hover:bg-[#121214]"
             >
@@ -124,7 +87,7 @@ export default function FriendRow({ id, name, avatar, amount, hasPendingApproval
                         )}
                     </div>
                 </div>
-            </motion.div>
+            </div>
         </div>
     );
 }
