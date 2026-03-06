@@ -45,14 +45,14 @@ export default function FriendRow({ id, name, avatar, amount, hasPendingApproval
         <div className="relative mb-3 rounded-2xl overflow-hidden active:scale-[0.98] transition-all duration-150">
             {/* Background Actions */}
             {isOwed && (
-                <div className="absolute inset-y-0 right-0 w-full flex items-center justify-end px-6 bg-blue-500/80 rounded-2xl">
+                <div className="absolute inset-y-0 right-0 w-full flex items-center justify-end px-6 bg-blue-500/80 rounded-2xl z-0">
                     <span className="text-white font-bold text-sm tracking-wide mr-2 flex items-center">
                         <Bell className="w-5 h-5 mr-2" /> Nudge
                     </span>
                 </div>
             )}
             {isDebt && (
-                <div className="absolute inset-y-0 right-0 w-full flex items-center justify-end px-6 bg-green-500/80 rounded-2xl">
+                <div className="absolute inset-y-0 right-0 w-full flex items-center justify-end px-6 bg-green-500/80 rounded-2xl z-0">
                     <span className="text-white font-bold text-sm tracking-wide mr-2 flex items-center">
                         <Wallet className="w-5 h-5 mr-2" /> Pay
                     </span>
@@ -68,7 +68,7 @@ export default function FriendRow({ id, name, avatar, amount, hasPendingApproval
                 animate={controls}
                 style={{ touchAction: "pan-y" }}
                 onClick={() => router.push(`/settle/${id}`)}
-                className="relative overflow-hidden bg-[#0a0a0c] backdrop-blur-md border border-white/10 rounded-2xl p-4 w-full h-full cursor-pointer hover:bg-white/10"
+                className="relative z-10 overflow-hidden bg-[#0a0a0c] backdrop-blur-md border border-white/10 rounded-2xl p-4 w-full h-full cursor-pointer hover:bg-[#121214]"
             >
                 {/* Dynamic Underglow */}
                 <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[70%] h-[50%] blur-[30px] rounded-full pointer-events-none z-0 ${amount >= 0 ? 'bg-green-500/10' : 'bg-red-500/10'}`}></div>

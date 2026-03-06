@@ -112,8 +112,8 @@ export default function ActivityItemRow({ item }: { item: ActivityItem }) {
 
     return (
         <>
-            <div className="relative mb-3 rounded-2xl bg-red-500/80 overflow-hidden">
-                <div className="absolute inset-y-0 right-0 flex items-center justify-end px-6 w-full">
+            <div className="relative mb-3 rounded-2xl overflow-hidden">
+                <div className="absolute inset-y-0 right-0 w-full flex items-center justify-end px-6 bg-red-500/80 rounded-2xl z-0">
                     <Trash className="w-6 h-6 text-white" />
                 </div>
 
@@ -124,7 +124,7 @@ export default function ActivityItemRow({ item }: { item: ActivityItem }) {
                     onDragEnd={handleDragEnd}
                     animate={controls}
                     style={{ touchAction: "pan-y" }}
-                    className="relative overflow-hidden bg-[#0a0a0c] backdrop-blur-md border border-white/10 rounded-2xl p-4 w-full h-full"
+                    className="relative z-10 overflow-hidden bg-[#0a0a0c] backdrop-blur-md border border-white/10 rounded-2xl p-4 w-full h-full"
                 >
                     {/* Dynamic Underglow */}
                     <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[70%] h-[50%] blur-[30px] rounded-full pointer-events-none z-0 ${item.type === 'paid' ? 'bg-red-500/10' : 'bg-green-500/10'}`}></div>
