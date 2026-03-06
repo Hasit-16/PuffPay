@@ -29,7 +29,7 @@ export default function FriendRow({ id, name, avatar, amount, hasPendingApproval
     return (
         <div
             onClick={() => router.push(`/settle/${id}`)}
-            className="relative mb-3 overflow-hidden bg-[#0a0a0c] backdrop-blur-md border border-white/10 rounded-2xl p-4 w-full cursor-pointer hover:bg-white/5 active:scale-[0.98] transition-all duration-150"
+            className="relative mb-3 overflow-hidden bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-4 w-full cursor-pointer hover:bg-white/10 active:scale-[0.98] transition-all duration-150"
         >
             {/* Dynamic Underglow */}
             <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[70%] h-[50%] blur-[30px] rounded-full pointer-events-none z-0 ${amount >= 0 ? 'bg-green-500/10' : 'bg-red-500/10'}`}></div>

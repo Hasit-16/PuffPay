@@ -100,7 +100,7 @@ export default function ActivityItemRow({ item }: { item: ActivityItem }) {
 
     return (
         <>
-            <div className="relative mb-3 overflow-hidden bg-[#0a0a0c] backdrop-blur-md border border-white/10 rounded-2xl p-4 w-full">
+            <div className="relative mb-3 overflow-hidden bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-4 w-full">
                 {/* Dynamic Underglow */}
                 <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[70%] h-[50%] blur-[30px] rounded-full pointer-events-none z-0 ${item.type === 'paid' ? 'bg-red-500/10' : 'bg-green-500/10'}`}></div>
 
