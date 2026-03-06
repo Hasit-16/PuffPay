@@ -28,6 +28,11 @@ export function usePushNotifications() {
     };
 
     const subscribeToPush = async (userId: string) => {
+        if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
+            toast.error("Push notifications are not supported in this browser.");
+            return false;
+        }
+
         setIsLoading(true);
         try {
             const registration = await navigator.serviceWorker.ready;
@@ -57,7 +62,8 @@ export function usePushNotifications() {
             });
 
             if (!response.ok) {
-                throw new Error("Failed to save push subscription to server.");
+                const errorData = await response.json();
+                throw new Error(errorData.error || "Failed to save push subscription to server.");
             }
 
             toast.success("Push notifications enabled!");
@@ -66,6 +72,8 @@ export function usePushNotifications() {
             console.error("Error subscribing to push:", error);
             if (Notification.permission === 'denied') {
                 toast.error("Notification permission denied. Please enable in site settings.");
+            } else if (error instanceof Error) {
+                toast.error(error.message || "Failed to enable push notifications.");
             } else {
                 toast.error("Failed to enable push notifications.");
             }
