@@ -149,7 +149,7 @@ export default function ActivityItemRow({ item }: { item: ActivityItem }) {
                             <div>
                                 <p className="font-medium text-zinc-50 text-sm line-clamp-1">{item.description}</p>
                                 <p className="text-xs text-zinc-400">
-                                    {item.type === 'paid' ? `You paid ${item.otherPerson.username}` : `${item.otherPerson.username} paid you`}
+                                    {item.type === 'paid' ? `You paid for ${item.otherPerson.username}` : `${item.otherPerson.username} paid you`}
                                 </p>
                             </div>
                         </div>

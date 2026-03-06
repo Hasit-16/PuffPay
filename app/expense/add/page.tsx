@@ -225,7 +225,7 @@ export default function AddExpensePage() {
                         </div>
 
                         <div className="space-y-1">
-                            <label className="text-xs font-medium text-zinc-500 pl-1">Split with</label>
+                            <label className="text-xs font-medium text-zinc-500 pl-1">Paid for</label>
                             {loading ? (
                                 <div className="h-12 w-full bg-black/20 animate-pulse rounded-2xl border border-white/10 mb-3" />
                             ) : (
