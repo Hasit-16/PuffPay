@@ -1,8 +1,4 @@
-/// <reference lib="webworker" />
-
-const sw = self as unknown as ServiceWorkerGlobalScope;
-
-sw.addEventListener('push', function (event) {
+self.addEventListener('push', function (event) {
     if (event.data) {
         const data = event.data.json();
 
@@ -18,17 +14,16 @@ sw.addEventListener('push', function (event) {
         };
 
         event.waitUntil(
-            sw.registration.showNotification(data.title, options)
+            self.registration.showNotification(data.title, options)
         );
     }
 });
 
-sw.addEventListener('notificationclick', function (event) {
+self.addEventListener('notificationclick', function (event) {
     event.notification.close();
 
-    // Focus or open the app when a notification is clicked
     event.waitUntil(
-        sw.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
+        self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
             if (clientList.length > 0) {
                 let client = clientList[0];
                 for (let i = 0; i < clientList.length; i++) {
@@ -38,7 +33,7 @@ sw.addEventListener('notificationclick', function (event) {
                 }
                 return client.focus();
             }
-            return sw.clients.openWindow('/');
+            return self.clients.openWindow('/');
         })
     );
 });
