@@ -1,0 +1,13 @@
+.next/dev/types/routes.d.ts(65,1): error TS1434: Unexpected keyword or identifier.
+.next/dev/types/routes.d.ts(65,8): error TS1434: Unexpected keyword or identifier.
+.next/dev/types/routes.d.ts(66,14): error TS1109: Expression expected.
+.next/dev/types/routes.d.ts(72,5): error TS1161: Unterminated regular expression literal.
+.next/dev/types/routes.d.ts(93,1): error TS1128: Declaration or statement expected.
+.next/dev/types/validator.ts(125,9): error TS1003: Identifier expected.
+.next/dev/types/validator.ts(125,10): error TS1003: Identifier expected.
+.next/dev/types/validator.ts(125,11): error TS1109: Expression expected.
+.next/dev/types/validator.ts(125,12): error TS1003: Identifier expected.
+.next/dev/types/validator.ts(125,13): error TS1003: Identifier expected.
+.next/dev/types/validator.ts(125,14): error TS1109: Expression expected.
+.next/dev/types/validator.ts(125,15): error TS1003: Identifier expected.
+.next/dev/types/validator.ts(125,16): error TS1003: Identifier expected.
