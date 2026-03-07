@@ -17,9 +17,18 @@ export function usePushNotifications() {
 
     const registerServiceWorker = async () => {
         try {
-            const registration = await navigator.serviceWorker.ready;
-            const sub = await registration.pushManager.getSubscription();
-            setSubscription(sub);
+            // Prevent hanging if SW fails to initialize by racing with a timeout
+            const registration = await Promise.race([
+                navigator.serviceWorker.ready,
+                new Promise<null>((resolve) => setTimeout(() => resolve(null), 3000))
+            ]);
+
+            if (registration) {
+                const sub = await registration.pushManager.getSubscription();
+                setSubscription(sub);
+            } else {
+                console.warn("Service worker not ready after 3 seconds.");
+            }
         } catch (error) {
             console.error("Service worker registration error:", error);
         } finally {
@@ -35,7 +44,24 @@ export function usePushNotifications() {
 
         setIsLoading(true);
         try {
-            const registration = await navigator.serviceWorker.ready;
+            // Explicitly request permission first per PWA best practices
+            const permission = await Notification.requestPermission();
+            if (permission !== 'granted') {
+                throw new Error("Notification permission denied. Please enable in site settings.");
+            }
+
+            // Get existing registration, or wait up to 3s for ready
+            let registration = await navigator.serviceWorker.getRegistration();
+            if (!registration) {
+                registration = await Promise.race([
+                    navigator.serviceWorker.ready,
+                    new Promise<null>((resolve) => setTimeout(() => resolve(null), 3000))
+                ]) as ServiceWorkerRegistration | null;
+
+                if (!registration) {
+                    throw new Error("Service worker not registered. Please reload the page.");
+                }
+            }
 
             // Helper function to convert base64 to Uint8Array safely
             const publicVapidKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!;

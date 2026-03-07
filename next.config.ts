@@ -7,6 +7,7 @@ const withPWA = withPWAInit({
   aggressiveFrontEndNavCaching: true,
   reloadOnOnline: true,
   disable: process.env.NODE_ENV === "development",
+  customWorkerSrc: "worker", // Points to the /worker directory, expecting index.ts or index.js
   workboxOptions: {
     disableDevLogs: true,
   },

@@ -33,13 +33,17 @@ export async function POST(req: Request) {
             );
 
         if (error) {
-            console.error("DB Error saving subscription:", error);
-            return NextResponse.json({ error: "Failed to save subscription" }, { status: 500 });
+            console.error("====== DATABASE ERROR SAVING SUBSCRIPTION ======");
+            console.error(JSON.stringify(error, null, 2));
+            console.error("==========================================");
+            return NextResponse.json({ error: "Failed to save subscription", details: error }, { status: 500 });
         }
 
         return NextResponse.json({ success: true });
-    } catch (error) {
-        console.error("Error in POST /api/notifications/subscribe:", error);
-        return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    } catch (error: any) {
+        console.error("====== CATCH BLOCK ERROR IN SUBSCRIBE ROUTE ======");
+        console.error(error?.message || error);
+        console.error("================================================");
+        return NextResponse.json({ error: "Internal Server Error", details: error?.message || String(error) }, { status: 500 });
     }
 }

@@ -32,7 +32,7 @@ function LoginForm() {
             <div className="p-6 text-center border-b border-white/10 flex flex-col items-center">
                 <div className="flex items-center justify-center mb-6">
                     <img
-                        src="/logo-transparent.png"
+                        src="/logo-transparent-white.png"
                         alt="PuffPay Logo"
                         className="h-16 w-auto object-contain drop-shadow-md"
                     />
