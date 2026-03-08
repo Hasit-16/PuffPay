@@ -1,10 +1,9 @@
-
-
 import TopBar from "@/components/layout/TopBar";
 import BalanceCard from "@/components/dashboard/BalanceCard";
 import DashboardClientView from "./DashboardClientView";
 import DashboardGreeting from "@/components/dashboard/DashboardGreeting";
 import { getDashboardData } from "./actions";
+import NotificationBanner from "@/components/ui/NotificationBanner";
 
 export default async function Dashboard() {
     const data = await getDashboardData();
@@ -23,6 +22,9 @@ export default async function Dashboard() {
             <TopBar />
 
             <main className="px-4 py-6 space-y-8">
+                {/* ---> BANNER ADDED HERE <--- */}
+                <NotificationBanner />
+
                 <DashboardGreeting username={username} />
 
                 {/* 2. Balance Card */}
