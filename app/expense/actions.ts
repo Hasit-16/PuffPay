@@ -152,7 +152,31 @@ export async function createTransaction(formData: FormData) {
     if (errorCount > 0) {
         return { error: "Failed to create some transactions" };
     }
+    try {
+        // 1. Get the exact URL (localhost for testing, Vercel for live)
+        const appUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
 
+        // 2. Figure out exactly who needs a notification (skip yourself!)
+        const usersToNotify = mode === 'group'
+            ? borrowerIds.filter(id => id !== user.id)
+            : borrowerIds;
+
+        // 3. Loop through the friends and ping their phones
+        for (const targetId of usersToNotify) {
+            await fetch(`${appUrl}/api/notifications/send`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    targetUserId: targetId,
+                    title: "💸 New PuffPay Expense",
+                    body: `You were added to a new bill: ${description}`
+                })
+            });
+        }
+    } catch (notifError) {
+        console.error("Failed to send push notification:", notifError);
+        // We catch the error so a failed notification doesn't crash the actual expense creation!
+    }
     revalidatePath("/dashboard");
     revalidatePath("/activity");
     return { success: true };

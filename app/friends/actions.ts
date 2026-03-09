@@ -1,8 +1,24 @@
-
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
+
+// ==========================================
+// 🔔 HELPER: SEND PUSH NOTIFICATION 🔔
+// ==========================================
+async function sendNotification(targetUserId: string, title: string, body: string) {
+    try {
+        const appUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+        await fetch(`${appUrl}/api/notifications/send`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ targetUserId, title, body })
+        });
+    } catch (error) {
+        console.error("Failed to send push notification:", error);
+    }
+}
+// ==========================================
 
 export interface UserResult {
     id: string;
@@ -34,22 +50,6 @@ export async function searchUsers(query: string): Promise<UserResult[]> {
         return [];
     }
 
-    // 2. Check existing friendship status for each result
-    // This is a bit N+1 but for 10 items it's fine. 
-    // Optimization: Fetch all relevant friendships in one go.
-    const profileIds = profiles.map(p => p.id);
-
-    const { data: friendships } = await supabase
-        .from("friendships")
-        .select("user_id, friend_id, status")
-        .or(`user_id.eq.${user.id},friend_id.eq.${user.id}`)
-        .in("user_id", profileIds) // Check if they sent request
-        .or(`friend_id.in.(${profileIds.join(',')})`); // Check if I sent request
-    // Note: The OR logic above with .in() combined is tricky in Supabase logic constructor.
-    // Simpler: Just fetch all friendships involving me and these users.
-
-    // Actually, let's just loop for simplicity in V1 as V1 performance reqs are low.
-    // ... Or better, fetch all my friendships and map them.
     const { data: myFriendships } = await supabase
         .from("friendships")
         .select("*")
@@ -132,6 +132,13 @@ export async function sendFriendRequest(targetUserId: string) {
             return { error: insertError.message };
         }
 
+        // 🔔 TRIGGER NOTIFICATION HERE 🔔
+        await sendNotification(
+            targetUserId,
+            "👋 New Friend Request",
+            "Someone wants to split bills with you on PuffPay!"
+        );
+
         console.log("sendFriendRequest: Success");
         revalidatePath("/friends/add");
         return { success: true };
@@ -152,15 +159,6 @@ export async function getFriendRequests() {
         console.log("getFriendRequests: No user");
         return [];
     }
-
-    // First just check if there are ANY pending requests for me, without the join
-    const { data: rawData, error: rawError } = await supabase
-        .from("friendships")
-        .select("*")
-        .eq("friend_id", user.id)
-        .eq("status", "pending");
-
-    console.log("getFriendRequests: Raw pending count:", rawData?.length, "Error:", rawError);
 
     const { data, error } = await supabase
         .from("friendships")
@@ -295,12 +293,9 @@ export async function acceptFriendRequest(requestId: string) {
     if (error) return { error: error.message };
 
     // 2. Insert Reverse Record (Bidirectional)
-    // user_id is the original sender, friend_id is me (user.id).
-    // We want to insert: user_id = me, friend_id = original sender.
     if (existingRequest) {
         const originalSenderId = existingRequest.user_id;
 
-        // Check if reverse already exists (unlikely but good to check)
         const { data: reverseCheck } = await supabase
             .from("friendships")
             .select("id")
@@ -313,6 +308,14 @@ export async function acceptFriendRequest(requestId: string) {
                 friend_id: originalSenderId,
                 status: "accepted"
             });
+
+            // 🔔 TRIGGER NOTIFICATION HERE 🔔
+            // Only notify if we successfully complete the friendship loop!
+            await sendNotification(
+                originalSenderId,
+                "🤝 Friend Request Accepted",
+                "Your friend accepted your request. You can now split bills!"
+            );
         }
     }
 
