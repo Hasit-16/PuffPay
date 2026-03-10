@@ -43,6 +43,16 @@ export async function POST(req: Request) {
             data: data || {},
         });
 
+        // ==========================================
+        // 🚨 ADDED: HIGH URGENCY OPTIONS FOR ANDROID
+        // ==========================================
+        const pushOptions = {
+            TTL: 60 * 60 * 24, // Time to Live: Keeps the message alive for 24 hours if the phone is off
+            headers: {
+                "Urgency": "high" // <-- This MUST be inside a 'headers' object!
+            }
+        };
+
         // Send push to all active user devices
         const pushPromises = subscriptions.map(async (sub) => {
             try {
@@ -53,7 +63,10 @@ export async function POST(req: Request) {
                         auth: sub.auth,
                     },
                 };
-                await webpush.sendNotification(pushSubscription, payload);
+
+                // 🚨 ADDED: Pass the pushOptions as the third argument here
+                await webpush.sendNotification(pushSubscription, payload, pushOptions);
+
             } catch (err: any) {
                 if (err.statusCode === 404 || err.statusCode === 410) {
                     // Subscription has expired or is no longer valid, clean it up

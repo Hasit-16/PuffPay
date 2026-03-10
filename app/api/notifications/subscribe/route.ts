@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import webpush from "web-push"; // <-- 1. Added web-push import
 
 export async function POST(req: Request) {
     try {
@@ -38,6 +39,35 @@ export async function POST(req: Request) {
             console.error("==========================================");
             return NextResponse.json({ error: "Failed to save subscription", details: error }, { status: 500 });
         }
+
+        // ==========================================
+        // 🔔 2. INSTANT "WELCOME" NOTIFICATION 🔔
+        // ==========================================
+        try {
+            // Initialize VAPID Keys
+            webpush.setVapidDetails(
+                process.env.VAPID_SUBJECT || "mailto:admin@puffpay.com",
+                process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!,
+                process.env.VAPID_PRIVATE_KEY!
+            );
+
+            // Format the message
+            const payload = JSON.stringify({
+                title: "🔔 Notifications Enabled!",
+                body: "You're all set! We'll notify you about new expenses and settlements.",
+            });
+
+            // Send it directly to the browser that just subscribed
+            await webpush.sendNotification(subscription, payload);
+
+        } catch (pushError) {
+            console.error("====== ERROR SENDING WELCOME PUSH ======");
+            console.error(pushError);
+            console.error("==========================================");
+            // Note: We catch the error but don't return a 500 status here, 
+            // because the database save was still successful!
+        }
+        // ==========================================
 
         return NextResponse.json({ success: true });
     } catch (error: any) {
