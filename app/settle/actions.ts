@@ -154,7 +154,7 @@ export async function settleAllTransactions(friendId: string) {
     // 🔔 NOTIFY THE LENDER
     await sendNotification(
         friendId,
-        "💰 Bulk Payment Received!",
+        "💰 Payment Received!",
         "A friend just paid off all their pending debts to you. Please confirm!"
     );
 
@@ -185,7 +185,7 @@ export async function approveAllSettlements(friendId: string) {
     // 🔔 NOTIFY THE BORROWER
     await sendNotification(
         friendId,
-        "✅ All Payments Confirmed",
+        "✅ Payments Confirmed",
         "Your friend confirmed all your payments. You are completely settled up!"
     );
 
@@ -215,8 +215,8 @@ export async function rejectAllSettlements(friendId: string) {
     // 🔔 NOTIFY THE BORROWER
     await sendNotification(
         friendId,
-        "❌ Bulk Payment Rejected",
-        "Your friend rejected your bulk settlement. Please check with them."
+        "❌ Payment Rejected",
+        "Your friend rejected your settlement. Please check with them."
     );
 
     revalidatePath("/dashboard");
