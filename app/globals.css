@@ -121,6 +121,27 @@
 
   body {
     @apply bg-background text-foreground;
+
+    /* PWA FIXES: Prevent text highlighting/selection */
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+
+    /* Prevent the long-press popup menu (mostly for iOS/Safari) */
+    -webkit-touch-callout: none;
+
+    /* Remove the weird blue/gray flash when you tap buttons on Android */
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* CRITICAL RULE: Re-enable selection for inputs! */
+  input,
+  textarea {
+    -webkit-user-select: auto;
+    -moz-user-select: auto;
+    -ms-user-select: auto;
+    user-select: auto;
   }
 }
 
