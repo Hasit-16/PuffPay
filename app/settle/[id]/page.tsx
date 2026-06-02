@@ -79,7 +79,7 @@ export default async function SettlePage({ params }: { params: Promise<{ id: str
     const settleAction = settleAllTransactions.bind(null, friendId);
 
     return (
-        <div className="min-h-screen pb-20 animate-in slide-in-from-bottom-8 fade-in duration-200 ease-out fill-mode-both">
+        <div className="min-h-screen pb-20">
             <TopBar />
 
             <main className="p-4 flex flex-col items-center pt-4">

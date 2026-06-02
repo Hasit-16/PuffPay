@@ -62,7 +62,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <main className="pb-32 animate-in fade-in duration-500">
+          <main className="pb-32">
             {children}
           </main>
           <BottomNav />

@@ -1,6 +1,6 @@
 export default function Template({ children }: { children: React.ReactNode }) {
     return (
-        <div className="animate-in slide-in-from-right-4 fade-in duration-300 ease-out fill-mode-both">
+        <div className="animate-in slide-in-from-right-4 fade-in duration-300 ease-out">
             {children}
         </div>
     );

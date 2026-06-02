@@ -158,7 +158,7 @@ export default function AddExpensePage() {
     const isExactValid = Math.abs(difference) < 0.01; // Float tolerance
 
     return (
-        <div className="min-h-screen bg-transparent px-4 py-6 animate-in slide-in-from-bottom-8 fade-in duration-200 ease-out fill-mode-both">
+        <div className="min-h-screen bg-transparent px-4 py-6">
             {/* Header */}
             <div className="flex items-center mb-6">
                 <Link href="/dashboard">
@@ -400,7 +400,6 @@ export default function AddExpensePage() {
                         placeholder="What's this for?"
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
-                        required
                         className="bg-black/20 border border-white/10 rounded-2xl h-12 text-base text-zinc-50 placeholder:text-zinc-600 focus-visible:ring-1 focus-visible:ring-green-500 focus-visible:border-green-500 transition-all mb-3"
                     />
 

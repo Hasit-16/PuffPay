@@ -70,7 +70,7 @@ export default function CreateGroupPage() {
     };
 
     return (
-        <div className="min-h-screen px-4 py-6 animate-in slide-in-from-bottom-8 fade-in duration-200 ease-out fill-mode-both">
+        <div className="min-h-screen px-4 py-6">
             <div className="flex items-center mb-8">
                 <Link href="/dashboard">
                     <Button variant="ghost" size="icon" className="-ml-2 hover:bg-white/10">
