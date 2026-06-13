@@ -1,7 +1,9 @@
 import { createClient } from "@/lib/supabase/server";
+import { createServerClient } from "@supabase/ssr";
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, ShieldCheck, Trophy, Award, Users, BarChart3, Activity } from "lucide-react";
+import { ArrowLeft, ShieldCheck, Trophy, BarChart3 } from "lucide-react";
 
 interface ProfileWithTransactionCount {
     id: string;
@@ -10,30 +12,63 @@ interface ProfileWithTransactionCount {
 }
 
 export default async function AdminDashboard() {
-    const supabase = await createClient();
-
-    // 1. Security / Auth Check
+    // 1. Security / Auth Check (Using your standard client)
+    const supabaseAuth = await createClient();
     const {
         data: { user },
-    } = await supabase.auth.getUser();
+    } = await supabaseAuth.auth.getUser();
 
     if (!user) {
         redirect("/login");
     }
 
-    // 2. Data Fetching (Leaderboard Logic)
-    const { data: rawProfiles, error } = await supabase
-        .from("profiles")
-        .select("id, username, transactions!payer_id(count)") as {
-            data: ProfileWithTransactionCount[] | null;
-            error: any;
-        };
+    // 2. 🚨 Admin Data Client (Bypasses RLS to see all users' data)
+    const cookieStore = await cookies();
+    const supabaseAdmin = createServerClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.SUPABASE_SERVICE_ROLE_KEY!,
+        {
+            cookies: {
+                getAll() {
+                    return cookieStore.getAll();
+                },
+                setAll(cookiesToSet) {
+                    try {
+                        cookiesToSet.forEach(({ name, value, options }) =>
+                            cookieStore.set(name, value, options)
+                        );
+                    } catch {
+                        // The `setAll` method was called from a Server Component.
+                    }
+                },
+            },
+        }
+    );
 
-    if (error) {
-        console.error("Error fetching admin leaderboard:", error);
-    }
+    // 3. Data Fetching Concurrently (Using the Admin Client!)
+    const [
+        profilesRes,
+        transactionsRes,
+        friendshipsRes,
+        subscriptionsRes
+    ] = await Promise.all([
+        supabaseAdmin.from("profiles").select("id, username, transactions!payer_id(count)"),
+        supabaseAdmin.from("transactions").select("amount, status"),
+        supabaseAdmin.from("friendships").select("user_id, friend_id"),
+        supabaseAdmin.from("push_subscriptions").select("user_id")
+    ]);
 
-    // Process and Map results
+    const rawProfiles = profilesRes.data as ProfileWithTransactionCount[] | null;
+    const allTransactions = transactionsRes.data || [];
+    const friendships = friendshipsRes.data || [];
+    const subscriptions = subscriptionsRes.data || [];
+
+    if (profilesRes.error) console.error("Error fetching profiles:", profilesRes.error);
+    if (transactionsRes.error) console.error("Error fetching transactions:", transactionsRes.error);
+    if (friendshipsRes.error) console.error("Error fetching friendships:", friendshipsRes.error);
+    if (subscriptionsRes.error) console.error("Error fetching subscriptions:", subscriptionsRes.error);
+
+    // Leaderboard calculation logic
     const leaderboard = (rawProfiles || []).map((profile) => {
         const totalExpenses = profile.transactions?.[0]?.count ?? 0;
         return {
@@ -43,20 +78,51 @@ export default async function AdminDashboard() {
         };
     });
 
-    // Sort from highest totalExpenses to lowest
+    // Sort leaderboard from highest totalExpenses to lowest
     const sortedLeaderboard = leaderboard.sort((a, b) => b.totalExpenses - a.totalExpenses);
 
-    // Calculate quick stats
-    const totalRegisteredUsers = leaderboard.length;
-    const totalIOUsCreated = leaderboard.reduce((sum, item) => sum + item.totalExpenses, 0);
-    const activeContributors = leaderboard.filter(item => item.totalExpenses > 0).length;
+    // Advanced Health Analytics Calculations
+    // 1. Total Active Debt (pending or confirming status)
+    const activeTransactions = allTransactions.filter(
+        (tx) => tx.status === "pending" || tx.status === "confirming"
+    );
+    const totalActiveDebt = activeTransactions.reduce(
+        (sum, tx) => sum + Number(tx.amount),
+        0
+    );
+
+    // 2. Settlement Rate (percentage of settled transactions out of total)
+    const totalTxCount = allTransactions.length;
+    const settledTxCount = allTransactions.filter(
+        (tx) => tx.status === "settled" || tx.status === "confirmed" // include 'confirmed' as legacy/active settled status if present
+    ).length;
+    const settlementRate = totalTxCount > 0 ? Math.round((settledTxCount / totalTxCount) * 100) : 0;
+
+    // 3. Push Opt-in Rate (unique users in push_subscriptions / total profiles)
+    const totalRegisteredUsers = rawProfiles ? rawProfiles.length : 0;
+    const uniqueSubscribedUsers = subscriptions
+        ? new Set(subscriptions.map((sub) => sub.user_id)).size
+        : 0;
+    const pushOptInRate = totalRegisteredUsers > 0
+        ? Math.round((uniqueSubscribedUsers / totalRegisteredUsers) * 100)
+        : 0;
+
+    // 4. Orphaned Users (profiles whose ID does not appear in user_id or friend_id of friendships)
+    const activeFriendIds = new Set<string>();
+    friendships.forEach((f) => {
+        if (f.user_id) activeFriendIds.add(f.user_id);
+        if (f.friend_id) activeFriendIds.add(f.friend_id);
+    });
+    const orphanedUsersCount = rawProfiles
+        ? rawProfiles.filter((p) => !activeFriendIds.has(p.id)).length
+        : 0;
 
     return (
         <div className="min-h-screen bg-transparent pb-20">
             {/* Header / Top Navigation */}
             <header className="sticky top-0 z-40 w-full bg-white/5 backdrop-blur-md pt-[max(env(safe-area-inset-top),1.5rem)] pb-4 px-6 border-b border-white/5 flex items-center justify-between">
-                <Link 
-                    href="/dashboard" 
+                <Link
+                    href="/dashboard"
                     className="flex items-center gap-2 text-zinc-400 hover:text-zinc-50 active:scale-95 transition-all duration-200"
                 >
                     <ArrowLeft className="w-5 h-5" />
@@ -80,38 +146,46 @@ export default async function AdminDashboard() {
                     </p>
                 </div>
 
-                {/* Metrics Cards Grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    <div className="bg-zinc-900/60 backdrop-blur-xl rounded-2xl border border-zinc-800 p-5 space-y-2">
-                        <div className="flex items-center justify-between text-zinc-500">
-                            <span className="text-xs font-medium uppercase tracking-wider">Total Users</span>
-                            <Users className="w-4 h-4 text-zinc-400" />
+                {/* Advanced Health Metrics Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                    {/* Card 1: Total Active Debt */}
+                    <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 space-y-2">
+                        <span className="text-zinc-400 text-xs font-semibold uppercase tracking-wider block">
+                            Total Active Debt
+                        </span>
+                        <div className="text-3xl font-bold text-green-500 tabular-nums">
+                            ₹{totalActiveDebt.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                         </div>
-                        <div className="text-2xl font-bold text-zinc-50">{totalRegisteredUsers}</div>
-                        <p className="text-[10px] text-zinc-500">Registered accounts</p>
-                    </div>
-                    
-                    <div className="bg-zinc-900/60 backdrop-blur-xl rounded-2xl border border-zinc-800 p-5 space-y-2">
-                        <div className="flex items-center justify-between text-zinc-500">
-                            <span className="text-xs font-medium uppercase tracking-wider">Total IOUs</span>
-                            <Activity className="w-4 h-4 text-green-500" />
-                        </div>
-                        <div className="text-2xl font-bold text-green-500">{totalIOUsCreated}</div>
-                        <p className="text-[10px] text-zinc-500">Active and settled debts</p>
                     </div>
 
-                    <div className="bg-zinc-900/60 backdrop-blur-xl rounded-2xl border border-zinc-800 p-5 space-y-2">
-                        <div className="flex items-center justify-between text-zinc-500">
-                            <span className="text-xs font-medium uppercase tracking-wider">Active Users</span>
-                            <Award className="w-4 h-4 text-zinc-400" />
+                    {/* Card 2: Settlement Rate */}
+                    <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 space-y-2">
+                        <span className="text-zinc-400 text-xs font-semibold uppercase tracking-wider block">
+                            Settlement Rate
+                        </span>
+                        <div className="text-3xl font-bold text-green-500 tabular-nums">
+                            {settlementRate}%
                         </div>
-                        <div className="text-2xl font-bold text-zinc-50">
-                            {totalRegisteredUsers > 0 
-                                ? `${((activeContributors / totalRegisteredUsers) * 100).toFixed(0)}%`
-                                : "0%"
-                            }
+                    </div>
+
+                    {/* Card 3: Push Opt-in Rate */}
+                    <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 space-y-2">
+                        <span className="text-zinc-400 text-xs font-semibold uppercase tracking-wider block">
+                            Push Opt-in Rate
+                        </span>
+                        <div className="text-3xl font-bold text-white tabular-nums">
+                            {pushOptInRate}%
                         </div>
-                        <p className="text-[10px] text-zinc-500">{activeContributors} users created IOUs</p>
+                    </div>
+
+                    {/* Card 4: Orphaned Users */}
+                    <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 space-y-2">
+                        <span className="text-zinc-400 text-xs font-semibold uppercase tracking-wider block">
+                            Orphaned Users
+                        </span>
+                        <div className="text-3xl font-bold text-red-400 tabular-nums">
+                            {orphanedUsersCount}
+                        </div>
                     </div>
                 </div>
 
@@ -143,16 +217,15 @@ export default async function AdminDashboard() {
                                 <tbody className="divide-y divide-zinc-800/50">
                                     {sortedLeaderboard.map((item, index) => {
                                         const rank = index + 1;
-                                        // Highlight top 3
-                                        const rankColors = 
+                                        const rankColors =
                                             rank === 1 ? "text-amber-500 bg-amber-500/5 border-amber-500/20" :
-                                            rank === 2 ? "text-zinc-300 bg-zinc-300/5 border-zinc-300/20" :
-                                            rank === 3 ? "text-amber-700 bg-amber-700/5 border-amber-700/20" :
-                                            "text-zinc-500 bg-transparent border-transparent";
+                                                rank === 2 ? "text-zinc-300 bg-zinc-300/5 border-zinc-300/20" :
+                                                    rank === 3 ? "text-amber-700 bg-amber-700/5 border-amber-700/20" :
+                                                        "text-zinc-500 bg-transparent border-transparent";
 
                                         return (
-                                            <tr 
-                                                key={item.id} 
+                                            <tr
+                                                key={item.id}
                                                 className="hover:bg-zinc-800/30 transition-colors group"
                                             >
                                                 <td className="py-4 px-6 text-center font-bold">

@@ -223,3 +223,70 @@ export async function rejectAllSettlements(friendId: string) {
     revalidatePath("/activity");
     revalidatePath(`/settle/${friendId}`);
 }
+
+export async function bulkInitiateSettlement(friendId: string) {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) throw new Error("Unauthorized");
+
+    const currentUserId = user.id;
+
+    // Update all pending transactions between currentUserId and friendId to 'confirming'
+    const { error } = await supabase
+        .from("transactions")
+        .update({ status: 'confirming' })
+        .eq("status", "pending")
+        // Bidirectional filter: checks both (me as payer, friend as borrower) and (friend as payer, me as borrower)
+        .or(`and(payer_id.eq.${currentUserId},borrower_id.eq.${friendId}),and(payer_id.eq.${friendId},borrower_id.eq.${currentUserId})`);
+
+    if (error) {
+        console.error("Error initiating bulk settlement:", error);
+        throw new Error("Failed to initiate bulk settlement");
+    }
+
+    // 🔔 NOTIFY THE LENDER: Send push notification
+    await sendNotification(
+        friendId,
+        "💰 Payment Received!",
+        "A friend just paid off all pending debts to you. Please confirm!"
+    );
+
+    revalidatePath("/dashboard");
+    revalidatePath("/activity");
+    revalidatePath(`/settle/${friendId}`);
+}
+
+export async function bulkApproveSettlement(friendId: string) {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) throw new Error("Unauthorized");
+
+    const currentUserId = user.id;
+    const settledAt = new Date();
+
+    // Update all confirming transactions between currentUserId and friendId to 'settled'
+    const { error } = await supabase
+        .from("transactions")
+        .update({ status: 'settled', settled_at: settledAt.toISOString() })
+        .eq("status", "confirming")
+        // Bidirectional filter: checks both (me as payer, friend as borrower) and (friend as payer, me as borrower)
+        .or(`and(payer_id.eq.${currentUserId},borrower_id.eq.${friendId}),and(payer_id.eq.${friendId},borrower_id.eq.${currentUserId})`);
+
+    if (error) {
+        console.error("Error approving bulk settlement:", error);
+        throw new Error("Failed to approve bulk settlement");
+    }
+
+    // 🔔 NOTIFY THE BORROWER: Send push notification
+    await sendNotification(
+        friendId,
+        "✅ Payments Confirmed",
+        "Your friend confirmed all your payments. You are completely settled up!"
+    );
+
+    revalidatePath("/dashboard");
+    revalidatePath("/activity");
+    revalidatePath(`/settle/${friendId}`);
+}

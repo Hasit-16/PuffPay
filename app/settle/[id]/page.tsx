@@ -5,6 +5,7 @@ import { Check, X, Bell } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { settleAllTransactions, approveAllSettlements, rejectAllSettlements } from "../actions";
 import { redirect } from "next/navigation";
+import SettleButton from "@/components/settle/SettleButton";
 
 export default async function SettlePage({ params }: { params: Promise<{ id: string }> }) {
     const supabase = await createClient();
@@ -125,11 +126,7 @@ export default async function SettlePage({ params }: { params: Promise<{ id: str
 
                             {/* Pay Button */}
                             {pendingTransactions.length > 0 && (
-                                <form action={settleAction}>
-                                    <button className="w-full bg-green-500 text-zinc-950 font-bold text-lg rounded-xl py-4 mt-8 shadow-[0_0_15px_rgba(34,197,94,0.3)] hover:bg-green-400 transition-all flex items-center justify-center active:scale-95 duration-200">
-                                        I Have Paid This
-                                    </button>
-                                </form>
+                                <SettleButton friendId={friendId} />
                             )}
                         </>
                     )}
