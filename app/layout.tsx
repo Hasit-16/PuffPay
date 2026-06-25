@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import IOSInstallPrompt from "@/components/IOSInstallPrompt";
 import BottomNav from "@/components/layout/BottomNav";
+import AgentationProvider from "@/components/AgentationProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -67,6 +68,7 @@ export default function RootLayout({
           </main>
           <BottomNav />
           <IOSInstallPrompt />
+          <AgentationProvider />
         </ThemeProvider>
         <Toaster
           position="bottom-center"
